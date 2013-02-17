@@ -1,7 +1,7 @@
 //chrome.extension.getURL("images/myimage.png")
 //console.log('Hello World!', jQuery);
 
-var exam_list = [];
+var exam_list = {};
 var $kaoshi = $('#kaoshi');
 $kaoshi.find('option').each(function(){
 	exam_list[$(this).attr('value')] = $(this).text();
@@ -19,6 +19,38 @@ $fa.after('<div class="control-group"><div class="controls"><input type="submit"
 $f.append($fa);
 
 $('#exam-control .controls').append($kaoshi);
+
+$("#xuehao").change(function(){
+	var no = $(this).val();
+	if(no.indexOf('1') == 0){
+		$kaoshi.find('option').each(function(){
+			if(this.innerText.indexOf('高一') == -1){
+				$(this).hide();
+			}else{
+				$(this).show();
+			}
+		});
+		$kaoshi.children()[0].selected = true;
+	}
+	if(no.indexOf('2') == 0){
+		$kaoshi.find('option').each(function(){
+			if(this.innerText.indexOf('高三') != -1 || this.innerText.indexOf('高考') != -1){
+				$(this).hide();
+			}else{
+				$(this).show();
+			}
+		});
+		$kaoshi.find('option:contains(高二):first')[0].selected = true;
+	}
+	if(no.indexOf('3') == 0){
+		$kaoshi.children().show();
+		$kaoshi.find('option:contains(高三):first')[0].selected = true;
+	}
+});
+
+
+$('div.Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(5)').append('<td rowspan="1" style="padding:0cm 0cm 0cm 0cm" background="images/search_r4_c4.jpg"><p class="MsoNormal" style="line-height:150%;word-break:break-all"><span style="font-size:9.0pt;line-height:150%"><span lang="EN-US"><o:p></o:p></span></span></p></td>');
+//
 
 /*
   
