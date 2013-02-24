@@ -1,16 +1,31 @@
 //chrome.extension.getURL("images/myimage.png")
-//console.log('Hello World!', jQuery);
 
 var exam_list = {};
-var $kaoshi = $('#kaoshi');
+var $kaoshi = $('#kaoshi'), $kaoshi_new;
 $kaoshi.find('option').each(function(){
 	exam_list[$(this).attr('value')] = $(this).text().replace(/(\s)/g,'');
 });
-//for(var i in a){console.log(i)}
-//<label class="radio"><input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Option one is this and that—be sure to include why it's great</label>
 
 
-var $f = $('form:first'), update_status_t = $f.find('b').text().replace(/(\s)/g,''), orig_announcement_t = $f.next().text().replace(/(\s)(\s)+/g,'$1');
+for(var i in exam_list){
+	var $eln = $('<label class="radio"><input type="radio" name="kaoshi" value="'+i+'"> '+exam_list[i]+'</label>');
+	if($kaoshi_new){
+		$kaoshi_new.after($eln);
+	}else{
+		$kaoshi_new = $eln;
+	}
+}
+
+var $f = $('form:first'),
+	update_status_t = $f.find('b').text().replace(/(\s)/g,''),
+	orig_announcement_t = $f.next().text()
+		.replace(/(\s)(\s)+/g,'$1')
+		.replace(/．/g, '。')
+		.replace(/,/g, '，')
+		.replace(/;/g, '；')
+		.replace(/\*/g, '* ')
+		.replace(/\(/g, '（')
+		.replace(/\)/g, '）');
 
 // Fetching ended, now start structure fill
 
@@ -44,30 +59,26 @@ $('#password').change(function(){
 
 $('#xuehao').change(function(){
 	var no = $(this).val();
-	$kaoshi.detach();
+	$kaoshi_new.detach();
 	if(no.indexOf('1') == 0){
-		$kaoshi.find('option').each(function(){
+		console.log($kaoshi_new);
+		$kaoshi_new.filter('label').each(function(){
 			if(this.innerText.indexOf('高一') == -1){
 				$(this).hide();
 			}else{
 				$(this).show();
 			}
 		});
-		$kaoshi.children()[0].selected = true;
+		$kaoshi_new.find('input:first')[0].checked = true;
 	}
 	if(no.indexOf('2') == 0){
-		$kaoshi.find('option').each(function(){
-			if(this.innerText.indexOf('高三') != -1 || this.innerText.indexOf('高考') != -1){
-				$(this).hide();
-			}else{
-				$(this).show();
-			}
-		});
-		$kaoshi.find('option:contains(高二):first')[0].selected = true;
+		$kaoshi_new.show().not('label:contains(高二)').hide();
+		console.log($kaoshi_new.filter(':visible'));
+		$kaoshi_new.filter(':visible').find('input')[0].checked = true;
 	}
 	if(no.indexOf('3') == 0){
-		$kaoshi.children().show();
-		$kaoshi.find('option:contains(高三):first')[0].selected = true;
+		$kaoshi_new.show().not('label:contains(高三), label:contains(高考)').hide();
+		$kaoshi_new.filter('label:contains(高三):first').find('input')[0].checked = true;
 	}
-	$('#exam-control .controls').empty().append($kaoshi);
+	$('#exam-control .controls').empty().append($kaoshi_new);
 });
