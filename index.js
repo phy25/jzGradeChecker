@@ -14,9 +14,9 @@ var $f = $('form:first'), update_status_t = $f.find('b').text().replace(/(\s)/g,
 
 // Fetching ended, now start structure fill
 
-var $fa = $('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="学号" required="required" min="10101" max="32100" /></div></div>');
-$fa.after('<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="密码" required="required" pattern="^(\\d{15}$|^\\d{18}$|^\\d{17}(\\d|X|x))$" /></div></div>');
-$fa.after('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls"><span class="help-inline">请先输入学号</span></div></div>');
+var $fa = $('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>');
+$fa.after('<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>');
+$fa.after('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls"><span class="help-block">请先输入学号</span></div></div>');
 $fa.after('<div class="control-group"><div class="controls"><input type="submit" class="btn btn-primary" value="查询" /></div></div>');
 
 $f.addClass('form-horizontal').html('').append($fa);
@@ -33,7 +33,16 @@ $container.append($append);
 
 $('#orig-announcement').append('<div class="alert alert-info">'+update_status_t+'</div><p>'+orig_announcement_t.replace(/(\n|\r)/g,'</p><p>')+'</p>');
 
-$("#xuehao").change(function(){
+// 全角转半角函数来自 http://www.jslab.org.cn
+function dbc2sbc(t){
+	return t.replace(/[\uff01-\uff5e]/g, function(a){return String.fromCharCode(a.charCodeAt(0)-65248);}).replace(/\u3000/g," ");
+}
+
+$('#password').change(function(){
+	$(this).val(function(i, v){return $.trim(String(dbc2sbc(v)).replace('X', 'x'))});
+});
+
+$('#xuehao').change(function(){
 	var no = $(this).val();
 	$kaoshi.detach();
 	if(no.indexOf('1') == 0){
