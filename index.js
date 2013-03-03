@@ -101,7 +101,7 @@ $('#xuehao').change(function(){
 	$('#exam-control .controls').empty().append($kaoshi_new);
 });
 
-// Ajax
+// Ajax and info saving
 $f.submit(function(){
 	$.ajax({
 		url: $f.attr('action'),
@@ -109,5 +109,15 @@ $f.submit(function(){
 		data: $f.serialize(),
 		dataType: 'xml'
 	}).success(function(arguments){console.log(arguments);});
+	if(localStorage){
+		localStorage['stu_arr_0'] = $('#xuehao').val()+';'+$('#password').val();
+	}
 	return false;
 });
+
+// Info read
+if(localStorage){
+	var stu_arr = [(localStorage['stu_arr_0'] || '').split(';')];
+	$('#xuehao').val(stu_arr[0][0]);
+	$('#password').val(stu_arr[0][1]);
+}
