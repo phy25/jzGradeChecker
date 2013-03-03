@@ -11,11 +11,13 @@
   "content_scripts": [
     {
       "matches": [
-        "http://jszx.stedu.net/jszxcj/search.htm",
-        "http://www.stjszx.net/jszxcj/search.htm",
-        "http://stjszx.net/jszxcj/search.htm/jszxcj/search.htm"],
+        "http://jszx.stedu.net/jszxcj/*.htm",
+        "http://www.stjszx.net/jszxcj/*.htm",
+        "http://stjszx.net/jszxcj/*.htm"
+      ],
       "css": ["bootstrap/css/bootstrap.min.css", "index.css"],
-      "js": ["jquery-1.8.3.min.js", "index.js"]
+      "js": ["jquery-1.8.3.min.js", "index.js"],
+      "all_frames": true
     }
   ]
 }
