@@ -60,25 +60,54 @@ $('#password').change(function(){
 $('#xuehao').change(function(){
 	var no = $(this).val();
 	$kaoshi_new.detach();
+	var vf = false;
 	if(no.indexOf('1') == 0){
-		console.log($kaoshi_new);
-		$kaoshi_new.filter('label').each(function(){
+		$kaoshi_new.each(function(){
+			var $this = $(this);
 			if(this.innerText.indexOf('高一') == -1){
-				$(this).hide();
+				$this.addClass('hide');
 			}else{
-				$(this).show();
+				$this.removeClass('hide');
+				if(!vf) vf = $this.find('input')[0];
 			}
 		});
-		$kaoshi_new.find('input:first')[0].checked = true;
+		if(vf) vf.checked = true;
 	}
 	if(no.indexOf('2') == 0){
-		$kaoshi_new.show().not('label:contains(高二)').hide();
-		console.log($kaoshi_new.filter(':visible'));
-		$kaoshi_new.filter(':visible').find('input')[0].checked = true;
+		$kaoshi_new.each(function(){
+			var $this = $(this);
+			if(this.innerText.indexOf('高二') == -1){
+				$this.addClass('hide');
+			}else{
+				$this.removeClass('hide');
+				if(!vf) vf = $this.find('input')[0];
+			}
+		});
+		if(vf) vf.checked = true;
 	}
 	if(no.indexOf('3') == 0){
-		$kaoshi_new.show().not('label:contains(高三), label:contains(高考)').hide();
-		$kaoshi_new.filter('label:contains(高三):first').find('input')[0].checked = true;
+		$kaoshi_new.each(function(){
+			var $this = $(this);
+			if(this.innerText.indexOf('高三') == -1 && this.innerText.indexOf('高考') == -1){
+				$(this).addClass('hide');
+			}else{
+				$(this).removeClass('hide');
+				if(!vf) vf = $this.find('input')[0];
+			}
+		});
+		//var $vf = $kaoshi_new.not('.hide').find('input')[0];
+		if(vf) vf.checked = true;
 	}
 	$('#exam-control .controls').empty().append($kaoshi_new);
+});
+
+// Ajax
+$f.submit(function(){
+	$.ajax({
+		url: $f.attr('action'),
+		type: 'POST',
+		data: $f.serialize(),
+		dataType: 'xml'
+	}).success(function(arguments){console.log(arguments);});
+	return false;
 });
