@@ -107,8 +107,8 @@ $f.submit(function(){
 		url: $f.attr('action'),
 		type: 'POST',
 		data: $f.serialize(),
-		dataType: 'xml'
-	}).success(function(arguments){console.log(arguments);});
+		dataType: 'html'
+	}).done(function(arguments){console.log(arguments);});
 	if(localStorage){
 		localStorage['stu_arr_0'] = $('#xuehao').val()+';'+$('#password').val();
 	}
@@ -118,6 +118,6 @@ $f.submit(function(){
 // Info read
 if(localStorage){
 	var stu_arr = [(localStorage['stu_arr_0'] || '').split(';')];
-	$('#xuehao').val(stu_arr[0][0]);
+	$('#xuehao').val(stu_arr[0][0]).change();
 	$('#password').val(stu_arr[0][1]);
 }
