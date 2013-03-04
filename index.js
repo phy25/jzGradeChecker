@@ -142,4 +142,7 @@ $(function(){
 		$('#xuehao').val(stu_arr[0][0]).change();
 		$('#password').val(stu_arr[0][1]);
 	}
+
+	// Finally show the page
+	$('body').addClass('loaded');
 });
