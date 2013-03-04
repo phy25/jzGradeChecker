@@ -129,7 +129,11 @@ $(function(){
 			//var $vf = $kaoshi_new.not('.hide').find('input')[0];
 			if(vf) vf.checked = true;
 		}
-		$('#exam-control .controls').empty().append($kaoshi_new);
+		if(vf){
+			$('#exam-control .controls').empty().append($kaoshi_new);
+		}else{
+			$('#exam-control .controls').html('<span class="help-block">请先输入学号</span>');
+		}
 	});
 
 	// Ajax and info saving
@@ -142,7 +146,7 @@ $(function(){
 	});
 
 	// Info read
-	if(localStorage){
+	if(localStorage && localStorage['stu_arr_0']){
 		var stu_arr = [(localStorage['stu_arr_0'] || '').split(';')];
 		$('#xuehao').val(stu_arr[0][0]).change();
 		$('#password').val(stu_arr[0][1]);
