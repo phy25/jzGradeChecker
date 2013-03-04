@@ -2,7 +2,7 @@
 
 function parseQuery(a){
 	var queryString = {};
-	a.replace(
+	(a || '').replace(
 		new RegExp("([^?=&]+)(=([^&]*))?", "g"),
 		function($0, $1, $2, $3) { queryString[$1] = $3; }
 	);
@@ -14,7 +14,6 @@ window.onpopstate = function(e) {
 	if(window.sessionStorage){
 		var q = parseQuery(e.state);
 		var $radio = $('#exam-control').find('input[value='+q['kaoshi']+']').attr('checked', true);
-		console.log(q);
 		if(sessionStorage['no_result'] == 'true'){
 			sessionStorage['no_result'] = 'false';
 			$radio.parent().append('<span class="help-inline">无成绩数据</span>');
@@ -43,7 +42,7 @@ $(function(){
 	}
 
 	var $f = $('form:first'),
-		update_status_t = $f.find('b').text().replace(/(\s)/g,''),
+		update_status_t = $f.find('b').text().replace(/(\s)/g,'').replace(/\(/g, '（').replace(/\)/g, '）'),
 		orig_announcement_t = $f.next().text()
 			.replace(/(\s)(\s)+/g,'$1')
 			.replace(/．/g, '。')
@@ -76,8 +75,14 @@ $(function(){
 
 	// 全角转半角函数来自 http://www.jslab.org.cn
 	function dbc2sbc(t){
-		return t.replace(/[\uff01-\uff5e]/g, function(a){return String.fromCharCode(a.charCodeAt(0)-65248);}).replace(/\u3000/g," ");
+		return (t || '').replace(/[\uff01-\uff5e]/g, function(a){return String.fromCharCode(a.charCodeAt(0)-65248);}).replace(/\u3000/g," ");
 	}
+
+	function get_current_exam(){
+		var arr = update_status_t.split('（')[0].split('');
+		console.log(arr);
+	}
+	get_current_exam();
 
 	$('#password').change(function(){
 		$(this).val(function(i, v){return $.trim(String(dbc2sbc(v)).replace('X', 'x'))});
