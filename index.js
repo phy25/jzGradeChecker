@@ -103,16 +103,10 @@ $('#xuehao').change(function(){
 
 // Ajax and info saving
 $f.submit(function(){
-	$.ajax({
-		url: $f.attr('action'),
-		type: 'POST',
-		data: $f.serialize(),
-		dataType: 'html'
-	}).done(function(arguments){console.log(arguments);});
+	$('body').fadeTo(50, 0.25);
 	if(localStorage){
 		localStorage['stu_arr_0'] = $('#xuehao').val()+';'+$('#password').val();
 	}
-	return false;
 });
 
 // Info read
