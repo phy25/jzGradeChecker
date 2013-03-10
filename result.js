@@ -15,6 +15,11 @@ $(function(){
 			sessionStorage['result_error'] = innerText.indexOf('考生号或密码无效') != -1 ? 'cert': 'exam';
 		}
 		window.history.back();
+	}else{
+		// Save the time to give hints on index.js
+		if(window.localStorage){
+			localStorage['stu_arr_0_lastChecked'] = +new Date();
+		}
 	}
 
 	var $content = $('table:eq(2)').detach();
