@@ -15,7 +15,7 @@
         "http://stjszx.net/jszxcj/*.htm"
       ],
       "css": ["bootstrap/css/bootstrap.min.css", "index.css"],
-      "js": ["jquery-1.8.3.min.js", "index.js"],
+      "js": ["jquery-1.8.3.min.js", "commonData.js", "index.js"],
       "run_at": "document_start",
       "all_frames": true
     },
@@ -26,7 +26,7 @@
         "http://stjszx.net/jszxcj/*.asp"
       ],
       "css": ["bootstrap/css/bootstrap.min.css", "result.css"],
-      "js": ["jquery-1.8.3.min.js", "result.js"],
+      "js": ["jquery-1.8.3.min.js", "commonData.js", "result.js"],
       "run_at": "document_start",
       "all_frames": true
     }
