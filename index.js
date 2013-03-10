@@ -11,16 +11,27 @@ function parseQuery(a){
 
 // Pop state support
 window.onpopstate = function(e) {
-	if(window.sessionStorage){
-		var q = parseQuery(e.state);
-		var $radio = $('#exam-control').find('input[value='+q['kaoshi']+']').attr('checked', true);
-		if(sessionStorage['no_result'] == 'true'){
-			sessionStorage['no_result'] = 'false';
+	var q = parseQuery(e.state);
+	var $radio = $('#exam-control').find('input[value='+q['kaoshi']+']').attr('checked', true);
+
+	if(window.sessionStorage && sessionStorage['result_error']){
+		if(sessionStorage['result_error'] == 'cert'){
+			$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查下再试试吧。</div>');
+			var $form_stuinfo = $('#form-stuinfo').children('div').addClass('error').one('change', 'input', function(){
+				// $('#result_error').remove();
+				// 暂时注释掉避免降低用户体验
+				$form_stuinfo.removeClass('error');
+			});
+		}else{
+			$('h1:first').after('<div id="result_error" class="alert alert-error" title="肯定会有的，只是等多久的问题 :)">查不到 <strong>'+ $radio.parent().text() +'</strong> 的数据。</div>');
 			$radio.parent().append('<span class="help-inline">无成绩数据</span>');
 			$('#exam-control').addClass('error').one('change', 'input', function(){
+				// $('#result_error').remove();
+				// 暂时注释掉避免降低用户体验
 				$('#exam-control').removeClass('error');
 			});
 		}
+		delete sessionStorage['result_error'];
 	}
 };
 
@@ -54,8 +65,8 @@ $(function(){
 
 	// Fetching ended, now start structure fill
 
-	var $fa = $('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>');
-	$fa.after('<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>');
+	var $fa = $('<div id="form-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>'
+		 + '<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div></div>');
 	$fa.after('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls"><span class="help-block">请先输入学号</span></div></div>');
 	$fa.after('<div class="control-group"><div class="controls"><input type="submit" class="btn btn-primary" value="查询" /></div></div>');
 

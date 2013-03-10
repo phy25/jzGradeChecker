@@ -9,12 +9,12 @@ removebg();
 
 $(function(){
 	// No result
-	if(document.body.innerText.indexOf('对不起') != -1){
+	var innerText = document.body.innerText;
+	if(innerText.indexOf('对不起') != -1){
 		if(window.sessionStorage){
-			sessionStorage['no_result'] = 'true';
-			//window.history.pushState({'no_result':true}, document.title, location.href);
-			window.history.back();
+			sessionStorage['result_error'] = innerText.indexOf('考生号或密码无效') != -1 ? 'cert': 'exam';
 		}
+		window.history.back();
 	}
 
 	var $content = $('table:eq(2)').detach();
