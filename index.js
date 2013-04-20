@@ -81,7 +81,7 @@ $(function(){
 
 	$f.addClass('form-horizontal').html('').append($fa);
 
-	var $container = $('<div class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
+	var $container = $('<div id="container" class="container" />').appendTo($('<body />').replaceAll('body'));
 
 	var $append = $('<h1>金中成绩查询</h1>')
 		.after($f)
