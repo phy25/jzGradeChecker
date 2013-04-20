@@ -1,5 +1,6 @@
 body{opacity:0.25;}
 body.loaded{opacity:1;}
 body>table>tbody>:first-child>td>table>tbody>:nth-child(1), body>table>tbody>:first-child>td>table>tbody>:nth-child(2){display:none;}
-table{font-size:1em !important;}
+table{font-size:1em !important;border:none;}
+td, th{border:none;}
 h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif !important;}

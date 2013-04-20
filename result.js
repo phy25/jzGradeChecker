@@ -47,6 +47,9 @@ var startExecution = function(){
 		}
 	}
 
+	// 去掉固有的 style
+	$('link:first').remove();
+
 	var $content = $('table:eq(2) div:first').children().detach();
 	var $container = $('<div class="container" />').appendTo($('<body />').replaceAll('body'));
 
@@ -55,7 +58,7 @@ var startExecution = function(){
 
 	$container.append($append);
 
-	var $table = $container.find('table:eq(0)').addClass('table table-striped table-bordered table-condensed').removeAttr('width border cellpadding cellspacing bordercolor');
+	var $table = $container.find('table:eq(0)').addClass('table table-striped table-condensed').removeAttr('width border cellpadding cellspacing bordercolor');
 
 	$table.find('tr:first').unwrap().wrapAll('<thead />');
 	$table.find('thead').prependTo($table).find('td').children().wrap('<th />');
