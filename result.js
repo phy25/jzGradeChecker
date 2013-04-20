@@ -63,7 +63,35 @@ var startExecution = function(){
 	$table.find('tr:first').unwrap().wrapAll('<thead />');
 	$table.find('thead').prependTo($table).find('td').children().wrap('<th />');
 	$table.find('thead>tr').prepend($table.find('th')).parent().find('td').remove();
-	console.log();
+	
+	function getTableArr($Elem){
+		var r = {'thead':[], 'tbody':[]}, $h, $b;
+		$h = $Elem.find('thead tr:first');
+		if(!$h.length){
+			$h = $Elem.find('tbody tr:first');
+			$b = $Elem.find('tbody tr:not(:first)');
+		}else{
+			$b = $Elem.find('tbody tr');
+		}
+		$h.find('th, td').each(function(i){
+			if(i > 0){
+				r.thead[r.thead.length] = $.text(this).replace(/(\s)/g,'');
+			}
+		});
+		
+		$b.each(function(){
+			r.tbody[r.tbody.length] = {};
+			var td = r.tbody[r.tbody.length-1], $td = $(this).find('td');
+			td.subject = $td.eq(0).text().replace(/(\s)/g,'');
+			$td.not(':first').each(function(i){
+				td[r.thead[i]] = $(this).text().replace(/(\s)/g,'');
+			});
+		});
+
+		return r;
+	}
+
+	
 
 	// Finally show the page
 	$('body').addClass('loaded');
