@@ -7,7 +7,23 @@ function removebg(){
 };
 removebg();
 
-$(function(){
+function checkTitle(){
+	if(document.title){
+		if(document.title == '金中成绩查询'){
+			// 另一个扩展 Javascript 已经接管页面
+			console.error('Attempting to start an instance while another instance exists already');
+		}else{
+			document.title = '金中成绩查询';
+			$(document).ready(startExecution);
+		}
+	}else{
+		setTimeout(checkTitle, 50);
+	}
+};
+checkTitle();
+
+
+var startExecution = function(){
 	// No result
 	var innerText = document.body.innerText;
 	if(innerText.indexOf('您未被授权查看该页') != -1){
@@ -31,7 +47,7 @@ $(function(){
 		}
 	}
 
-	var $content = $('table:eq(2)').detach();
+	var $content = $('table:eq(2) div:first').children().detach();
 	var $container = $('<div class="container" />').appendTo($('<body />').replaceAll('body'));
 
 	var $append = $('<h1>金中成绩查询</h1>')
@@ -39,10 +55,13 @@ $(function(){
 
 	$container.append($append);
 
-	var $table = $container.find('table:eq(1)').addClass('table').removeAttr('width border cellpadding cellspacing bordercolor');
+	var $table = $container.find('table:eq(0)').addClass('table table-striped table-bordered table-condensed').removeAttr('width border cellpadding cellspacing bordercolor');
 
-	$table.find('tr:first').wrap('<thead />').parent().detach().prependTo($table);
+	$table.find('tr:first').unwrap().wrapAll('<thead />');
+	$table.find('thead').prependTo($table).find('td').children().wrap('<th />');
+	$table.find('thead>tr').prepend($table.find('th')).parent().find('td').remove();
+	console.log();
 
 	// Finally show the page
 	$('body').addClass('loaded');
-});
+};
