@@ -91,8 +91,6 @@ var startExecution = function(){
 		return r;
 	}
 
-	
-
 	// Finally show the page
 	$('body').addClass('loaded');
 };

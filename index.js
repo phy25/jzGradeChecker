@@ -175,10 +175,25 @@ function startExecution(){
 				if(vf) vf.checked = true;
 			}
 			if(vf){
-				$('#exam-control .controls').empty().append($kaoshi_new);
+				$('#exam-control .controls').empty().addClass('collapsed').append($kaoshi_new).append($exams_act);
 			}else{
 				$('#exam-control .controls').html('<span class="help-block">请先输入学号</span>');
 			}
+		});
+		
+		var $exams_act = $('<p><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏考试</a></p>');
+
+		$('#expand_all', $exams_act).click(function(){
+			$kaoshi_new.filter('.hide').show();
+			$(this).hide().parent().parent().removeClass('collapsed').addClass('expanded');
+			$('#collapse_all').show();
+			$kaoshi_new.find('input').filter(':checked').focus();
+		});
+		$('#collapse_all', $exams_act).click(function(){
+			$kaoshi_new.filter('.hide').hide();
+			$(this).hide().parent().removeClass('expanded').addClass('collapsed');
+			$('#expand_all').show();
+			$kaoshi_new.find('input').filter(':checked').focus();
 		});
 
 		// Ajax and info saving
