@@ -1,7 +1,7 @@
 //chrome.extension.getURL("images/myimage.png")
 
 function checkTitle(){
-	if(document.title){
+	if(document.body){
 		if(document.title == '金中成绩查询'){
 			// 另一个扩展 Javascript 已经接管页面
 			console.error('Attempting to start an instance while another instance exists already');
@@ -187,7 +187,7 @@ function startExecution(){
 		});
 		$('#collapse_all', $exams_act).click(function(){
 			$kaoshi_new.filter('.hide').hide();
-			$(this).hide().parent().removeClass('expanded').addClass('collapsed');
+			$(this).hide().parent().parent().removeClass('expanded').addClass('collapsed');
 			$('#expand_all').show();
 			$kaoshi_new.find('input').filter(':checked').focus();
 		});

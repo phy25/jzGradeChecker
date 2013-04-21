@@ -8,7 +8,7 @@ function removebg(){
 removebg();
 
 function checkTitle(){
-	if(document.title){
+	if(document.body){
 		if(document.title == '金中成绩查询'){
 			// 另一个扩展 Javascript 已经接管页面
 			console.error('Attempting to start an instance while another instance exists already');
@@ -25,6 +25,7 @@ checkTitle();
 function startExecution(){
 	$(function(){
 		// No result
+		console.log('Hello', document.body.innerText);
 		var innerText = document.body.innerText;
 		if(innerText.indexOf('您未被授权查看该页') != -1){
 			errorPage();
