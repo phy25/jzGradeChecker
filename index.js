@@ -106,7 +106,8 @@ function startExecution(){
 
 		var $append = $('<h1>金中成绩查询</h1>')
 			.after($f)
-			.after('<h2>教务处通知</h2><div id="orig-announcement"></div>');
+			.after('<h2>教务处通知</h2><div id="orig-announcement"></div>')
+			.after('<p class="text-right"><small><i class="icon-heart" /> <a href="' + extVersion[1] + '" target="_blank" class="muted">jzGradeChecker ' + extVersion[0] + '</a></small></p>');
 
 		$container.append($append);
 
@@ -132,6 +133,7 @@ function startExecution(){
 		$('#xuehao').change(function(){
 			var no = $(this).val();
 			$kaoshi_new.detach();
+			$exams_act.detach();
 			var vf = false;
 			if(no.indexOf('1') == 0){
 				$kaoshi_new.each(function(){
@@ -143,7 +145,6 @@ function startExecution(){
 						if(!vf) vf = $this.find('input')[0];
 					}
 				});
-				if(vf) vf.checked = true;
 			}
 			if(no.indexOf('2') == 0){
 				$kaoshi_new.each(function(){
@@ -155,7 +156,6 @@ function startExecution(){
 						if(!vf) vf = $this.find('input')[0];
 					}
 				});
-				if(vf) vf.checked = true;
 			}
 			if(no.indexOf('3') == 0){
 				$kaoshi_new.each(function(){
@@ -168,10 +168,14 @@ function startExecution(){
 					}
 				});
 				//var $vf = $kaoshi_new.not('.hide').find('input')[0];
-				if(vf) vf.checked = true;
 			}
 			if(vf){
-				$('#exam-control .controls').empty().addClass('collapsed').append($kaoshi_new).append($exams_act);
+				$kaoshi_new.find('input').removeAttr('checked');
+				vf.checked = true;
+				$('#exam-control .controls').empty().removeClass('expanded').addClass('collapsed').append($kaoshi_new).append($exams_act);
+				$kaoshi_new.filter('.hide').hide().end().not('.hide').show();
+				$('#expand_all').show();
+				$('#collapse_all').hide();
 			}else{
 				$('#exam-control .controls').html('<span class="help-block">请先输入学号</span>');
 			}

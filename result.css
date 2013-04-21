@@ -4,3 +4,29 @@ body>table>tbody>:first-child>td>table>tbody>:nth-child(1), body>table>tbody>:fi
 table{font-size:1em !important;border:none;}
 td, th{border:none;}
 h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif !important;}
+
+/* 覆盖 Bootstrap 的图片地址 */
+
+[class^="icon-"], [class*=" icon-"] {background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings.png") !important;}
+
+/* White icons with optional class, or on hover/focus/active states of certain elements */
+
+.icon-white,
+.nav-pills > .active > a > [class^="icon-"],
+.nav-pills > .active > a > [class*=" icon-"],
+.nav-list > .active > a > [class^="icon-"],
+.nav-list > .active > a > [class*=" icon-"],
+.navbar-inverse .nav > .active > a > [class^="icon-"],
+.navbar-inverse .nav > .active > a > [class*=" icon-"],
+.dropdown-menu > li > a:hover > [class^="icon-"],
+.dropdown-menu > li > a:focus > [class^="icon-"],
+.dropdown-menu > li > a:hover > [class*=" icon-"],
+.dropdown-menu > li > a:focus > [class*=" icon-"],
+.dropdown-menu > .active > a > [class^="icon-"],
+.dropdown-menu > .active > a > [class*=" icon-"],
+.dropdown-submenu:hover > a > [class^="icon-"],
+.dropdown-submenu:focus > a > [class^="icon-"],
+.dropdown-submenu:hover > a > [class*=" icon-"],
+.dropdown-submenu:focus > a > [class*=" icon-"] {
+  background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings-white.png") !important;
+}

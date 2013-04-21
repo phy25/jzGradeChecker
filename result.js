@@ -25,7 +25,6 @@ checkTitle();
 function startExecution(){
 	$(function(){
 		// No result
-		console.log('Hello', document.body.innerText);
 		var innerText = document.body.innerText;
 		if(innerText.indexOf('您未被授权查看该页') != -1){
 			errorPage();
@@ -51,10 +50,38 @@ function startExecution(){
 		var $container = $('<div class="container" />').appendTo($('<body />').replaceAll('body'));
 
 		var $append = $('<h1>金中成绩查询</h1>')
+			.after('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>')
 			.after($content);
 
 		$container.append($append);
 
+		// 考生信息
+		var $info = $container.find('p:first'), info_o = $info.text(), info_text = '', info_arr = {};
+		info_o = info_o.replace(/(\s)(\s)+/g,'$1').replace(/:/g, '：').split('：');
+		for(e in info_o){
+			var space_arr = info_o[e].split(/\s/g);
+			if(e > 0){
+				info_text = info_text + space_arr[0];
+				if(e == info_o.length - 2){
+					info_text = info_text + '<span class="divider">&rsaquo;</span></li> ';
+				}else{
+					info_text = info_text + '</li> ';
+				}
+			}
+			if(e == 0 || space_arr[1]){
+				if(e == info_o.length - 2){ // 提前给最后一项写标签头
+					info_text = info_text + '<li class="active" title="'+ space_arr[e > 0 ? 1 : 0] +'"><i class="icon-book" /> ';
+				}else{
+					info_text = info_text + '<li title="'+ space_arr[e > 0 ? 1 : 0] +'">';
+					if(e == 0) info_text = info_text + '<i class="icon-user" /> ';
+				}
+			}
+		}
+		$('#breadcrumb').append(info_text);
+		$info.remove().html(info_text)
+			.addClass('text-right').prepend('<a class="btn btn-small" href="search.htm" title="修改信息"><i class="icon-edit" /> 修改</a> ');
+
+		// 成绩
 		var $table = $container.find('table:eq(0)').addClass('table table-striped table-condensed').removeAttr('width border cellpadding cellspacing bordercolor');
 
 		$table.find('tr:first').unwrap().wrapAll('<thead />');
@@ -87,6 +114,29 @@ function startExecution(){
 
 			return r;
 		}
+
+		// 平均分
+		var $average = $container.find('table:eq(1)').remove();
+		$container.find('p').eq(-1).remove().end().eq(-2).remove(); // 移除科目解释
+		$average.find('td:first').children().appendTo($container).wrapAll('<div id="average" class="hide"></div>');
+		$('#average').prepend('<h2>平均分数据</h2>');
+		$('<p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a><a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>').appendTo($container);
+
+		$('#expand_average').click(function(){
+			var offset = $('#average').stop(1,1).slideDown()
+				.offset();
+			$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
+			$(this).hide();
+			$('#collapse_average').show().focus();
+		});
+		$('#collapse_average').click(function(){
+			$('#average').stop(1,1).slideUp();
+			$(this).hide();
+			$('#expand_average').show().focus();
+		});
+
+		// Copyright
+		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + extVersion[1] + '" target="_blank" class="muted">jzGradeChecker ' + extVersion[0] + '</a></small></p>');
 
 		// Finally show the page
 		$('body').addClass('loaded');
