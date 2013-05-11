@@ -135,6 +135,71 @@ function startExecution(){
 			$('#expand_average').show().focus();
 		});
 
+		// 图表
+		(function(){
+			var tableData = getTableArr($table), subjects = [], series = [{name: '前排名', data: [], color: '#BBB'}, {name: '级排名', data:[], color: '#049CDB'}, {name:'市排名', data:[], color: '#49afcd'}], hasCityRank = false;
+			for(a in tableData.tbody){
+				subjects.push(tableData.tbody[a].subject);
+				series[0].data.push(parseInt(tableData.tbody[a]['前序']));
+				series[1].data.push(parseInt(tableData.tbody[a]['序']));
+				series[2].data.push(parseInt(tableData.tbody[a]['市序']));
+				if(parseInt(tableData.tbody[a]['市序']) > 0) hasCityRank = true;
+			}
+
+			if(!hasCityRank) series.splice(2,1);
+
+			$('#breadcrumb').after('<div id="chart" style="width:auto;height:400px" />');
+			// var colors = Highcharts.getOptions().colors;
+			$('#chart').highcharts({
+				chart: {
+					type: 'column'
+				},
+				title: {
+					text: null
+				},
+				xAxis: {
+					categories: subjects
+				},
+				yAxis: {
+					min: 0,
+					reversed: true,
+					title: {
+						text: '排名'
+					}
+				},
+				tooltip: {
+					headerFormat: '<span>{point.key}</span><br />',
+					pointFormat: '<span style="color:{series.color};">{series.name}</span> <b>{point.y}</b><br />',
+					footerFormat: '',
+					shared: true,
+					useHTML: true
+				},
+				plotOptions: {
+					column: {
+						pointPadding: 0.2,
+						borderWidth: 0,
+						dataLabels: {
+							enabled: true,
+							style: {
+								fontWeight: 'bold'
+							}
+						}
+					},
+					series: {
+						allowPointSelect: true,
+						states: {
+							select: {
+								color: null,
+								borderWidth: 1,
+								borderColor: '#f89406'
+							}
+						}
+					}
+				},
+				series: series
+			});
+		})();
+
 		// Copyright
 		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + extVersion[1] + '" target="_blank" class="muted">jzGradeChecker ' + extVersion[0] + '</a></small></p>');
 
