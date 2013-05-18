@@ -8,12 +8,10 @@ if(window.chrome){
 			chrome.webstore.install(wsurl,
 				function(){
 					location = '../';
-				}, function(){
-					if(confirm("建议您在官方安装扩展，需要继续吗？\n如果按取消，将去 Chrome 网上应用店安装扩展。")){
+				}, function(t){
+					if(confirm("网上应用店安装失败"+(t?("（"+t+"）\n"):"")+"。建议您在官方安装扩展，需要继续吗？")){
 						location = 'latest.crx';
 						lightbox_init();
-					}else{
-						location = wsurl;
 					}
 				});
 			return false;
@@ -22,8 +20,12 @@ if(window.chrome){
 			chrome.webstore.install(wsurl,
 				function(){
 					location = '../';
-				}, function(){
-					location = wsurl;
+				},function(t){
+					if(t){
+						if(confirm('错误：'+t+"\n是否到 Chrome 网上应用店安装？")){
+							location = wsurl;
+						}
+					}
 				});
 			return false;
 		});
