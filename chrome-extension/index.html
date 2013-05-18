@@ -25,14 +25,10 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/phy25/jzGradeChecker">在 GitHub 上查看项目</a>
+          <a id="forkme_banner" href="https://github.com/phy25/jzGradeChecker">GitHub 项目主页</a>
 
           <h1 id="project_title">JzGradeChecker</h1>
           <h2 id="project_tagline">汕头市金山中学学生成绩查询界面插件。</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/phy25/jzGradeChecker/zipball/chrome-extension" title="以 zip 文件形式保存项目源代码">以 zip 文件形式保存 Chrome 扩展源代码</a>
-            </section>
         </header>
     </div>
 
@@ -41,13 +37,26 @@
       <section id="main_content" class="inner">
         <h1>jzGradeChecker Chrome 扩展安装</h1>
 
-<p>您可以选择以下任意一种方式安装 jzGradeChecker Chrome 扩展。<a href="../">想了解扩展的更多信息请戳这里</a>。</p>
+<p><a href="latest.crx" id="install-link-quick">点这里快速下载安装 jzGradeChecker Chrome 扩展</a>。</p>
 
-<h2>在 Chrome 网上应用店安装</h2>
+<p><a href="../">想了解扩展的更多信息请戳这里</a>。</p>
 
-<p><a href="https://chrome.google.com/webstore/detail/gghlnllohkclgmeefgaenonjjlndceap?hl=zh-CN" onclick="if(chrome && chrome.webstore && chrome.webstore.install){chrome.webstore.install();return false;}">点这里去 Chrome 网上应用店安装</a>。</p>
+<blockquote>
+  <p>如果您是 Google Chrome 用户，并且希望体验在新标签页打开成绩查询界面功能，请不要使用上面的快速安装，<a href="#install-direct" title="在官方安装">看下面</a>。</p>
+</blockquote>
 
-<p><strong>建议非 Chrome 用户使用下一种方法安装。</strong></p>
+<p>如果您希望自己选择安装方式（<strong>功能有差别</strong>），看下面。</p>
+
+<blockquote id="non-chrome-notice">
+  <p><strong style="color:red;">您使用的浏览器似乎不是 Chromium 内核的浏览器，无法安装本扩展。</strong></p>
+  <p>建议您尝试 <a href="http://www.google.com/chrome/">Google Chrome 浏览器</a>。当然猎豹、360 什么的也是可以的。</p>
+</blockquote>
+
+<h2 id="install-crws">在 Chrome 网上应用店安装</h2>
+
+<p><a href="https://chrome.google.com/webstore/detail/gghlnllohkclgmeefgaenonjjlndceap?hl=zh-CN" id="install-link-crws">点这里去 Chrome 网上应用店安装</a>。</p>
+
+<p><strong>建议非 Google Chrome 用户使用下一种方法安装。</strong></p>
 
 <p>正常情况下 Chrome 会自动更新扩展。如果不能自动更新，只需直接覆盖安装新版本即可。</p>
 
@@ -55,9 +64,9 @@
 
 <p><strong>Cons</strong>: 没有应用链接功能，可以快速在新标签页打开成绩查询界面。（Webstore 版本由于安全限制，无法实现此功能。）</p>
 
-<h2>在官方安装</h2>
+<h2 id="install-direct">在官方安装</h2>
 
-<p><a href="latest.crx">在这里下载</a>（版本 0.5，更新于 2013/5/12）。</p>
+<p><a href="latest.crx" id="install-link-direct">在这里下载</a>（版本 0.5，更新于 2013/5/12）。</p>
 
 <p>由于 Chrome 的信任域问题，安装时，您很有可能需要打开 <code>chrome://extensions</code> 页面，把下载好的扩展文件拖入页面中，即可正常安装。</p>
 
@@ -77,5 +86,14 @@
         <p>使用 <a href="https://github.com/phy25/jzGradeChecker">GitHub</a> 和 <a href="http://pages.github.com">GitHub Pages</a> 托管</p>
       </footer>
     </div>
+    <div id="shadowing"></div>
+    <div id="box">
+      <h2>正在安装…</h2>
+      <div id="boxcontent">
+        <p><strong>如果您正在使用 Google Chrome</strong>，由于信任域问题，安装时，您很有可能需要打开 <code>chrome://extensions</code> 页面，把下载好的扩展文件拖入页面中，即可正常安装。</p>
+        <p><i style="float:left;"><a href="latest.crx">重新下载</a></i> <strong style="float:right;"><a href="../" title="查看插件使用介绍">确定</a></strong></p>
+      </div>
+    </div>
+    <script type="text/javascript" src="install.js"></script>
   </body>
 </html>
