@@ -6,6 +6,7 @@ if(window.chrome){
 		document.getElementById('install-link-crws').addEventListener('click', function(e){e.preventDefault();});
 		document.getElementById('install-link-quick').addEventListener('click', function(){
 			var error = function(t){
+				if(t == 'User cancelled install') return false;
 				if(confirm("网上应用店安装失败"+(t?("（"+t+"）\n"):"")+"。建议您在官方安装扩展，需要继续吗？")){
 					location = 'latest.crx';
 					lightbox_init();
@@ -23,10 +24,9 @@ if(window.chrome){
 		});
 		document.getElementById('install-link-crws').addEventListener('click', function(){
 			var error = function(t){
-				if(t){
-					if(confirm('错误：'+t+"\n是否到 Chrome 网上应用店页面安装？")){
-						location = wsurl;
-					}
+				if(t == 'User cancelled install') return false;
+				if(confirm('错误：'+t+"\n是否到 Chrome 网上应用店页面安装？")){
+					location = wsurl;
 				}
 			};
 			try{
