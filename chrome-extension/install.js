@@ -5,28 +5,38 @@ if(window.chrome){
 		document.getElementById('install-link-quick').addEventListener('click', function(e){e.preventDefault();});
 		document.getElementById('install-link-crws').addEventListener('click', function(e){e.preventDefault();});
 		document.getElementById('install-link-quick').addEventListener('click', function(){
-			chrome.webstore.install(wsurl,
-				function(){
-					location = '../';
-				}, function(t){
-					if(confirm("网上应用店安装失败"+(t?("（"+t+"）\n"):"")+"。建议您在官方安装扩展，需要继续吗？")){
-						location = 'latest.crx';
-						lightbox_init();
-					}
-				});
+			var error = function(t){
+				if(confirm("网上应用店安装失败"+(t?("（"+t+"）\n"):"")+"。建议您在官方安装扩展，需要继续吗？")){
+					location = 'latest.crx';
+					lightbox_init();
+				}
+			};
+			try{
+				chrome.webstore.install(wsurl,
+					function(){ // for Chrome
+						location = '../';
+					}, error);
+			}catch(e){// for fxxking 360
+				error(e.description);
+			}
 			return false;
 		});
 		document.getElementById('install-link-crws').addEventListener('click', function(){
-			chrome.webstore.install(wsurl,
-				function(){
-					location = '../';
-				},function(t){
-					if(t){
-						if(confirm('错误：'+t+"\n是否到 Chrome 网上应用店安装？")){
-							location = wsurl;
-						}
+			var error = function(t){
+				if(t){
+					if(confirm('错误：'+t+"\n是否到 Chrome 网上应用店页面安装？")){
+						location = wsurl;
 					}
-				});
+				}
+			};
+			try{
+				chrome.webstore.install(wsurl,
+					function(){ // for Chrome
+						location = '../';
+					}, error);
+			}catch(e){// for fxxking 360
+				error(e.description);
+			}
 			return false;
 		});
 		document.getElementById('install-link-direct').addEventListener('click', function(){
