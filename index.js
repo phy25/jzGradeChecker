@@ -73,7 +73,7 @@ function startExecution(){
 
 
 		for(var i in exam_list){
-			var $eln = $('<label class="radio"><input type="radio" name="kaoshi" value="'+i+'"> '+exam_list[i]+'</label>');
+			var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'"> '+exam_list[i]+'</label>');
 			if($kaoshi_new){
 				$kaoshi_new.after($eln);
 			}else{
@@ -98,7 +98,7 @@ function startExecution(){
 
 		var $fa = $('<div id="form-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>'
 			 + '<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div></div>');
-		$fa.after('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls"><span class="help-block">请先输入学号</span></div></div>');
+		$fa.after('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>');
 		$fa.after('<div class="control-group"><div class="controls"><input type="submit" class="btn btn-primary" value="查询" /></div></div>');
 
 		$f.addClass('form-horizontal').html('').append($fa);
@@ -106,6 +106,7 @@ function startExecution(){
 		var $container = $('<div id="container" class="container" />').appendTo($('<body />').replaceAll('body'));
 
 		var $append = $('<h1>金中成绩查询</h1>')
+			.after('<div id="ext-announcement" class="alert alert-success" style="display:none;"></div>')
 			.after($f)
 			.after('<h2>教务处通知</h2><div id="orig-announcement"></div>')
 			.after('<p class="text-right"><small><i class="icon-heart" /> <a href="' + extVersion[1] + '" target="_blank" class="muted">jzGradeChecker ' + extVersion[0] + '</a></small></p>');
@@ -170,6 +171,16 @@ function startExecution(){
 				});
 				//var $vf = $kaoshi_new.not('.hide').find('input')[0];
 			}
+
+			if(no.indexOf('3') == 0){
+				var month = new Date().getMonth();
+				if(month > 3 && month < 7){ // 5-7 月
+					$('#ext-announcement').html('<strong title="祝好 :)">Best wishes!</strong> 在这里查分数的日子不多了，希望那最后一次不在这里查分数的考试一切顺利！<br /><span class="muted">其实对你来说这个扩展快要退休了……</span>').show();
+				}
+			}else{
+				$('#ext-announcement').hide();
+			}
+
 			if(vf){
 				$kaoshi_new.find('input').removeAttr('checked');
 				if(!$exam_list_current.is('.hide')){ // 如果学校提供的被选中的项在不折叠范围
@@ -187,7 +198,7 @@ function startExecution(){
 			}
 		});
 		
-		var $exams_act = $('<p><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏考试</a></p>');
+		var $exams_act = $('<p class="span12"><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏考试</a></p>');
 
 		$('#expand_all', $exams_act).click(function(){
 			$kaoshi_new.filter('.hide').show();
