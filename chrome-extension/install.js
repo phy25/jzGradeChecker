@@ -61,9 +61,10 @@ if(window.chrome){
 		}
 		function trackLinkEvent(loc, cat, act, attr, val){
 			_gaq.push(['_trackEvent', cat, act, attr, val]);
+			document.body.style.opacity = '0.5';
 			setTimeout(function() {
 				document.location.href = loc;
-			}, 100);
+			}, 1000);
 		}
 		$id('install-direct-done').addEventListener('click', function(){
 			trackLinkEvent(this.href, 'jzGradeChecker', 'UIDownloadLightboxContinue');
