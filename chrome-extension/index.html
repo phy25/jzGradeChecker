@@ -37,9 +37,15 @@
       <section id="main_content" class="inner">
         <h1>jzGradeChecker Chrome 扩展安装</h1>
 
-<p><a href="latest.crx" id="install-link-quick">点这里快速下载安装 jzGradeChecker Chrome 扩展</a>。</p>
+<blockquote id="non-chrome-notice">
+  <p><strong style="color:red;">您使用的浏览器似乎不是 Chromium 内核的浏览器，无法安装本扩展。</strong></p>
+  <p>建议您尝试 <a href="//www.google.com/chrome/">Google Chrome 浏览器</a>。当然猎豹、360 什么的也是可以的。</p>
+</blockquote>
 
-<p><a href="../">想了解扩展的更多信息请戳这里</a>。</p>
+<p>
+  <a href="latest.crx" id="install-link-quick" class="btn btn-large btn-primary" title="将自动选择最适合的安装方式">安装 jzGradeChecker Chrome 扩展</a>
+  <a href="../" title="了解该扩展更多信息" class="btn btn-large">了解更多</a>
+</p>
 
 <blockquote>
   <p>如果您是 Google Chrome 用户，并且希望体验在新标签页打开成绩查询界面功能，请不要使用上面的快速安装，<a href="#install-direct" title="在官方安装">看下面</a>。</p>
@@ -47,14 +53,9 @@
 
 <p>如果您希望自己选择安装方式（<strong>功能有差别</strong>），看下面。</p>
 
-<blockquote id="non-chrome-notice">
-  <p><strong style="color:red;">您使用的浏览器似乎不是 Chromium 内核的浏览器，无法安装本扩展。</strong></p>
-  <p>建议您尝试 <a href="http://www.google.com/chrome/">Google Chrome 浏览器</a>。当然猎豹、360 什么的也是可以的。</p>
-</blockquote>
-
 <h2 id="install-crws">在 Chrome 网上应用店安装</h2>
 
-<p><a href="https://chrome.google.com/webstore/detail/gghlnllohkclgmeefgaenonjjlndceap?hl=zh-CN" id="install-link-crws">点这里去 Chrome 网上应用店安装</a>。</p>
+<p><a href="https://chrome.google.com/webstore/detail/gghlnllohkclgmeefgaenonjjlndceap?hl=zh-CN" id="install-link-crws" class="btn">在 Chrome 网上应用店安装</a></p>
 
 <p><strong>建议非 Google Chrome 用户使用下一种方法安装。</strong></p>
 
@@ -64,9 +65,9 @@
 
 <p><strong>Cons</strong>: 没有应用链接功能，可以快速在新标签页打开成绩查询界面。（Webstore 版本由于安全限制，无法实现此功能。）</p>
 
-<h2 id="install-direct">在官方安装</h2>
+<h2 id="install-direct">在官方 GitHub 上安装</h2>
 
-<p><a href="latest.crx" id="install-link-direct">在这里下载</a>（版本 0.5，更新于 2013/5/12）。</p>
+<p><a href="latest.crx" id="install-link-direct" class="btn">下载扩展</a>（版本 0.5，更新于 2013/5/12）</p>
 
 <p>由于 Chrome 的信任域问题，安装时，您很有可能需要打开 <code>chrome://extensions</code> 页面，把下载好的扩展文件拖入页面中，即可正常安装。</p>
 
@@ -83,7 +84,7 @@
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">JzGradeChecker 由 <a href="https://github.com/phy25">phy25</a> 维护</p>
-        <p>使用 <a href="https://github.com/phy25/jzGradeChecker">GitHub</a> 和 <a href="http://pages.github.com">GitHub Pages</a> 托管</p>
+        <p><a href="https://github.com/phy25/jzGradeChecker">GitHub</a> 和 <a href="http://pages.github.com">GitHub Pages</a> 托管</p>
       </footer>
     </div>
     <div id="shadowing"></div>
@@ -91,7 +92,7 @@
       <h2>正在安装…</h2>
       <div id="boxcontent">
         <p><strong>如果您正在使用 Google Chrome</strong>，由于信任域问题，安装时，您很有可能需要打开 <code>chrome://extensions</code> 页面，把下载好的扩展文件拖入页面中，即可正常安装。</p>
-        <p><i style="float:left;"><a href="latest.crx">重新下载</a></i> <strong style="float:right;"><a href="../" title="查看插件使用介绍">确定</a></strong></p>
+        <p><span style="float:left;"><a href="latest.crx" class="btn">重新下载</a></span> <span style="float:right;"><a href="../" title="查看插件使用介绍" class="btn btn-primary" id="install-direct-done">确定</a></span></p>
       </div>
     </div>
     <script type="text/javascript" src="install.js"></script>
