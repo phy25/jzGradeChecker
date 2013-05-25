@@ -1,5 +1,3 @@
-//chrome.extension.getURL("images/myimage.png")
-
 function checkTitle(){
 	if(document.body){
 		if(document.title == '金中成绩查询'){
@@ -66,10 +64,11 @@ function startExecution(){
 			return;
 		}
 
-		var exam_list = {};
+		var exam_list = {}, exam_list_current, $exam_list_current;
 		var $kaoshi = $('#kaoshi'), $kaoshi_new;
 		$kaoshi.find('option').each(function(){
-			exam_list[$(this).attr('value')] = $(this).text().replace(/(\s)/g,'');
+			if(this.defaultSelected) exam_list_current = this.value;
+			exam_list[this.value] = this.text.replace(/(\s)/g,'');
 		});
 
 
@@ -80,10 +79,12 @@ function startExecution(){
 			}else{
 				$kaoshi_new = $eln;
 			}
+
+			if(i == exam_list_current) $exam_list_current = $eln;
 		}
 
 		var $f = $('form:first'),
-			update_status_t = $f.find('b').text().replace(/(\s)/g,'').replace(/\(/g, '（').replace(/\)/g, '）'),
+			update_status_t = $f.find('b').text().replace(/(\s)/g,'').replace(/\(/g, '（').replace(/\)/g, '）').replace('注:', ''),
 			orig_announcement_t = $f.next().text()
 				.replace(/(\s)(\s)+/g,'$1')
 				.replace(/．/g, '。')
@@ -112,8 +113,8 @@ function startExecution(){
 		$container.append($append);
 
 		// Structure fill ended, now content fill
-
-		$('#orig-announcement').append('<div class="alert alert-info">'+update_status_t+'</div><p>'+orig_announcement_t.replace(/(\n|\r)/g,'</p><p>')+'</p>');
+		$('h1:first').after('<div class="alert alert-info">'+update_status_t+'</div>');
+		$('#orig-announcement').append('<p>'+orig_announcement_t.replace(/(\n|\r)/g,'</p><p>')+'</p>');
 
 		// 全角转半角函数来自 http://www.jslab.org.cn
 		function dbc2sbc(t){
@@ -171,7 +172,12 @@ function startExecution(){
 			}
 			if(vf){
 				$kaoshi_new.find('input').removeAttr('checked');
-				vf.checked = true;
+				if(!$exam_list_current.is('.hide')){ // 如果学校提供的被选中的项在不折叠范围
+					$exam_list_current.find('input')[0].checked = true;
+				}else{ // 否则选中第一项
+					vf.checked = true;
+				}
+				
 				$('#exam-control .controls').empty().removeClass('expanded').addClass('collapsed').append($kaoshi_new).append($exams_act);
 				$kaoshi_new.filter('.hide').hide().end().not('.hide').show();
 				$('#expand_all').show();
@@ -198,7 +204,7 @@ function startExecution(){
 
 		// Ajax and info saving
 		$f.submit(function(){
-			$('body').fadeTo(50, 0.25);
+			$('body').fadeTo(100, 0.25);
 			if(localStorage){
 				localStorage['stu_arr_0'] = $('#xuehao').val()+';'+$('#password').val();
 			}

@@ -7,6 +7,7 @@
     "128": "icon.png",
     "256": "icon-256.png"
   },
+  "homepage_url": "http://github.phy25.com/jzGradeChecker/",
   "update_url": "http://github.phy25.com/jzGradeChecker/chrome-extension/updates.xml",
   "permissions": [
   
