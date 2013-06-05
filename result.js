@@ -47,7 +47,7 @@ function startExecution(){
 		$('link:first').remove();
 
 		var $content = $('table:eq(2) div:first').children().detach();
-		var $container = $('<div class="container" />').appendTo($('<body />').replaceAll('body'));
+		var $container = $('<div class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
 
 		var $append = $('<h1>金中成绩查询</h1>')
 			.after('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>')
@@ -148,7 +148,7 @@ function startExecution(){
 
 			if(!hasCityRank) series.splice(2,1);
 
-			$('#breadcrumb').after('<div id="chart" style="width:auto;height:400px" />');
+			$('#breadcrumb').after('<div id="chart" style="width:auto;height:300px;" />');
 			// var colors = Highcharts.getOptions().colors;
 			$('#chart').highcharts({
 				chart: {
