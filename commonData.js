@@ -3,7 +3,7 @@ Common Data
 */
 
 // A sequential exam list **TODO**
-var exam_list_organized = [], extVersion = ['0.5', 'http://github.phy25.com/jzGradeChecker/'];
+var exam_list_organized = [], extVersion = ['0.5.1', 'http://github.phy25.com/jzGradeChecker/'];
 
 function errorPage(){
 	$('style').remove();

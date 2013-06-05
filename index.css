@@ -33,3 +33,16 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
 .dropdown-submenu:focus > a > [class*=" icon-"] {
   background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings-white.png") !important;
 }
+
+.controls > .checkbox:nth-child(2).span5, .controls > .radio:nth-child(2).span5 {
+	padding-top: 5px;
+}
+
+.controls.row-fluid{
+	width: auto;
+}
+
+.row-fluid [class*="span"] {
+	min-height: 0 !important;
+	margin-left: 0;
+}
