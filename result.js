@@ -24,6 +24,7 @@ checkTitle();
 
 function startExecution(){
 	$(function(){
+		var $oldDOM = $('html').clone(); // temp
 		// No result
 		var innerText = document.body.innerText;
 		if(innerText.indexOf('您未被授权查看该页') != -1){
@@ -47,7 +48,7 @@ function startExecution(){
 		$('link:first').remove();
 
 		var $content = $('table:eq(2) div:first').children().detach();
-		var $container = $('<div class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
+		var $container = $('<div id="container" class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
 
 		var $append = $('<h1>金中成绩查询</h1>')
 			.after('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>')
@@ -78,8 +79,6 @@ function startExecution(){
 			}
 		}
 		$('#breadcrumb').append(info_text);
-		$info.remove().html(info_text)
-			.addClass('text-right').prepend('<a class="btn btn-small" href="search.htm" title="修改信息"><i class="icon-edit" /> 修改</a> ');
 
 		// 成绩
 		var $table = $container.find('table:eq(0)').addClass('table table-striped table-condensed').removeAttr('width border cellpadding cellspacing bordercolor');
@@ -88,34 +87,6 @@ function startExecution(){
 		$table.find('thead').prependTo($table).find('td').children().wrap('<th />');
 		$table.find('thead>tr').prepend($table.find('th')).parent().find('td').remove();
 		
-		// old function getTableArr
-		function getTableArr($Elem){
-			var r = {'thead':[], 'tbody':[]}, $h, $b;
-			$h = $Elem.find('thead tr:first');
-			if(!$h.length){
-				$h = $Elem.find('tbody tr:first');
-				$b = $Elem.find('tbody tr:not(:first)');
-			}else{
-				$b = $Elem.find('tbody tr');
-			}
-			$h.find('th, td').each(function(i){
-				if(i > 0){
-					r.thead[r.thead.length] = $.text(this).replace(/(\s)/g,'');
-				}
-			});
-			
-			$b.each(function(){
-				r.tbody[r.tbody.length] = {};
-				var td = r.tbody[r.tbody.length-1], $td = $(this).find('td');
-				td.subject = $td.eq(0).text().replace(/(\s)/g,'');
-				$td.not(':first').each(function(i){
-					td[r.thead[i]] = $(this).text().replace(/(\s)/g,'');
-				});
-			});
-
-			return r;
-		}
-
 		function getTableData($Elem, useInt){
 			var r = {'subjects':[], 'series':[]},
 				$h = $Elem.find('thead tr:first'),
@@ -237,6 +208,30 @@ function startExecution(){
 
 		// Copyright
 		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + extVersion[1] + '" target="_blank" class="muted">jzGradeChecker ' + extVersion[0] + '</a></small></p>');
+		function fetchExamData($dom){
+			var $content = $('table:eq(2) div:first', $dom).children();
+			// 考生信息
+			var info_o = $content.filter('p:first').text().replace(/(\s)(\s)+/g,'$1').replace(/:/g, '：').split('：'), info_arr = [];
+			for(e in info_o){
+				var space_arr = info_o[e].split(/\s/g);
+				if(e > 0){
+					info_arr[info_arr.length-1][1] = space_arr[0];
+				}
+				if(e == 0 || space_arr[1]){
+					info_arr[info_arr.length] = [ space_arr[e > 0 ? 1 : 0] ];
+				}
+			}
+			var data = getTableData($table, true);
+			data.user = info_arr;
+			return data;
+		}
+		function renderPage(examData, $dest){
+			/*
+			var $container = $('<div id="container" class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
+			*/
+		}
+		console.log(fetchExamData($oldDOM));
+		// renderPage();
 
 		// Finally show the page
 		$('body').addClass('loaded');
