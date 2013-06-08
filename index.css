@@ -34,7 +34,11 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
   background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings-white.png") !important;
 }
 
-.controls > .checkbox:nth-child(2).span5, .controls > .radio:nth-child(2).span5 {
+.controls > .checkbox.span5:nth-child(1), .controls > .radio.span5:nth-child(1){
+	padding-top: 0px;
+}
+
+#exam-control .controls{
 	padding-top: 5px;
 }
 
@@ -42,7 +46,11 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
 	width: auto;
 }
 
-.row-fluid [class*="span"] {
+.row-fluid [class*="span"]{
 	min-height: 0 !important;
-	margin-left: 0;
+	margin-left: 0 !important;
+}
+
+.form-search .help-inline, .form-inline .help-inline, .form-horizontal .help-inline{
+	vertical-align: top;
 }
