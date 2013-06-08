@@ -30,3 +30,5 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
 .dropdown-submenu:focus > a > [class*=" icon-"] {
   background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings-white.png") !important;
 }
+
+#chart{display:block;width:100%;height:400px;}

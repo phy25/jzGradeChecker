@@ -88,6 +88,7 @@ function startExecution(){
 		$table.find('thead').prependTo($table).find('td').children().wrap('<th />');
 		$table.find('thead>tr').prepend($table.find('th')).parent().find('td').remove();
 		
+		// old function getTableArr
 		function getTableArr($Elem){
 			var r = {'thead':[], 'tbody':[]}, $h, $b;
 			$h = $Elem.find('thead tr:first');
@@ -109,6 +110,34 @@ function startExecution(){
 				td.subject = $td.eq(0).text().replace(/(\s)/g,'');
 				$td.not(':first').each(function(i){
 					td[r.thead[i]] = $(this).text().replace(/(\s)/g,'');
+				});
+			});
+
+			return r;
+		}
+
+		function getTableData($Elem, useInt){
+			var r = {'subjects':[], 'series':[]},
+				$h = $Elem.find('thead tr:first'),
+				$b = $Elem.find('tbody tr'),
+				makeInt = function(text){return useInt?Number(text):text;};
+
+			if(!$h.length){
+				$h = $Elem.find('tbody tr:first');
+				$b = $b.not(':first');
+			}
+
+			$h.find('th, td').each(function(i){
+				if(i > 0){
+					r.series.push({'name': $.text(this).replace(/(\s)/g,''), 'data':[]});
+				}
+			});
+			
+			$b.each(function(){
+				var $td = $(this).find('td');
+				r.subjects.push($.text($td.eq(0)).replace(/(\s)/g,''));
+				$td.not(':first').each(function(i){
+					r.series[i].data.push(makeInt($.text(this).replace(/(\s)/g,'')));
 				});
 			});
 
@@ -137,20 +166,25 @@ function startExecution(){
 
 		// 图表
 		(function(){
-			var tableData = getTableArr($table), subjects = [], series = [{name: '前排名', data: [], color: '#BBB'}, {name: '级排名', data:[], color: '#049CDB'}, {name:'市排名', data:[], color: '#49afcd'}], hasCityRank = false;
-			for(a in tableData.tbody){
-				subjects.push(tableData.tbody[a].subject);
-				series[0].data.push(parseInt(tableData.tbody[a]['前序']));
-				series[1].data.push(parseInt(tableData.tbody[a]['序']));
-				series[2].data.push(parseInt(tableData.tbody[a]['市序']));
-				if(parseInt(tableData.tbody[a]['市序']) > 0) hasCityRank = true;
+			var tableData = getTableData($table, true), subjects = tableData.subjects, series = [];
+			for(a in tableData.series){
+				if(tableData.series[a].name == '前序'){
+					series[0] = {name: '前排名', data: tableData.series[a].data, color: '#BBB'};
+				}
+				if(tableData.series[a].name == '序'){
+					series[1] = {name: '级排名', data: tableData.series[a].data, color: '#049CDB'};
+				}
+				if(tableData.series[a].name == '市序'){
+					series[2] = {name: '市排名', data: tableData.series[a].data, color: '#49afcd'};
+				}
 			}
+			if(series[2].data[0] == 0) series.splice(2,1);
+			if(series[0].data[0] == 0) series.splice(0,1);
+			
 
-			if(!hasCityRank) series.splice(2,1);
-
-			$('#breadcrumb').after('<div id="chart" style="width:auto;height:300px;" />');
+			$('#breadcrumb').after('<div id="chart" />');
 			// var colors = Highcharts.getOptions().colors;
-			$('#chart').highcharts({
+			var chart = $('#chart').highcharts({
 				chart: {
 					type: 'column'
 				},
@@ -198,6 +232,7 @@ function startExecution(){
 				},
 				series: series
 			});
+			$(window).resize(function(){var c = $('#chart')[0];chart.setSize(c.offsetWidth, c.offsetHeight)});
 		})();
 
 		// Copyright
