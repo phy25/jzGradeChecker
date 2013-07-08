@@ -33,3 +33,4 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
 
 /* Result */
 #chart{display:block;width:100%;height:400px;}
+table.examData td, table.examData th{text-align: center;}

@@ -273,7 +273,25 @@ function startExecution(){
 			$('#meta-detail-menu', $dest).on('click', 'a', function(){prompt('按 Ctrl+C 复制'+this.title, $(this).data('value')); return false;});
 			$('#meta-detail-btn', $dest).dropdown();
 
+			// 图表
+			// 成绩
+			var $table = $('<table class="table table-striped table-condensed examData"><thead><tr></tr></thead><tbody></tbody></table>'),
+				$thead = $table.find('thead tr:first'),
+				$tbody = $table.find('tbody:first');
 
+			for(i in resultData.gradeData.series){
+				$('<th />').text(resultData.gradeData.series[i].name).appendTo($thead);
+			}
+			for(i in resultData.gradeData.subjects){
+				var $tr = $('<tr><td></td></tr>').find('td').text(resultData.gradeData.subjects[i]).end();
+				for(sei in resultData.gradeData.series){
+					$('<td />').text(resultData.gradeData.series[sei].data[i]).appendTo($tr);
+				}
+				$tr.appendTo($tbody);
+			}
+			$table.appendTo($dest);
+
+			// 平均分
 		}
 		var resultData = fetchResultData($oldDOM);
 		console.log(resultData);
