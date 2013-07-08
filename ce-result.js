@@ -275,17 +275,21 @@ function startExecution(){
 
 			// 图表
 			// 成绩
-			var $table = $('<table class="table table-striped table-condensed examData"><thead><tr></tr></thead><tbody></tbody></table>'),
+			var $table = $('<table class="table table-striped table-condensed examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
 				$thead = $table.find('thead tr:first'),
-				$tbody = $table.find('tbody:first');
+				$tbody = $table.find('tbody:first'),
+				gd = resultData.gradeData;
 
-			for(i in resultData.gradeData.series){
-				$('<th />').text(resultData.gradeData.series[i].name).appendTo($thead);
+			if(gd.series[2].data[0] == 0) gd.series.splice(2,1);
+			if(gd.series[3].data[0] == 0) gd.series.splice(3,1);
+
+			for(i in gd.series){
+				$('<th />').text(gd.series[i].name).appendTo($thead);
 			}
-			for(i in resultData.gradeData.subjects){
-				var $tr = $('<tr><td></td></tr>').find('td').text(resultData.gradeData.subjects[i]).end();
-				for(sei in resultData.gradeData.series){
-					$('<td />').text(resultData.gradeData.series[sei].data[i]).appendTo($tr);
+			for(i in gd.subjects){
+				var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
+				for(sei in gd.series){
+					$('<td />').text(gd.series[sei].data[i]).appendTo($tr);
 				}
 				$tr.appendTo($tbody);
 			}
