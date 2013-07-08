@@ -250,15 +250,34 @@ function startExecution(){
 			});
 
 			data.meta = metaData;
+			
+			$content = undefined;
+			$average = undefined;
 			return data;
 		}
-		function renderPage(examData, $dest){
+		function renderPage(resultData, $dest){
 			/*
 			var $container = $('<div id="container" class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
 			*/
+			// 考生信息
+			$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>');
+
+			$('#breadcrumb', $dest).append('<li title="学号"><i class="icon-user" /> '+ resultData.meta['学号'] +'</li> <li title="姓名" class="dropdown">'+ resultData.meta['姓名'] +' <a href="javascript:void(0)" id="meta-detail-btn" class="dropdown-toggle" title="更多信息"><i class="icon-chevron-down"></i></a><ul id="meta-detail-menu" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu"></ul> <span class="divider">&rsaquo;</span></li> <li class="active" title="考试场次（名称可能与首页不符）"><i class="icon-book" /> '+ resultData.meta['考试场次'] +'</li>');
+			var $mdm = $('#meta-detail-menu', $dest);
+			for(key in resultData.meta){
+				if(!resultData.meta[key]) continue;
+				$('<li><a href="javascript:void(0)"></a></li>').find('a').attr('title', key).data('value', resultData.meta[key])
+					.text(key + '：' + resultData.meta[key])
+					.end().appendTo($mdm);
+			}
+			$('#meta-detail-menu', $dest).on('click', 'a', function(){prompt('按 Ctrl+C 复制'+this.title, $(this).data('value')); return false;});
+			$('#meta-detail-btn', $dest).dropdown();
+
+
 		}
-		console.log(fetchResultData($oldDOM));
-		// renderPage();
+		var resultData = fetchResultData($oldDOM);
+		console.log(resultData);
+		renderPage(resultData, $('<div id="content"></div>').appendTo('#container'));
 
 		// Finally show the page
 		$('body').addClass('loaded');
