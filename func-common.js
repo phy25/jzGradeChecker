@@ -9,5 +9,3 @@ jzgc.config = {
 	// A sequential exam list **TODO**
 	examListOrganized: []
 };
-
-$('body').off('.data-api');
