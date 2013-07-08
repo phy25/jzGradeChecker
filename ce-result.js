@@ -57,7 +57,7 @@ function startExecution(){
 		$container.append($append);
 
 		// 考生信息
-		var $info = $container.find('p:first'), info_o = $info.text(), info_text = '', info_arr = {};
+		var $info = $container.find('p:first').remove(), info_o = $info.text(), info_text = '', info_arr = {};
 		info_o = info_o.replace(/(\s)(\s)+/g,'$1').replace(/:/g, '：').split('：');
 		for(e in info_o){
 			var space_arr = info_o[e].split(/\s/g);
@@ -209,24 +209,47 @@ function startExecution(){
 
 		// Copyright
 		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
-		function fetchExamData($dom){
-			var $content = $('table:eq(2) div:first', $dom).children();
+
+		function fetchResultData($dom){
+			var $content = $('table:eq(2) div:first', $dom).children(), data = {};
+
 			// 考生信息
-			var info_o = $content.filter('p:first').text().replace(/(\s)(\s)+/g,'$1').replace(/:/g, '：').split('：'), info_arr = [];
-			for(e in info_o){
-				var space_arr = info_o[e].split(/\s/g);
-				if(e > 0){
-					info_arr[info_arr.length-1][1] = space_arr[0];
+			var metaData = {};
+			var metaByLine = function($para, opt){
+				var info_o = $para.text().replace(/(\s)(\s)+/g,'$1').replace(/:/g, '：').split('：'), info_arr = [];
+				for(e in info_o){
+					var space_arr = info_o[e].split(/\s/g);
+					if(e > 0){
+						info_arr[info_arr.length-1][1] = space_arr[0];
+					}
+					if(e == 0 || space_arr[1]){
+						info_arr[info_arr.length] = [ space_arr[e > 0 ? 1 : 0] ];
+					}
 				}
-				if(e == 0 || space_arr[1]){
-					info_arr[info_arr.length] = [ space_arr[e > 0 ? 1 : 0] ];
+				// 整理成 key => value
+				for(e in info_arr){
+					opt[info_arr[e][0]] = info_arr[e][1];
 				}
-			}
+				$para = undefined;
+				info_arr = undefined;
+				info_o = undefined;
+				space_arr = undefined;
+			};
+
+			metaByLine($content.filter('p:eq(0)'), metaData);
+			metaByLine($content.filter('p:eq(1)'), metaData);
 
 			// 成绩
-			var data = getTableData($content.filter('table:first'), true);
+			var gradeData = getTableData($content.filter('table:first'), true);
+			data.gradeData = gradeData;
 			
-			data.user = info_arr;
+			// 平均分
+			var $average = $dom.find('table:eq(4)').find('td:first').children();
+			$average.each(function(i, e){
+				data.averageHTML = (data.averageHTML || '') + $.trim(e.innerHTML) + "\n";
+			});
+
+			data.meta = metaData;
 			return data;
 		}
 		function renderPage(examData, $dest){
@@ -234,7 +257,7 @@ function startExecution(){
 			var $container = $('<div id="container" class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
 			*/
 		}
-		console.log(fetchExamData($oldDOM));
+		console.log(fetchResultData($oldDOM));
 		// renderPage();
 
 		// Finally show the page
