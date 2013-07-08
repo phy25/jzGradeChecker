@@ -24,8 +24,8 @@
         "http://www.stjszx.net/jszxcj/*.htm",
         "http://stjszx.net/jszxcj/*.htm"
       ],
-      "css": ["bootstrap/css/bootstrap.min.css", "index.css"],
-      "js": ["jquery-1.8.3.min.js", "commonData.js", "index.js"],
+      "css": ["bootstrap/css/bootstrap.min.css", "style.css", "ce.css"],
+      "js": ["jquery-1.8.3.min.js", "commonData.js", "ce-index.js"],
       "run_at": "document_start",
       "all_frames": true
     },
@@ -35,8 +35,8 @@
         "http://www.stjszx.net/jszxcj/*.asp",
         "http://stjszx.net/jszxcj/*.asp"
       ],
-      "css": ["bootstrap/css/bootstrap.min.css", "result.css"],
-      "js": ["jquery-1.8.3.min.js", "highcharts.js", "commonData.js", "result.js"],
+      "css": ["bootstrap/css/bootstrap.min.css", "style.css", "ce.css"],
+      "js": ["jquery-1.8.3.min.js", "highcharts.js", "commonData.js", "ce-result.js"],
       "run_at": "document_start",
       "all_frames": true
     }

@@ -1,19 +1,18 @@
-/*.Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(1), .Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(2), .Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(3), .Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(4){display:none;}*/
+/* Common */
 body{opacity:0.25;}
 body.loaded{opacity:1;}
-#xuehao, #password{height:2em;}
-#container{width:auto; max-width: 940px; min-width:480px; padding-right: 20px; padding-left: 20px;}
-h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif !important;}
 
-#exam-control .controls.expanded label{font-weight: bold;}
-#exam-control .controls.expanded label.hide{font-weight: normal;}
+/* Index */
+/*.Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(1), .Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(2), .Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(3), .Section1>div>table>tbody>:first-child>td>:first-child>table>tbody>:nth-child(4){display:none;}*/
+
+/* Result */
+body>table>tbody>:first-child>td>table>tbody>:nth-child(1), body>table>tbody>:first-child>td>table>tbody>:nth-child(2){display:none;}
 
 /* 覆盖 Bootstrap 的图片地址 */
 
 [class^="icon-"], [class*=" icon-"] {background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings.png") !important;}
 
 /* White icons with optional class, or on hover/focus/active states of certain elements */
-
 .icon-white,
 .nav-pills > .active > a > [class^="icon-"],
 .nav-pills > .active > a > [class*=" icon-"],
@@ -32,25 +31,4 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
 .dropdown-submenu:hover > a > [class*=" icon-"],
 .dropdown-submenu:focus > a > [class*=" icon-"] {
   background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings-white.png") !important;
-}
-
-.controls > .checkbox.span5:nth-child(1), .controls > .radio.span5:nth-child(1){
-	padding-top: 0px;
-}
-
-#exam-control .controls{
-	padding-top: 5px;
-}
-
-.controls.row-fluid{
-	width: auto;
-}
-
-.row-fluid [class*="span"]{
-	min-height: 0 !important;
-	margin-left: 0 !important;
-}
-
-.form-search .help-inline, .form-inline .help-inline, .form-horizontal .help-inline{
-	vertical-align: top;
 }

@@ -203,7 +203,8 @@ function startExecution(){
 				},
 				series: series
 			});
-			$(window).resize(function(){var c = $('#chart')[0];chart.setSize(c.offsetWidth, c.offsetHeight)});
+			var resize = function(){var c = $('#chart')[0]; chart.setSize(c.offsetWidth, c.offsetHeight)};
+			$(window).on('resize orientationchange', resize); // Tablet support added
 		})();
 
 		// Copyright
@@ -221,7 +222,10 @@ function startExecution(){
 					info_arr[info_arr.length] = [ space_arr[e > 0 ? 1 : 0] ];
 				}
 			}
-			var data = getTableData($table, true);
+
+			// 成绩
+			var data = getTableData($content.filter('table:first'), true);
+			
 			data.user = info_arr;
 			return data;
 		}

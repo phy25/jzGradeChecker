@@ -1,10 +1,6 @@
 /*
-Ajax common function
+Ajax function
 */
-
-//Init object
-if(!jzgc) var jzgc = {};
-
 jzgc.ajax = {
 	// data: {xuehao, password, kaoshi}
 	getExamResult: function(data, successCallback, failCallback){

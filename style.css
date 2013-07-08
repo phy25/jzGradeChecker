@@ -1,0 +1,35 @@
+/* Common */
+#container{width:auto; max-width: 940px; min-width:480px; padding-right: 20px; padding-left: 20px; margin:0 auto;}
+table{font-size:1em !important;border:none;}
+td, th{border:none;}
+h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif !important;}
+
+/* Index */
+#xuehao, #password{
+	height:2em;
+}
+#exam-control .controls.expanded label{
+	font-weight: bold;
+}
+#exam-control .controls.expanded label.hide{
+	font-weight: normal;
+}
+.controls > .checkbox.span5:nth-child(1), .controls > .radio.span5:nth-child(1){
+	padding-top: 0px;
+}
+#exam-control .controls{
+	padding-top: 5px;
+}
+.controls.row-fluid{
+	width: auto;
+}
+.row-fluid [class*="span"]{
+	min-height: 0 !important;
+	margin-left: 0 !important;
+}
+.form-search .help-inline, .form-inline .help-inline, .form-horizontal .help-inline{
+	vertical-align: top;
+}
+
+/* Result */
+#chart{display:block;width:100%;height:400px;}
