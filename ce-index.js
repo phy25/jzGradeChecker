@@ -73,7 +73,7 @@ window.onpopstate = function(e) {
 function startExecution(){
 	$(function(){
 		if(document.body.innerText.indexOf('您未被授权查看该页') != -1){
-			errorPage();
+			jzgc.ce.errorPage();
 			return;
 		}
 
@@ -123,7 +123,7 @@ function startExecution(){
 			.after('<div id="ext-tip" class="alert" style="display:none;"></div>')
 			.after($f)
 			.after('<h2>教务处通知</h2><div id="orig-announcement"></div>')
-			.after('<p class="text-right"><small><i class="icon-heart" /> <a href="' + extVersion[1] + '" target="_blank" class="muted">jzGradeChecker ' + extVersion[0] + '</a></small></p>');
+			.after('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
 
 		$container.append($append);
 

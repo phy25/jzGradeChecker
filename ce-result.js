@@ -28,7 +28,7 @@ function startExecution(){
 		// No result
 		var innerText = document.body.innerText;
 		if(innerText.indexOf('您未被授权查看该页') != -1){
-			errorPage();
+			jzgc.ce.errorPage();
 			return;
 		}
 
@@ -208,7 +208,7 @@ function startExecution(){
 		})();
 
 		// Copyright
-		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + extVersion[1] + '" target="_blank" class="muted">jzGradeChecker ' + extVersion[0] + '</a></small></p>');
+		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
 		function fetchExamData($dom){
 			var $content = $('table:eq(2) div:first', $dom).children();
 			// 考生信息
