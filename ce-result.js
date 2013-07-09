@@ -1,35 +1,16 @@
-function removebg(){
-	if(document.body && document.body.background){
-		document.body.background = '';
-	}else{
-		setTimeout(removebg, 100);
-	}
-};
-removebg();
+/*
+Result Page Handler for chrome entension
+*/
 
-function checkTitle(){
-	if(document.body){
-		if(document.title == '金中成绩查询'){
-			// 另一个扩展 Javascript 已经接管页面
-			console.error('Attempting to start an instance while another instance exists already');
-		}else{
-			document.title = '金中成绩查询';
-			startExecution();
-		}
-	}else{
-		setTimeout(checkTitle, 50);
-	}
-};
-checkTitle();
+jzgc.ce.removebg();
+jzgc.ce.conflictCheck(startExecution);
 
 function startExecution(){
 	$(function(){
+		if(jzgc.ce.checkErrorPage()){return;}
+
 		// No result
 		var innerText = document.body.innerText;
-		if(innerText.indexOf('您未被授权查看该页') != -1){
-			jzgc.ce.errorPage();
-			return;
-		}
 
 		if(innerText.indexOf('对不起') != -1){
 			if(window.sessionStorage){

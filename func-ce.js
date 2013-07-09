@@ -3,6 +3,12 @@ Common functions for Chrome extension
 */
 
 jzgc.ce = {
+	checkErrorPage: function(force){
+		if(force || (document.body && document.body.innerText.indexOf('您未被授权查看该页') != -1)){
+			this.errorPage();
+			return true;
+		}
+	},
 	errorPage: function(){
 		$('style').remove();
 		$('<div class="container" />').appendTo($('<body />').replaceAll('body'))
@@ -36,5 +42,27 @@ jzgc.ce = {
 			);
 			$('#count').html(function(i, v){return v+1;});
 		};
+	},
+	conflictCheck: function(complete){
+		if(typeof complete == 'function') this._conflictCheckOnComplete = complete;
+
+		if(document.body){
+			if(document.title == '金中成绩查询'){
+				// 另一个扩展 Javascript 已经接管页面
+				console.error('Attempting to start an instance while another instance exists already');
+			}else{
+				document.title = '金中成绩查询';
+				if(typeof this._conflictCheckOnComplete == 'function') this._conflictCheckOnComplete();
+			}
+		}else{
+			setTimeout(this.conflictCheck, 50);
+		}
+	},
+	removebg: function(){
+		if(document.body && document.body.background){
+			document.body.background = '';
+		}else{
+			setTimeout(this.removebg, 50);
+		}
 	}
 };

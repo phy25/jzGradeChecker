@@ -1,17 +1,8 @@
-function checkTitle(){
-	if(document.body){
-		if(document.title == '金中成绩查询'){
-			// 另一个扩展 Javascript 已经接管页面
-			console.error('Attempting to start an instance while another instance exists already');
-		}else{
-			document.title = '金中成绩查询';
-			startExecution();
-		}
-	}else{
-		setTimeout(checkTitle, 50);
-	}
-};
-checkTitle();
+/*
+Index Page Handler for chrome entension
+*/
+
+jzgc.ce.conflictCheck(startExecution);
 
 function parseQuery(a){
 	var queryString = {};
@@ -72,10 +63,7 @@ window.onpopstate = function(e) {
 
 function startExecution(){
 	$(function(){
-		if(document.body.innerText.indexOf('您未被授权查看该页') != -1){
-			jzgc.ce.errorPage();
-			return;
-		}
+		if(jzgc.ce.checkErrorPage()){return;}
 
 		var exam_list = {}, exam_list_current, $exam_list_current;
 		var month = new Date().getMonth();
