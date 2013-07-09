@@ -266,7 +266,6 @@ function startExecution(){
 			$('<h2>教务处通知</h2><div id="orig-announcement"></div>')
 				.filter('#orig-announcement').append('<p>' + indexData.notes.announcement.replace(/(\n|\r)/g,'</p><p>') + '</p>')
 				.end().appendTo($dest);
-			$('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>').appendTo($dest);
 		}
 		var indexData = fetchIndexData($(document.body));
 		console.log(indexData);
@@ -274,6 +273,8 @@ function startExecution(){
 		// Start to render page
 		var $container = $('<div id="container" class="container"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
 		renderPage(indexData, $('#content'));
+
+		jzgc.ce.appendCopyRight($container);
 
 		// Finally show the page
 		$('body').addClass('loaded');

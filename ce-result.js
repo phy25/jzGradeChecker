@@ -243,7 +243,7 @@ function startExecution(){
 		renderPage(resultData, $('#content'));
 
 		// Copyright
-		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
+		jzgc.ce.appendCopyRight($container);
 
 		// Finally show the page
 		$('body').addClass('loaded');

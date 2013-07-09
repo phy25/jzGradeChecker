@@ -69,5 +69,8 @@ jzgc.ce = {
 		}else{
 			setTimeout(this.removebg, 50);
 		}
+	},
+	appendCopyRight: function($dest){
+		$dest.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
 	}
 };
