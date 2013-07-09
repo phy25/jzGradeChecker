@@ -65,6 +65,74 @@ function startExecution(){
 	$(function(){
 		if(jzgc.ce.checkErrorPage()){return;}
 
+		function fetchIndexData($sourceElm){
+			var data = {examList:{}, notes:{}}; //, $exam_list_current;
+			// var month = new Date().getMonth();
+			// var $kaoshi = $('#kaoshi'), $kaoshi_new;
+			$('#kaoshi', $sourceElm).find('option').each(function(){
+				if(this.defaultSelected) data.examListCurrent = this.value;
+				data.examList[this.value] = this.text.replace(/(\s)/g,'');
+			});
+
+			var $f = $('form:first', $sourceElm);
+			data.notes.update = $f.find('b').text().replace(/(\s)/g,'').replace(/\(/g, '（').replace(/\)/g, '）').replace('注:', ''),
+			data.notes.announcement = $f.next().text()
+				.replace(/(\s)(\s)+/g,'$1')
+				.replace(/．/g, '。')
+				.replace(/,/g, '，')
+				.replace(/;/g, '；')
+				.replace(/\*/g, '* ')
+				.replace(/\(/g, '（')
+				.replace(/\)/g, '）');
+
+			return data;
+		}
+
+		function renderPage(indexData, $dest){
+			$('<div class="alert alert-info" />').text(indexData.notes.update).appendTo($dest);
+			$('<div id="ext-tip" class="alert" style="display:none;"></div>').appendTo($dest);
+
+			//$f;
+			var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal"></form>');
+			$('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>').appendTo($f);
+			$('<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>').appendTo($f);
+			$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
+			$('<div class="form-actions"><input type="submit" class="btn btn-primary" value="查询" /></div>').appendTo($f);
+
+			var $exams = $('<div id="exams-list" class="hide" />'), $examCurrent;
+			for(var i in indexData.examList){
+				var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'"> '+exam_list[i]+'</label>');
+				$exams.append($eln);
+
+				if(i == indexData.examListCurrent) $examCurrent = $eln;
+			}
+
+			var $exams_act = $('<p class="span12"><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏考试</a></p>');
+			$('#expand_all', $exams_act).click(function(){
+				$kaoshi_new.filter('.hide').show();
+				$(this).hide().parent().parent().removeClass('collapsed').addClass('expanded');
+				$('#collapse_all').show();
+				$kaoshi_new.find('input').filter(':checked').focus();
+			});
+			$('#collapse_all', $exams_act).click(function(){
+				$kaoshi_new.filter('.hide').hide();
+				$(this).hide().parent().parent().removeClass('expanded').addClass('collapsed');
+				$('#expand_all').show();
+				$kaoshi_new.find('input').filter(':checked').focus();
+			});
+
+			$f.find('#exam-control .controls').append($exams.append($exams_act));
+			$f.appendTo($dest);
+
+			$('<h2>教务处通知</h2><div id="orig-announcement"></div>')
+				.filter('#orig-announcement').append('<p>' + indexData.notes.announcement.replace(/(\n|\r)/g,'</p><p>') + '</p>')
+				.end().appendTo($dest);
+			$('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>').appendTo($dest);
+		}
+		var indexData = fetchIndexData($(document.body));
+		console.log(indexData);
+		
+
 		var exam_list = {}, exam_list_current, $exam_list_current;
 		var month = new Date().getMonth();
 		var $kaoshi = $('#kaoshi'), $kaoshi_new;
@@ -72,7 +140,6 @@ function startExecution(){
 			if(this.defaultSelected) exam_list_current = this.value;
 			exam_list[this.value] = this.text.replace(/(\s)/g,'');
 		});
-
 
 		for(var i in exam_list){
 			var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'"> '+exam_list[i]+'</label>');
@@ -124,16 +191,11 @@ function startExecution(){
 			return (t || '').replace(/[\uff01-\uff5e]/g, function(a){return String.fromCharCode(a.charCodeAt(0)-65248);}).replace(/\u3000/g," ");
 		}
 
-		function get_current_exam(){
-			var arr = update_status_t.split('（')[0].split('');
-			console.log(arr);
-		}
-		//get_current_exam();
-
 		$('#password').change(function(){
 			$(this).val(function(i, v){return $.trim(String(dbc2sbc(v)).replace('X', 'x'))});
 		});
 
+		// 当填入学号后
 		$('#xuehao').change(function(){
 			var no = $(this).val();
 			$kaoshi_new.detach();
@@ -254,6 +316,10 @@ function startExecution(){
 			$('#xuehao').val(stu_arr[0][0]).change();
 			$('#password').val(stu_arr[0][1]);
 		}
+		// Start to render page
+		//var $container = $('<div id="container" class="container"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
+		$('#container').append('<div id="content" />');
+		renderPage(indexData, $('#content'));
 
 		// Finally show the page
 		$('body').addClass('loaded');
