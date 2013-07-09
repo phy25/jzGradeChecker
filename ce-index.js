@@ -67,7 +67,6 @@ function startExecution(){
 
 		function fetchIndexData($sourceElm){
 			var data = {examList:{}, notes:{}}; //, $exam_list_current;
-			// var month = new Date().getMonth();
 			// var $kaoshi = $('#kaoshi'), $kaoshi_new;
 			$('#kaoshi', $sourceElm).find('option').each(function(){
 				if(this.defaultSelected) data.examListCurrent = this.value;
@@ -101,28 +100,166 @@ function startExecution(){
 
 			var $exams = $('<div id="exams-list" class="hide" />'), $examCurrent;
 			for(var i in indexData.examList){
-				var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'"> '+exam_list[i]+'</label>');
+				var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'"> '+indexData.examList[i]+'</label>');
 				$exams.append($eln);
 
 				if(i == indexData.examListCurrent) $examCurrent = $eln;
 			}
 
-			var $exams_act = $('<p class="span12"><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏考试</a></p>');
+			var $exams_act = $('<p class="span12"><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏其他</a></p>');
 			$('#expand_all', $exams_act).click(function(){
-				$kaoshi_new.filter('.hide').show();
+				$('#exams-list').find('label.hide').show()
+					.end().find('input:checked').focus();
 				$(this).hide().parent().parent().removeClass('collapsed').addClass('expanded');
 				$('#collapse_all').show();
-				$kaoshi_new.find('input').filter(':checked').focus();
 			});
 			$('#collapse_all', $exams_act).click(function(){
-				$kaoshi_new.filter('.hide').hide();
+				$('#exams-list').find('label.hide').hide()
+					.end().find('input:checked').focus();
 				$(this).hide().parent().parent().removeClass('expanded').addClass('collapsed');
 				$('#expand_all').show();
-				$kaoshi_new.find('input').filter(':checked').focus();
+			});
+
+			function dbc2sbc(t){
+				return (t || '').replace(/[\uff01-\uff5e]/g, function(a){return String.fromCharCode(a.charCodeAt(0)-65248);}).replace(/\u3000/g," ");
+			}
+
+			$('#password', $f).change(function(){
+				$(this).val(function(i, v){return $.trim(String(dbc2sbc(v)).replace('X', 'x'))});
+			});
+
+			// 当填入学号后
+			$('#xuehao', $f).change(function(){
+				var no = this.value, $exams = $('#exams-list').detach(), month = new Date().getMonth(),
+					vf = false, vc = false; // 第一项 input; 学校选择的 input
+
+				if(no.indexOf('1') == 0){
+					$exams.find('label').each(function(i,t){
+						var $t = $(t);
+						if(t.innerText.indexOf('高一') == -1){
+							$t.addClass('hide');
+						}else{
+							$t.removeClass('hide');
+							var ti = $t.find('input')[0];
+							if(!vf) vf = ti;
+							if(ti.value == indexData.examListCurrent) vc = ti;
+						}
+					});
+				}
+				if(no.indexOf('2') == 0){
+					$exams.find('label').each(function(i,t){
+						var $t = $(t);
+						if(t.innerText.indexOf('高二') == -1){
+							$t.addClass('hide');
+						}else{
+							$t.removeClass('hide');
+							var ti = $t.find('input')[0];
+							if(!vf) vf = ti;
+							if(ti.value == indexData.examListCurrent) vc = ti;
+						}
+					});
+				}
+				if(no.indexOf('3') == 0){
+					$exams.find('label').each(function(i,t){
+						var $t = $(t);
+						if(t.innerText.indexOf('高三') == -1 && this.innerText.indexOf('高考') == -1){
+							$(t).addClass('hide');
+						}else{
+							$(t).removeClass('hide');
+							var ti = $t.find('input')[0];
+							if(!vf) vf = ti;
+							if(ti.value == indexData.examListCurrent) vc = ti;
+						}
+					});
+				}
+
+				// Tip
+				if($('#ext-tip').is('.alert-40, alert-28')) $('#ext-tip').hide();
+				if(no.indexOf('3') == 0){
+					if(month > 3 && month < 7 && $('#ext-tip').text() == ''){ // 5-7 月
+						$('#ext-tip').removeClass().addClass('alert alert-success alert-40').html('<strong title="祝好 :)">Best wishes!</strong> 在这里查分数的日子不多了，希望那最后一次不在这里查分数的考试一切顺利！<br /><span class="muted">其实对你来说这个扩展快要退休了……</span>').show();
+						$('<button type="button" class="close" title="隐藏">&times;</button>')
+							.click(function(){
+								$(this).parent().hide().end().remove();
+								return false;
+							}).prependTo('#ext-tip');
+					}
+				}
+				if(no.indexOf('2') == 0){
+					if(month > 3 && month < 7 && $('#ext-tip').text() == '' && (+localStorage['stu_arr_0_noticeRead'] || 0) < 28){
+						// 5-7 月，编号 28
+						$('#ext-tip').removeClass().addClass('alert alert-success alert-28').html('查询学业水平考试成绩，请<a href="http://query.5184.com/query/query_list.jsp?queryType=30">登录广东省考试服务网页面</a>。').show();
+						$('<button type="button" class="close" title="不再提示">&times;</button>')
+							.click(function(){
+								localStorage['stu_arr_0_noticeRead'] = 28;
+								$(this).parent().fadeOut().end().remove();
+								return false;
+							}).prependTo('#ext-tip');
+					}
+				}
+
+				if(vf){
+					$exams.find('input').removeAttr('checked');
+					// console.log(vc, vf);
+					if(vc && !$(vc).parent().is('.hide')){ // 如果学校提供的被选中的项在不折叠范围
+						vc.checked = true;
+					}else{ // 否则选中第一项
+						vf.checked = true;
+					}
+					
+					$('#exam-control .controls').removeClass('expanded').addClass('collapsed');
+					$exams.show().find('label.hide').hide().end().find('label:not(.hide)').show();
+					$('#expand_all').show();
+					$('#collapse_all').hide();
+					$('#exam-control .controls .help-block').hide();
+				}else{
+					// 学号输入错误
+					$exams.hide();
+					$('#exam-control .controls .help-block').show();
+				}
+				$exams.prependTo('#exam-control .controls');
+			});
+
+			$f.submit(function(){
+				$('body').fadeTo(100, 0.25);
+				if(localStorage){
+					localStorage['stu_arr_0'] = $('#xuehao').val() + ';' + $('#password').val();
+				}
+				window.history.replaceState($f.serialize(), document.title, location.href);
 			});
 
 			$f.find('#exam-control .controls').append($exams.append($exams_act));
 			$f.appendTo($dest);
+
+			// remembered user info
+			if(localStorage && localStorage['stu_arr_0']){
+				var stu_arr = [(localStorage['stu_arr_0'] || '').split(';')], month = new Date().getMonth();
+				if(
+					(stu_arr[0][0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
+					|| (stu_arr[0][0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
+					){
+					if(!localStorage['stu_arr_0_lastUpgraded'] || new Date().getYear() != new Date(localStorage['stu_arr_0_lastUpgraded']).getYear()){
+						// 今年没有更新过，就提示下
+						$('#ext-tip').removeClass().addClass('alert alert-warning')
+							.html('你似乎需要升年级啦。<a id="upgrade_btn" href="javascript:void(0)" class="btn btn-small btn-warning">升级</a>').show();
+						$('#upgrade_btn').click(function(){
+							stu_arr[0][0] = +stu_arr[0][0] + 10000;
+							localStorage['stu_arr_0_lastUpgraded'] = +new Date();
+							$('#xuehao').val(stu_arr[0][0]).change();
+							$('#ext-tip').removeClass().addClass('alert alert-success').html('如果学校还没有更新学号，将会提示恢复原学号。');
+							$('<button type="button" class="close" title="隐藏">&times;</button>')
+								.click(function(){
+									$(this).parent().hide().end().remove();
+									return false;
+								}).prependTo('#ext-tip');
+							return false;
+						});
+					}
+				}
+				
+				$('#xuehao').val(stu_arr[0][0]).change();
+				$('#password').val(stu_arr[0][1]);
+			}
 
 			$('<h2>教务处通知</h2><div id="orig-announcement"></div>')
 				.filter('#orig-announcement').append('<p>' + indexData.notes.announcement.replace(/(\n|\r)/g,'</p><p>') + '</p>')
@@ -131,194 +268,9 @@ function startExecution(){
 		}
 		var indexData = fetchIndexData($(document.body));
 		console.log(indexData);
-		
 
-		var exam_list = {}, exam_list_current, $exam_list_current;
-		var month = new Date().getMonth();
-		var $kaoshi = $('#kaoshi'), $kaoshi_new;
-		$kaoshi.find('option').each(function(){
-			if(this.defaultSelected) exam_list_current = this.value;
-			exam_list[this.value] = this.text.replace(/(\s)/g,'');
-		});
-
-		for(var i in exam_list){
-			var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'"> '+exam_list[i]+'</label>');
-			if($kaoshi_new){
-				$kaoshi_new.after($eln);
-			}else{
-				$kaoshi_new = $eln;
-			}
-
-			if(i == exam_list_current) $exam_list_current = $eln;
-		}
-
-		var $f = $('form:first'),
-			update_status_t = $f.find('b').text().replace(/(\s)/g,'').replace(/\(/g, '（').replace(/\)/g, '）').replace('注:', ''),
-			orig_announcement_t = $f.next().text()
-				.replace(/(\s)(\s)+/g,'$1')
-				.replace(/．/g, '。')
-				.replace(/,/g, '，')
-				.replace(/;/g, '；')
-				.replace(/\*/g, '* ')
-				.replace(/\(/g, '（')
-				.replace(/\)/g, '）');
-
-		// Fetching ended, now start structure fill
-
-		var $fa = $('<div id="form-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>'
-			 + '<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div></div>');
-		$fa.after('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>');
-		$fa.after('<div class="control-group"><div class="controls"><input type="submit" class="btn btn-primary" value="查询" /></div></div>');
-
-		$f.addClass('form-horizontal').html('').append($fa);
-
-		var $container = $('<div id="container" class="container" />').appendTo($('<body />').replaceAll('body'));
-
-		var $append = $('<h1>金中成绩查询</h1>')
-			.after('<div id="ext-tip" class="alert" style="display:none;"></div>')
-			.after($f)
-			.after('<h2>教务处通知</h2><div id="orig-announcement"></div>')
-			.after('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
-
-		$container.append($append);
-
-		// Structure fill ended, now content fill
-		$('h1:first').after('<div class="alert alert-info">'+update_status_t+'</div>');
-		$('#orig-announcement').append('<p>'+orig_announcement_t.replace(/(\n|\r)/g,'</p><p>')+'</p>');
-
-		// 全角转半角函数来自 http://www.jslab.org.cn
-		function dbc2sbc(t){
-			return (t || '').replace(/[\uff01-\uff5e]/g, function(a){return String.fromCharCode(a.charCodeAt(0)-65248);}).replace(/\u3000/g," ");
-		}
-
-		$('#password').change(function(){
-			$(this).val(function(i, v){return $.trim(String(dbc2sbc(v)).replace('X', 'x'))});
-		});
-
-		// 当填入学号后
-		$('#xuehao').change(function(){
-			var no = $(this).val();
-			$kaoshi_new.detach();
-			$exams_act.detach();
-			var vf = false;
-			if(no.indexOf('1') == 0){
-				$kaoshi_new.each(function(){
-					var $this = $(this);
-					if(this.innerText.indexOf('高一') == -1){
-						$this.addClass('hide');
-					}else{
-						$this.removeClass('hide');
-						if(!vf) vf = $this.find('input')[0];
-					}
-				});
-			}
-			if(no.indexOf('2') == 0){
-				$kaoshi_new.each(function(){
-					var $this = $(this);
-					if(this.innerText.indexOf('高二') == -1){
-						$this.addClass('hide');
-					}else{
-						$this.removeClass('hide');
-						if(!vf) vf = $this.find('input')[0];
-					}
-				});
-			}
-			if(no.indexOf('3') == 0){
-				$kaoshi_new.each(function(){
-					var $this = $(this);
-					if(this.innerText.indexOf('高三') == -1 && this.innerText.indexOf('高考') == -1){
-						$(this).addClass('hide');
-					}else{
-						$(this).removeClass('hide');
-						if(!vf) vf = $this.find('input')[0];
-					}
-				});
-				//var $vf = $kaoshi_new.not('.hide').find('input')[0];
-			}
-			if($('#ext-tip').text() == ''){
-				if(no.indexOf('3') == 0){
-					if(month > 3 && month < 7){ // 5-7 月
-						$('#ext-tip').removeClass().addClass('alert alert-success').html('<strong title="祝好 :)">Best wishes!</strong> 在这里查分数的日子不多了，希望那最后一次不在这里查分数的考试一切顺利！<br /><span class="muted">其实对你来说这个扩展快要退休了……</span>').show();
-					}
-				}else{
-					$('#ext-tip').hide();
-				}
-			}
-
-			if(vf){
-				$kaoshi_new.find('input').removeAttr('checked');
-				if(!$exam_list_current.is('.hide')){ // 如果学校提供的被选中的项在不折叠范围
-					$exam_list_current.find('input')[0].checked = true;
-				}else{ // 否则选中第一项
-					vf.checked = true;
-				}
-				
-				$('#exam-control .controls').empty().removeClass('expanded').addClass('collapsed').append($kaoshi_new).append($exams_act);
-				$kaoshi_new.filter('.hide').hide().end().not('.hide').show();
-				$('#expand_all').show();
-				$('#collapse_all').hide();
-			}else{
-				$('#exam-control .controls').html('<span class="help-block">请先输入学号</span>');
-			}
-		});
-		
-		var $exams_act = $('<p class="span12"><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏考试</a></p>');
-
-		$('#expand_all', $exams_act).click(function(){
-			$kaoshi_new.filter('.hide').show();
-			$(this).hide().parent().parent().removeClass('collapsed').addClass('expanded');
-			$('#collapse_all').show();
-			$kaoshi_new.find('input').filter(':checked').focus();
-		});
-		$('#collapse_all', $exams_act).click(function(){
-			$kaoshi_new.filter('.hide').hide();
-			$(this).hide().parent().parent().removeClass('expanded').addClass('collapsed');
-			$('#expand_all').show();
-			$kaoshi_new.find('input').filter(':checked').focus();
-		});
-
-		// Ajax and info saving
-		$f.submit(function(){
-			$('body').fadeTo(100, 0.25);
-			if(localStorage){
-				localStorage['stu_arr_0'] = $('#xuehao').val()+';'+$('#password').val();
-			}
-			window.history.replaceState($f.serialize(), document.title, location.href);
-		});
-
-		// Info read
-		if(localStorage && localStorage['stu_arr_0']){
-			var stu_arr = [(localStorage['stu_arr_0'] || '').split(';')];
-			if(
-				(stu_arr[0][0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
-				|| (stu_arr[0][0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
-				){
-				if(!localStorage['stu_arr_0_lastUpgraded'] || new Date().getYear() != new Date(localStorage['stu_arr_0_lastUpgraded']).getYear()){
-					// 今年没有更新过，就提示下
-					$('#ext-tip').removeClass().addClass('alert alert-warning')
-						.html('你似乎需要升年级啦。<a id="upgrade_btn" href="javascript:void(0)" class="btn btn-small btn-warning">升级</a>').show();
-					$('#upgrade_btn').click(function(){
-						stu_arr[0][0] = +stu_arr[0][0] + 10000;
-						localStorage['stu_arr_0_lastUpgraded'] = +new Date();
-						$('#xuehao').val(stu_arr[0][0]).change();
-						$('#ext-tip').removeClass().addClass('alert alert-success').html('如果学校还没有更新学号，将会提示恢复原学号。');
-						$('<button type="button" class="close">&times;</button>')
-							.click(function(){
-								$(this).parent().hide().end().remove();
-								return false;
-							}).prependTo('#ext-tip');
-						return false;
-					});
-				}
-			}
-			
-
-			$('#xuehao').val(stu_arr[0][0]).change();
-			$('#password').val(stu_arr[0][1]);
-		}
 		// Start to render page
-		//var $container = $('<div id="container" class="container"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
-		$('#container').append('<div id="content" />');
+		var $container = $('<div id="container" class="container"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
 		renderPage(indexData, $('#content'));
 
 		// Finally show the page
