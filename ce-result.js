@@ -24,7 +24,6 @@ checkTitle();
 
 function startExecution(){
 	$(function(){
-		var $oldDOM = $('html').clone(); // temp
 		// No result
 		var innerText = document.body.innerText;
 		if(innerText.indexOf('您未被授权查看该页') != -1){
@@ -46,46 +45,6 @@ function startExecution(){
 
 		// 去掉固有的 style
 		$('link:first').remove();
-
-		var $content = $('table:eq(2) div:first').children().detach();
-		var $container = $('<div id="container" class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
-
-		var $append = $('<h1>金中成绩查询</h1>')
-			.after('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>')
-			.after($content);
-
-		$container.append($append);
-
-		// 考生信息
-		var $info = $container.find('p:first').remove(), info_o = $info.text(), info_text = '', info_arr = {};
-		info_o = info_o.replace(/(\s)(\s)+/g,'$1').replace(/:/g, '：').split('：');
-		for(e in info_o){
-			var space_arr = info_o[e].split(/\s/g);
-			if(e > 0){
-				info_text = info_text + space_arr[0];
-				if(e == info_o.length - 2){
-					info_text = info_text + '<span class="divider">&rsaquo;</span></li> ';
-				}else{
-					info_text = info_text + '</li> ';
-				}
-			}
-			if(e == 0 || space_arr[1]){
-				if(e == info_o.length - 2){ // 提前给最后一项写标签头
-					info_text = info_text + '<li class="active" title="'+ space_arr[e > 0 ? 1 : 0] +'"><i class="icon-book" /> ';
-				}else{
-					info_text = info_text + '<li title="'+ space_arr[e > 0 ? 1 : 0] +'">';
-					if(e == 0) info_text = info_text + '<i class="icon-user" /> ';
-				}
-			}
-		}
-		$('#breadcrumb').append(info_text);
-
-		// 成绩
-		var $table = $container.find('table:eq(0)').addClass('table table-striped table-condensed').removeAttr('width border cellpadding cellspacing bordercolor');
-
-		$table.find('tr:first').unwrap().wrapAll('<thead />');
-		$table.find('thead').prependTo($table).find('td').children().wrap('<th />');
-		$table.find('thead>tr').prepend($table.find('th')).parent().find('td').remove();
 		
 		function getTableData($Elem, useInt){
 			var r = {'subjects':[], 'series':[]},
@@ -115,105 +74,8 @@ function startExecution(){
 			return r;
 		}
 
-		
-
-		// 图表
-		(function(){return false;
-			// 平均分
-			var $average = $container.find('table:eq(1)').remove();
-			$container.find('p').eq(-1).remove().end().eq(-2).remove(); // 移除科目解释
-			$average.find('td:first').children().appendTo($container).wrapAll('<div id="average" class="hide"></div>');
-			$('#average').prepend('<h2>平均分数据</h2>');
-			$('<p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a><a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>').appendTo($container);
-
-			$('#expand_average').click(function(){
-				var offset = $('#average').stop(1,1).slideDown()
-					.offset();
-				$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
-				$(this).hide();
-				$('#collapse_average').show().focus();
-			});
-			$('#collapse_average').click(function(){
-				$('#average').stop(1,1).slideUp();
-				$(this).hide();
-				$('#expand_average').show().focus();
-			});
-
-			var tableData = getTableData($table, true), subjects = tableData.subjects, series = [];
-			for(a in tableData.series){
-				if(tableData.series[a].name == '前序'){
-					series[0] = {name: '前排名', data: tableData.series[a].data, color: '#BBB'};
-				}
-				if(tableData.series[a].name == '序'){
-					series[1] = {name: '级排名', data: tableData.series[a].data, color: '#049CDB'};
-				}
-				if(tableData.series[a].name == '市序'){
-					series[2] = {name: '市排名', data: tableData.series[a].data, color: '#49afcd'};
-				}
-			}
-			if(series[2].data[0] == 0) series.splice(2,1);
-			if(series[0].data[0] == 0) series.splice(0,1);
-			
-
-			$('#breadcrumb').after('<div id="chart" />');
-			// var colors = Highcharts.getOptions().colors;
-			var chart = $('#chart').highcharts({
-				chart: {
-					type: 'column'
-				},
-				title: {
-					text: null
-				},
-				xAxis: {
-					categories: subjects
-				},
-				yAxis: {
-					min: 0,
-					reversed: true,
-					title: {
-						text: '排名'
-					}
-				},
-				tooltip: {
-					headerFormat: '<span>{point.key}</span><br />',
-					pointFormat: '<span style="color:{series.color};">{series.name}</span> <b>{point.y}</b><br />',
-					footerFormat: '',
-					shared: true,
-					useHTML: true
-				},
-				plotOptions: {
-					column: {
-						pointPadding: 0.2,
-						borderWidth: 0,
-						dataLabels: {
-							enabled: true,
-							style: {
-								fontWeight: 'bold'
-							}
-						}
-					},
-					series: {
-						allowPointSelect: true,
-						states: {
-							select: {
-								color: null,
-								borderWidth: 1,
-								borderColor: '#f89406'
-							}
-						}
-					}
-				},
-				series: series
-			});
-			var resize = function(){var c = $('#chart')[0]; chart.setSize(c.offsetWidth, c.offsetHeight)};
-			$(window).on('resize orientationchange', resize); // Tablet support added
-		})();
-
-		// Copyright
-		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
-
-		function fetchResultData($dom){
-			var $content = $('table:eq(2) div:first', $dom).children(), data = {};
+		function fetchResultData($sourceElm){
+			var $content = $('table:eq(2) div:first', $sourceElm).children(), data = {};
 
 			// 考生信息
 			var metaData = {};
@@ -248,15 +110,15 @@ function startExecution(){
 			data.gradeData = gradeData;
 			
 			// 平均分
-			data.averageHTML = $.trim($dom.find('table:eq(4)').find('td:first').html().replace(/(\s)(\s)+/g,'$1'));
+			data.averageHTML = $.trim($sourceElm.find('table:eq(4)').find('td:first').html().replace(/(\s)(\s)+/g,'$1'));
 
 			// 备注
-			data.note = [];
+			data.notes = [];
 			$content.filter('p').not(':eq(0), :eq(1), :eq(-1)') // 0, 1 是 meta 部分，-1 是科目总分解释
 				.each(function(i, e){
 					var $e = $(e);
 					if($.trim($e.text())){
-						data.note.push($.trim( $e.html() ).replace(/(\s)(\s)+/g,'$1'));
+						data.notes.push($.trim( $e.html() ).replace(/(\s)(\s)+/g,'$1'));
 					}
 				});
 			
@@ -264,10 +126,8 @@ function startExecution(){
 			// $average = undefined;
 			return data;
 		}
+
 		function renderPage(resultData, $dest){
-			/*
-			var $container = $('<div id="container" class="container-fluid" />').appendTo($('<body />').replaceAll('body'));
-			*/
 			// 考生信息
 			$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>');
 
@@ -347,7 +207,7 @@ function startExecution(){
 			})();
 
 			// 成绩
-			var $table = $('<table class="table table-hover table-striped examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
+			var $table = $('<table id="gradeTable" class="table table-hover table-striped examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
 				$thead = $table.find('thead tr:first'),
 				$tbody = $table.find('tbody:first'),
 				gd = resultData.gradeData;
@@ -367,6 +227,13 @@ function startExecution(){
 			}
 			$table.appendTo($dest);
 
+			// 备注
+			var $notes = $('<div id="notes" />');
+			for(i in resultData.notes){
+				$notes.append('<p>' + resultData.notes[i] + '</p>');
+			}
+			$notes.appendTo($dest);
+
 			// 平均分
 			var $average = $('<p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p><div id="average" class="hide"></div>');
 
@@ -380,6 +247,7 @@ function startExecution(){
 				$('#collapse_average').show().focus();
 			});
 			$('#collapse_average', $average).click(function(){
+				// $('body').stop(1,1).css('scrollTop', $('#gradeTable').offset().top);
 				$('#average').stop(1,1).slideUp();
 				$(this).hide();
 				$('#expand_average').show().focus();
@@ -387,9 +255,15 @@ function startExecution(){
 
 			$average.appendTo($dest);
 		}
-		var resultData = fetchResultData($oldDOM);
-		console.log(resultData);
-		renderPage(resultData, $('<div id="content"></div>').appendTo('#container'));
+
+		var resultData = fetchResultData($(document.body));
+		
+		// Start to render page
+		var $container = $('<div id="container" class="container-fluid"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
+		renderPage(resultData, $('#content'));
+
+		// Copyright
+		$container.append('<p class="text-right"><small><i class="icon-heart" /> <a href="' + jzgc.config.version[2] + '" target="_blank" class="muted">jzGradeChecker ' + jzgc.config.version[1] + '</a></small></p>');
 
 		// Finally show the page
 		$('body').addClass('loaded');
