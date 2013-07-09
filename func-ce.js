@@ -55,9 +55,10 @@ jzgc.ce = {
 				if(typeof this._conflictCheckOnComplete == 'function') this._conflictCheckOnComplete();
 			}
 		}else{
-			setTimeout(this.conflictCheck, 50);
+			setTimeout(function(){jzgc.ce.conflictCheck();}, 50);
 		}
 	},
+	_conflictCheckOnComplete: false,
 	removebg: function(){
 		if(document.body && document.body.background){
 			document.body.background = '';

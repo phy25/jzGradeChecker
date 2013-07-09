@@ -142,7 +142,7 @@ function startExecution(){
 				if(series[0].data[0] == 0) series.splice(0,1);
 				
 				// var colors = Highcharts.getOptions().colors;
-				$('<div id="chart" />').highcharts({
+				$('<div id="chart" />').appendTo($dest).highcharts({
 					chart: {type: 'column'},
 					title: {text: null},
 					xAxis: {categories: subjects},
@@ -181,10 +181,9 @@ function startExecution(){
 							}
 						}
 					}
-				}).appendTo($dest);
+				});
 				var resize = function(){var $c = $('#chart'); $c.highcharts().setSize($c[0].offsetWidth, $c[0].offsetHeight); $c = undefined;};
-				$(window).on('resize orientationchange', resize) // Tablet support added
-					.trigger('resize');
+				$(window).on('resize orientationchange', resize); // Tablet support added
 			})();
 
 			// 成绩
