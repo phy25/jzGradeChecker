@@ -115,28 +115,30 @@ function startExecution(){
 			return r;
 		}
 
-		// 平均分
-		var $average = $container.find('table:eq(1)').remove();
-		$container.find('p').eq(-1).remove().end().eq(-2).remove(); // 移除科目解释
-		$average.find('td:first').children().appendTo($container).wrapAll('<div id="average" class="hide"></div>');
-		$('#average').prepend('<h2>平均分数据</h2>');
-		$('<p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a><a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>').appendTo($container);
-
-		$('#expand_average').click(function(){
-			var offset = $('#average').stop(1,1).slideDown()
-				.offset();
-			$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
-			$(this).hide();
-			$('#collapse_average').show().focus();
-		});
-		$('#collapse_average').click(function(){
-			$('#average').stop(1,1).slideUp();
-			$(this).hide();
-			$('#expand_average').show().focus();
-		});
+		
 
 		// 图表
-		(function(){
+		(function(){return false;
+			// 平均分
+			var $average = $container.find('table:eq(1)').remove();
+			$container.find('p').eq(-1).remove().end().eq(-2).remove(); // 移除科目解释
+			$average.find('td:first').children().appendTo($container).wrapAll('<div id="average" class="hide"></div>');
+			$('#average').prepend('<h2>平均分数据</h2>');
+			$('<p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a><a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>').appendTo($container);
+
+			$('#expand_average').click(function(){
+				var offset = $('#average').stop(1,1).slideDown()
+					.offset();
+				$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
+				$(this).hide();
+				$('#collapse_average').show().focus();
+			});
+			$('#collapse_average').click(function(){
+				$('#average').stop(1,1).slideUp();
+				$(this).hide();
+				$('#expand_average').show().focus();
+			});
+
 			var tableData = getTableData($table, true), subjects = tableData.subjects, series = [];
 			for(a in tableData.series){
 				if(tableData.series[a].name == '前序'){
@@ -239,20 +241,27 @@ function startExecution(){
 			metaByLine($content.filter('p:eq(0)'), metaData);
 			metaByLine($content.filter('p:eq(1)'), metaData);
 
+			data.meta = metaData;
+
 			// 成绩
 			var gradeData = getTableData($content.filter('table:first'), true);
 			data.gradeData = gradeData;
 			
 			// 平均分
-			var $average = $dom.find('table:eq(4)').find('td:first').children();
-			$average.each(function(i, e){
-				data.averageHTML = (data.averageHTML || '') + $.trim(e.innerHTML) + "\n";
-			});
+			data.averageHTML = $.trim($dom.find('table:eq(4)').find('td:first').html().replace(/(\s)(\s)+/g,'$1'));
 
-			data.meta = metaData;
+			// 备注
+			data.note = [];
+			$content.filter('p').not(':eq(0), :eq(1), :eq(-1)') // 0, 1 是 meta 部分，-1 是科目总分解释
+				.each(function(i, e){
+					var $e = $(e);
+					if($.trim($e.text())){
+						data.note.push($.trim( $e.html() ).replace(/(\s)(\s)+/g,'$1'));
+					}
+				});
 			
 			$content = undefined;
-			$average = undefined;
+			// $average = undefined;
 			return data;
 		}
 		function renderPage(resultData, $dest){
@@ -271,11 +280,74 @@ function startExecution(){
 					.end().appendTo($mdm);
 			}
 			$('#meta-detail-menu', $dest).on('click', 'a', function(){prompt('按 Ctrl+C 复制'+this.title, $(this).data('value')); return false;});
-			// $('#meta-detail-btn', $dest).data('toggle', 'dropdown');
 
 			// 图表
+			(function(){
+				var gd = resultData.gradeData, subjects = gd.subjects, series = [];
+				for(a in gd.series){
+					if(gd.series[a].name == '前序'){
+						series[0] = {name: '前排名', data: gd.series[a].data, color: '#BBB'};
+					}
+					if(gd.series[a].name == '序'){
+						series[1] = {name: '级排名', data: gd.series[a].data, color: '#049CDB'};
+					}
+					if(gd.series[a].name == '市序'){
+						series[2] = {name: '市排名', data: gd.series[a].data, color: '#49AFCD'};
+					}
+				}
+
+				// 去除空集
+				if(series[2].data[0] == 0) series.splice(2,1);
+				if(series[0].data[0] == 0) series.splice(0,1);
+				
+				// var colors = Highcharts.getOptions().colors;
+				$('<div id="chart" />').highcharts({
+					chart: {type: 'column'},
+					title: {text: null},
+					xAxis: {categories: subjects},
+					yAxis: {
+						min: 0,
+						reversed: true,
+						title: {
+							text: '排名'
+						}
+					},
+					series: series,
+					tooltip: {
+						headerFormat: '<span>{point.key}</span><br />',
+						pointFormat: '<span style="color:{series.color};">{series.name}</span> <b>{point.y}</b><br />',
+						footerFormat: '',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0,
+							dataLabels: {
+								enabled: true,
+								style: {fontWeight: 'bold'}
+							}
+						},
+						series: {
+							allowPointSelect: true,
+							states: {
+								select: {
+									color: null,
+									borderWidth: 1,
+									borderColor: '#f89406'
+								}
+							}
+						}
+					}
+				}).appendTo($dest);
+				var resize = function(){var $c = $('#chart'); $c.highcharts().setSize($c[0].offsetWidth, $c[0].offsetHeight); $c = undefined;};
+				$(window).on('resize orientationchange', resize) // Tablet support added
+					.trigger('resize');
+			})();
+
 			// 成绩
-			var $table = $('<table class="table table-striped table-condensed examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
+			var $table = $('<table class="table table-hover table-striped examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
 				$thead = $table.find('thead tr:first'),
 				$tbody = $table.find('tbody:first'),
 				gd = resultData.gradeData;
@@ -296,6 +368,24 @@ function startExecution(){
 			$table.appendTo($dest);
 
 			// 平均分
+			var $average = $('<p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p><div id="average" class="hide"></div>');
+
+			$average.filter('#average').html('<h2>平均分数据</h2>' + resultData.averageHTML);
+			
+			$('#expand_average', $average).click(function(){
+				var offset = $('#average').stop(1,1).slideDown()
+					.offset();
+				$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
+				$(this).hide();
+				$('#collapse_average').show().focus();
+			});
+			$('#collapse_average', $average).click(function(){
+				$('#average').stop(1,1).slideUp();
+				$(this).hide();
+				$('#expand_average').show().focus();
+			});
+
+			$average.appendTo($dest);
 		}
 		var resultData = fetchResultData($oldDOM);
 		console.log(resultData);
