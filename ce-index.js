@@ -17,13 +17,13 @@ function parseQuery(a){
 window.onpopstate = function(e) {
 	var f = function(){
 		c++;
-		if(document.title !== '金中成绩查询' && c<10){
+		if(!$('body').is('.loaded') && c<10){
 			setTimeout(f, 50);
 			return;
 		}
 
-		var q = parseQuery(e.state);
-		var $radio = $('#exam-control').find('input[value='+q['kaoshi']+']').attr('checked', true);
+		var q = parseQuery(e.state);console.log(q);
+		var $radio = $('#exams-list').find('input[value='+q['kaoshi']+']').attr('checked', true);
 
 		if(window.sessionStorage && sessionStorage['result_error']){
 			if(sessionStorage['result_error'] == 'cert'){
@@ -36,7 +36,7 @@ window.onpopstate = function(e) {
 					localStorage['stu_arr_0'] = stu_arr_0.join(';');
 					$('#xuehao').val(stu_arr_0[0]).change();
 
-					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>扩展猜错了，下次查询再升年级吧。请重新提交查询。</div>');
+					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>扩展猜错了，下次查询再升年级吧。请重新进行查询。</div>');
 				}else{
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查下再试试吧。</div>');
 					var $form_stuinfo = $('#form-stuinfo').children('div').addClass('error').one('change', 'input', function(){
@@ -48,7 +48,9 @@ window.onpopstate = function(e) {
 			}else{
 				// 无成绩
 				$('h1:first').after('<div id="result_error" class="alert alert-error" title="肯定会有的，只是等多久的问题 :)">查不到 <strong>'+ $radio.parent().text() +'</strong> 的数据。</div>');
-				$radio.parent().append('<span class="help-inline">无成绩数据</span>');
+				if($radio.parent().append('<span class="help-inline">无成绩数据</span>').is('.hide')){
+					$('#expand_all').click();
+				}
 				$('#exam-control').addClass('error').one('change', 'input', function(){
 					// $('#result_error').remove();
 					// 暂时注释掉避免降低用户体验

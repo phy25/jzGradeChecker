@@ -28,7 +28,7 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
 	margin-left: 0 !important;
 }
 .form-search .help-inline, .form-inline .help-inline, .form-horizontal .help-inline{
-	vertical-align: top;
+	vertical-align: top !important;
 }
 
 /* Result */
