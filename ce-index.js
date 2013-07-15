@@ -90,7 +90,14 @@ function startExecution(){
 		}
 
 		function renderPage(indexData, $dest){
-			$('<div class="alert alert-info" />').text(indexData.notes.update).appendTo($dest);
+			var $updates = $('<div class="alert alert-info" />').text(indexData.notes.update);
+			$('<a class="icon-refresh close" title="刷新"></a>')
+				.click(function(){
+					location.reload();
+					return false;
+				}).prependTo($updates);
+			$updates.appendTo($dest);
+
 			$('<div id="ext-tip" class="alert" style="display:none;"></div>').appendTo($dest);
 
 			//$f;

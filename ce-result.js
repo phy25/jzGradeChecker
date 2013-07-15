@@ -122,6 +122,8 @@ function startExecution(){
 			}
 			$('#meta-detail-menu', $dest).on('click', 'a', function(){prompt('按 Ctrl+C 复制'+this.title, $(this).data('value')); return false;});
 
+			$('#breadcrumb', $dest).append('<li class="btn-group pull-right"><a id="color-select-btn" class="btn btn-small btn-info dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" title="设置着色样式"><i class="icon-adjust icon-white" /> <span>着色</span></a><ul class="dropdown-menu" role="menu" aria-labelledby="color-select-btn" id="color-select-menu"><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="0" tabindex="-1" class="strong">默认</a></li><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="1" tabindex="-1">股市</a></li><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="2" tabindex="-1">现代</a></li></ul></li>');
+
 			// 图表
 			(function(){
 				var gd = resultData.gradeData, subjects = gd.subjects, series = [];
@@ -206,6 +208,69 @@ function startExecution(){
 				$tr.appendTo($tbody);
 			}
 			$table.appendTo($dest);
+
+			// 成绩着色
+			$('#color-select-menu', $dest).on('click', 'a', function(){
+				setTableColor($(this).data('type'));
+				//return false;
+			});
+
+			function setTableColor(type){
+				// type is a string!
+				var datas = [];
+				$('#gradeTable tbody>tr').each(function(i,t){
+					var $t = $(t).removeClass('error success warning');
+					if(type == '0') return;
+					var rankt = +$t.find('td:eq(2)').text(), rankl = +$t.find('td:eq(3)').text();
+					if(rankl){
+						if(type == '1'){
+							if(rankt < rankl) $t.addClass('error');
+							if(rankt > rankl) $t.addClass('success');
+						}
+						if(type == '2'){
+							if(rankt < rankl) $t.addClass('success');
+							if(rankt > rankl) $t.addClass('warning');
+						}
+
+						if(rankt < rankl) datas.push('+');
+						if(rankt > rankl) datas.push('-');
+					}else{
+						datas.push('0');
+					}
+				});
+
+				if(type == '1') var colors = {'+': '#EBCCCC', '-': '#D0E9C6', '0':'#049CDB'};
+				if(type == '2') var colors = {'+': '#D0E9C6', '-': '#FAF2CC', '0':'#049CDB'};
+				if(type == '0') var colors = {'+': '#049CDB', '-': '#049CDB', '0':'#049CDB'};
+
+				var chart = $('#chart').highcharts();
+				for(l in chart.series[1].data){
+					chart.series[1].data[l].update({'color': colors[datas[l]]}, false);
+				}
+				chart.redraw();
+
+				if(window.localStorage) localStorage['stu_arr_0_color'] = type;
+				var text = '着色';
+				$('#color-select-menu a').each(function(i, t){
+					var $t = $(t);
+					$t[i == +type ? 'addClass' : 'removeClass']('strong');
+					if(i == +type) text = $t.text();
+				});
+				$('#color-select-btn span').text(text);
+				$('#ext-tip.alert-color-select').hide();
+			}
+
+			if(window.localStorage && localStorage['stu_arr_0_color'] != undefined){
+				setTableColor(localStorage['stu_arr_0_color']);
+			}else{
+				$('#breadcrumb', $dest).after('<div id="ext-tip" class="alert alert-info alert-color-select">查看更直观的色彩成绩，请在右上角设置。</div>');
+				$('<button type="button" class="close" title="不再提示">&times;</button>')
+					.click(function(){
+						$(this).parent().fadeOut();
+						window.localStorage && localStorage['stu_arr_0_color'] = '0';
+						return false;
+					}).prependTo('#ext-tip');
+			}
 
 			// 备注
 			var $notes = $('<div id="notes" />');
