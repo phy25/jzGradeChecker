@@ -317,14 +317,26 @@ function startExecution(){
 			});
 
 			// 平均分高亮
-			if(resultData.meta['科类']){
-				$average.find('table').addClass('table');
+			$average.find('table').addClass('table table-condensed table-bordered examData').removeAttr('style width border cellpadding cellspacing bordercolor');
+			$average.find('colgroup').remove();
+			$average.find('tr').removeAttr('style height');
+			$average.find('td').removeAttr('style width');
+			$average.find('p').each(function(i, t){
+				var text = t.innerText.replace(/(\s)/g,''), $t = $(t);
+				if(text == ''){
+					$t.remove();
+				}else if(text.indexOf('高') != -1){
+					$('<caption />').text(text).prependTo($t.next('table'));
+					$t.remove();
+				}
+			});
 
+			if(resultData.meta['科类']){
 				$average.find('tr').each(function(i, t){
 					var $t = $(t);
 					if($t.find('td:first').text().replace(/(\s)/g,'') == resultData.meta['科类']){
 						$t.next().addBack().addClass('info');
-						$t.find('td').attr('style', 'font-size: 10.0pt; font-weight:bold; padding: 0; text-align: center;');
+						$t.find('td').css('font-weight', 'bold');
 					}
 				});
 			}
