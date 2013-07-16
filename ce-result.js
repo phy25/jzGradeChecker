@@ -316,6 +316,19 @@ function startExecution(){
 				$('#expand_average').show().focus();
 			});
 
+			// 平均分高亮
+			if(resultData.meta['科类']){
+				$average.find('table').addClass('table');
+
+				$average.find('tr').each(function(i, t){
+					var $t = $(t);
+					if($t.find('td:first').text().replace(/(\s)/g,'') == resultData.meta['科类']){
+						$t.next().addBack().addClass('info');
+						$t.find('td').attr('style', 'font-size: 10.0pt; font-weight:bold; padding: 0; text-align: center;');
+					}
+				});
+			}
+
 			$average.appendTo($dest);
 			$dest = undefined;
 		}
