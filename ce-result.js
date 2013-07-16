@@ -298,7 +298,7 @@ function startExecution(){
 			$notes.appendTo($dest);
 
 			// 平均分
-			var $average = $('<p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p><div id="average" class="hide"></div>');
+			var $average = $('<div id="average" class="hide"></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
 
 			$average.filter('#average').html('<h2>平均分数据</h2>' + resultData.averageHTML);
 			
