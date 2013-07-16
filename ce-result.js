@@ -194,8 +194,8 @@ function startExecution(){
 				$tbody = $table.find('tbody:first'),
 				gd = resultData.gradeData;
 
-			if(gd.series[2].data[0] == 0) gd.series.splice(2,1);
-			if(gd.series[3].data[0] == 0) gd.series.splice(3,1);
+			if(!gd.series[3] || gd.series[3].data[0] == 0) gd.series.splice(3,1); // 市序
+			if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 序
 
 			for(i in gd.series){
 				$('<th />').text(gd.series[i].name).appendTo($thead);
@@ -211,41 +211,59 @@ function startExecution(){
 
 			// 成绩着色
 			$('#color-select-menu', $dest).on('click', 'a', function(){
-				setTableColor($(this).data('type'));
+				setTableColor($(this).data('type'), true);
 				//return false;
 			});
 
-			function setTableColor(type){
+			function setTableColor(type, isUserAction){
 				// type is a string!
 				var datas = [];
+				if(type == '1'){
+					var colors = {'+': '#EBCCCC', '-': '#D0E9C6', '0':'#049CDB'},
+						classes = {'+': 'error', '-': 'success', '0':''};
+				}
+				if(type == '2'){
+					var colors = {'+': '#D0E9C6', '-': '#FAF2CC', '0':'#049CDB'},
+						classes = {'+': 'success', '-': 'warning', '0':''};
+				}
+				if(type == '0'){
+					var colors = {'+': '#049CDB', '-': '#049CDB', '0':'#049CDB'},
+						classes = {'+': '', '-':'', '0':''};
+				}
+
 				$('#gradeTable tbody>tr').each(function(i,t){
 					var $t = $(t).removeClass('error success warning');
-					if(type == '0') return;
 					var rankt = +$t.find('td:eq(2)').text(), rankl = +$t.find('td:eq(3)').text();
-					if(rankl){
-						if(type == '1'){
-							if(rankt < rankl) $t.addClass('error');
-							if(rankt > rankl) $t.addClass('success');
-						}
-						if(type == '2'){
-							if(rankt < rankl) $t.addClass('success');
-							if(rankt > rankl) $t.addClass('warning');
-						}
 
+					// 判断成绩颜色
+					if(rankl){
 						if(rankt < rankl) datas.push('+');
 						if(rankt > rankl) datas.push('-');
+						if(rankt == rankl) datas.push('0');
 					}else{
-						datas.push('0');
+						if(rankt > 0 && rankt < 500) datas.push('+');
+						if(rankt >= 500) datas.push('-');
+						if(rankt == 0) datas.push('0');
 					}
+					$t.addClass(classes[datas[i]]);
 				});
 
-				if(type == '1') var colors = {'+': '#EBCCCC', '-': '#D0E9C6', '0':'#049CDB'};
-				if(type == '2') var colors = {'+': '#D0E9C6', '-': '#FAF2CC', '0':'#049CDB'};
-				if(type == '0') var colors = {'+': '#049CDB', '-': '#049CDB', '0':'#049CDB'};
+				var chart = $('#chart').highcharts(), chartSeries;
 
-				var chart = $('#chart').highcharts();
-				for(l in chart.series[1].data){
-					chart.series[1].data[l].update({'color': colors[datas[l]]}, false);
+				if(chart.series[1]){
+					chartSeries = chart.series[1];
+				}else{
+					chartSeries = chart.series[0];
+					if($('#ext-tip').length) $('#ext-tip').remove();
+					$('#breadcrumb').after('<div id="ext-tip" class="alert alert-info alert-color-select-nocolor">这次考试没有前次排序可以对比……所以色彩就随意啦。</div>');
+					$('<button type="button" class="close" title="隐藏">&times;</button>')
+						.click(function(){
+							$(this).parent().fadeOut();
+							return false;
+						}).prependTo('#ext-tip');
+				}
+				for(l in chartSeries.data){
+					chartSeries.data[l].update({'color': colors[datas[l]]}, false);
 				}
 				chart.redraw();
 
@@ -299,6 +317,7 @@ function startExecution(){
 			});
 
 			$average.appendTo($dest);
+			$dest = undefined;
 		}
 
 		var resultData = fetchResultData($(document.body));
