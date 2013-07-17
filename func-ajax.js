@@ -25,15 +25,25 @@ jzgc.ajax = {
 			},
 			success: function(data) {
 				if(data.indexOf('3;url=Search.htm') != -1){
+					// I am sorry but the encoding there is wrong,
+					// and thus I cannot judge the error type... 
 					if(typeof failCallback == 'function') failCallback('certError', data);
 					return false;
 				}
 				// Thanks to jQuery.load(): removing the scripts
 				// to avoid any 'Permission Denied' errors in IE
-				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ""));
-				$d = $d.find('table:eq(3)');
-
-				if(typeof successCallback == 'function') successCallback(jzgc.ajax.getTableArr($d));
+				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")), ret;
+				
+				if(jzgc.result && typeof jzgc.result.fetchResultData == 'function'){
+					ret = jzgc.result.fetchResultData($d);
+				}else{
+					$d = $d.find('table:eq(3)');
+					ret = jzgc.ajax.getTableArr($d);
+					ret.isOldType = true;
+				}
+				
+				$d = undefined;
+				if(typeof successCallback == 'function') successCallback(ret);
 			}
 		});
 	},
