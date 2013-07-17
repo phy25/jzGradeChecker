@@ -39,7 +39,7 @@ jzgc.index = {
 		$('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>').appendTo($f);
 		$('<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>').appendTo($f);
 		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
-		$('<div class="form-actions"><input type="submit" class="btn btn-primary" value="查询" /></div>').appendTo($f);
+		$('<div class="form-actions"><input type="submit" class="btn btn-primary" value="查询" /> <a role="button" class="btn" href="javascript:void(0)" title="导出成绩数据" id="export-btn">导出</a></div>').appendTo($f);
 
 		var $exams = $('<div id="exams-list" class="hide" />'), $examCurrent;
 		for(var i in indexData.examList){
@@ -172,6 +172,17 @@ jzgc.index = {
 		});
 
 		$f.find('#exam-control .controls').append($exams.append($exams_act));
+
+		// 导出
+		$('#export-btn', $f).click(function(){
+			if( $('#xuehao').is(':invalid') || $('#password').is(':invalid')){
+				return false;
+			}
+
+			// Save cert data
+			return false;
+		});
+
 		$f.appendTo($dest);
 
 		// remembered user info
@@ -207,5 +218,7 @@ jzgc.index = {
 		$('<h2>教务处通知</h2><div id="orig-announcement"></div>')
 			.filter('#orig-announcement').append('<p>' + indexData.notes.announcement.replace(/(\n|\r)/g,'</p><p>') + '</p>')
 			.end().appendTo($dest);
+
+		// $f = undefined;
 	}
 };
