@@ -22,7 +22,7 @@ window.onpopstate = function(e) {
 			return;
 		}
 
-		var q = parseQuery(e.state);console.log(q);
+		var q = parseQuery(e.state);
 		var $radio = $('#exams-list').find('input[value='+q['kaoshi']+']').attr('checked', true);
 
 		if(window.sessionStorage && sessionStorage['result_error']){

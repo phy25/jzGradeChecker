@@ -263,6 +263,7 @@ jzgc.result = {
 		});
 
 		// 平均分高亮
+		$average.find('hr:first').remove();
 		$average.find('table').addClass('table table-condensed table-bordered examData').removeAttr('style width border cellpadding cellspacing bordercolor');
 		$average.find('colgroup').remove();
 		$average.find('tr').removeAttr('style height');
