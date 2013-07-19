@@ -96,12 +96,23 @@ jzgc.export = {
 		}
 		function complete(){
 			$('#export-stopnow').remove();
-			ret.notes = dataFirst.notes;
-			ret.averageHTML = dataFirst.averageHTML;
-			log('已完成导出', 'success');
-			$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-success');
-			$('#content-export').append('<h2>结果在这里，拷贝走吧</h2><p><span class="label label-info">怎么用？</span> 反正数据都在里头了，先存着就是了。以后我们会开发读取这种格式的工具，敬情留意。</p><textarea id="result" class="input-xxlarge" rows="6"></textarea>');
-			$('#result').text(JSON.stringify(ret))[0].select();
+			if(dataFirst){
+				ret.notes = dataFirst.notes;
+				ret.averageHTML = dataFirst.averageHTML;
+			}
+			if(ret.exams.length > 0){
+				if(window.jzgcStopNow){
+					log('导出已完成', 'success');
+				}else{
+					log('导出已停止', 'success');
+				}
+				$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-success');
+				$('#content-export').append('<h2>结果在这里，拷贝走吧</h2><p><span class="label label-info">怎么用？</span> 反正数据都在这里头了，先存着就是了。<strong>请手工复制并保存下面文本框中的内容。</strong> <br />以后我们会开发读取这种格式的工具，敬情留意。</p><textarea id="result" class="input-xxlarge" rows="6"></textarea>');
+				$('#result').text(JSON.stringify(ret))[0].select();
+			}else{
+				$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-danger');
+				log('导出已停止，没有获取到数据', 'error');
+			}
 		}
 		getID();
 	}
