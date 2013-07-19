@@ -36,6 +36,10 @@ jzgc.export = {
 			$('#breadcrumb', $export).append('<li title="学号"><i class="icon-user" /> '+ user[0] +'</li> <li id="bc_name"><span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
 			$('<div id="export-progress" class="progress progress-striped active"><div id="export-progress-bar" class="bar"></div></div>').appendTo($export);
 			$('<pre id="export-log" class="pre-scrollable"></pre>').appendTo($export);
+			$('<a id="export-stopnow" href="javascript:void(0)" role="button" title="在当前考试下载完成后，立即停止继续下载" class="btn btn-danger">到此为止吧</a>').click(function(){
+				window.jzgcStopNow = true;
+				$(this).addClass('disabled').text('就到此为止');
+			}).appendTo($export);
 
 			$('#content').after($export);
 
@@ -57,7 +61,7 @@ jzgc.export = {
 				{xuehao: user[0], password: user[1], kaoshi: list[pointer][0]},
 				function(data){
 					if(!dataFirst){
-						dataFirst = data;
+						dataFirst = jQuery.extend(true, {}, data);
 						$('#bc_name').attr('title', '姓名').prepend(data.meta['姓名']);
 					}
 					data.notes = undefined;
@@ -69,7 +73,7 @@ jzgc.export = {
 					log('已保存 ' + list[pointer][1] + ' (' + list[pointer][0] + ') ');
 					pointer++;
 					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');
-					if(pointer == list.length){
+					if(pointer == list.length || window.jzgcStopNow){
 						complete();
 					}else{
 						setTimeout(getID, timeout);
@@ -82,7 +86,7 @@ jzgc.export = {
 
 					pointer++;
 					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');
-					if(pointer == list.length){
+					if(pointer == list.length || window.jzgcStopNow){
 						complete();
 					}else{
 						setTimeout(getID, timeout);
@@ -91,6 +95,9 @@ jzgc.export = {
 			);
 		}
 		function complete(){
+			$('#export-stopnow').remove();
+			ret.notes = dataFirst.notes;
+			ret.averageHTML = dataFirst.averageHTML;
 			log('已完成导出', 'success');
 			$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-success');
 			$('#content-export').append('<h2>结果在这里，拷贝走吧</h2><p><span class="label label-info">怎么用？</span> 反正数据都在里头了，先存着就是了。以后我们会开发读取这种格式的工具，敬情留意。</p><textarea id="result" class="input-xxlarge" rows="6"></textarea>');
