@@ -213,7 +213,8 @@ jzgc.result = {
 			}
 			chart.redraw();
 
-			if(window.localStorage) localStorage['stu_arr_0_color'] = type;
+			jzgc.user.attrSave('color', type);
+
 			var text = '着色';
 			$('#color-select-menu a').each(function(i, t){
 				var $t = $(t);
@@ -224,14 +225,14 @@ jzgc.result = {
 			$('#ext-tip.alert-color-select').hide();
 		}
 
-		if(window.localStorage && localStorage['stu_arr_0_color'] != undefined){
-			setTableColor(localStorage['stu_arr_0_color']);
+		if(jzgc.user.attrGet('color') != undefined){
+			setTableColor(jzgc.user.attrGet('color'));
 		}else{
 			$('#breadcrumb', $dest).after('<div id="ext-tip" class="alert alert-info alert-color-select">查看更直观的色彩成绩，请在右上角设置。</div>');
 			$('<button type="button" class="close" title="不再提示">&times;</button>')
 				.click(function(){
 					$(this).parent().fadeOut();
-					window.localStorage && localStorage['stu_arr_0_color'] = '0';
+					jzgc.user.attrSave('color', 0);
 					return false;
 				}).prependTo('#ext-tip');
 		}

@@ -19,8 +19,8 @@ function startExecution(){
 			window.history.back();
 		}else{
 			// Save the time to give hints on index.js
-			if(window.localStorage){
-				localStorage['stu_arr_0_lastChecked'] = +new Date();
+			if(jzgc.user.isAvailable()){
+				jzgc.user.attrSave('lastChecked', +new Date());
 			}
 		}
 

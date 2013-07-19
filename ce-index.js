@@ -28,12 +28,12 @@ window.onpopstate = function(e) {
 		if(window.sessionStorage && sessionStorage['result_error']){
 			if(sessionStorage['result_error'] == 'cert'){
 				// 考生信息错误
-				if(window.localStorage && +new Date() - +localStorage['stu_arr_0_lastUpgraded'] < 5000){
+				if(+new Date() - +jzgc.user.attrGet('lastUpgraded') < 5000){
 					// 5 秒前更新过
-					localStorage['stu_arr_0_lastUpgraded'] = 0; // 重设掉
-					var stu_arr_0 = (localStorage['stu_arr_0'] || '').split(';');
+					jzgc.user.attrSave('lastUpgraded', 0); // 重设掉
+					var stu_arr_0 = jzgc.user.get(0);
 					if(stu_arr_0[0] > 20100) stu_arr_0[0] = +stu_arr_0[0] - 10000;
-					localStorage['stu_arr_0'] = stu_arr_0.join(';');
+					jzgc.user.saveArray(stu_arr_0, 0);
 					$('#xuehao').val(stu_arr_0[0]).change();
 
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>扩展猜错了，下次查询再升年级吧。请重新进行查询。</div>');

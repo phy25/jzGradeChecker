@@ -21,6 +21,9 @@ jzgc.index = {
 			.replace(/\(/g, '（')
 			.replace(/\)/g, '）');
 
+		// 随手存一下
+		if(jzgc.config) jzgc.config.examList = data.examList;
+
 		return data;
 	},
 	renderPage: function(indexData, $dest){
@@ -129,12 +132,12 @@ jzgc.index = {
 				}
 			}
 			if(no.indexOf('2') == 0){
-				if(month > 3 && month < 7 && $('#ext-tip').text() == '' && (+localStorage['stu_arr_0_noticeRead'] || 0) < 28){
+				if(month > 3 && month < 7 && $('#ext-tip').text() == '' && (+jzgc.user.attrGet('noticeRead') || 0) < 28){
 					// 5-7 月，编号 28
 					$('#ext-tip').removeClass().addClass('alert alert-success alert-28').html('查询学业水平考试成绩，请<a href="http://query.5184.com/query/query_list.jsp?queryType=30">登录广东省考试服务网页面</a>。').show();
 					$('<button type="button" class="close" title="不再提示">&times;</button>')
 						.click(function(){
-							localStorage['stu_arr_0_noticeRead'] = 28;
+							jzgc.user.attrSave('noticeRead', 28);
 							$(this).parent().fadeOut().end().remove();
 							return false;
 						}).prependTo('#ext-tip');
@@ -165,9 +168,7 @@ jzgc.index = {
 
 		$f.submit(function(){
 			$('body').fadeTo(100, 0.25);
-			if(localStorage){
-				localStorage['stu_arr_0'] = $('#xuehao').val() + ';' + $('#password').val();
-			}
+			jzgc.user.save($('#xuehao').val(), $('#password').val());
 			window.history.replaceState($f.serialize(), document.title, location.href);
 		});
 
@@ -175,31 +176,42 @@ jzgc.index = {
 
 		// 导出
 		$('#export-btn', $f).click(function(){
-			if( $('#xuehao').is(':invalid') || $('#password').is(':invalid')){
+			// HTML5 only!!!
+			if( $('#xuehao').is(':invalid') ){
+				$('#xuehao')[0].focus();
+				return false;
+			}
+			if( $('#password').is(':invalid') ){
+				$('#password')[0].focus();
 				return false;
 			}
 
-			// Save cert data
+			if(jzgc.user.isAvailable()){
+				jzgc.user.save($('#xuehao').val(), $('#password').val());
+				jzgc.export.showUI();
+			}else{
+				alert('抱歉，本功能不可用。');
+			}
 			return false;
 		});
 
 		$f.appendTo($dest);
 
 		// remembered user info
-		if(localStorage && localStorage['stu_arr_0']){
-			var stu_arr = [(localStorage['stu_arr_0'] || '').split(';')], month = new Date().getMonth();
+		if(jzgc.user.isAvailable(0)){
+			var stu_arr = jzgc.user.get(0), month = new Date().getMonth();
 			if(
-				(stu_arr[0][0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
-				|| (stu_arr[0][0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
+				(stu_arr[0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
+				|| (stu_arr[0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
 				){
-				if(!localStorage['stu_arr_0_lastUpgraded'] || new Date().getYear() != new Date(localStorage['stu_arr_0_lastUpgraded']).getYear()){
+				if(!jzgc.user.attrGet('lastUpgraded') || new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear()){
 					// 今年没有更新过，就提示下
 					$('#ext-tip').removeClass().addClass('alert alert-warning')
 						.html('你似乎需要升年级啦。<a id="upgrade_btn" href="javascript:void(0)" class="btn btn-small btn-warning">升级</a>').show();
 					$('#upgrade_btn').click(function(){
-						stu_arr[0][0] = +stu_arr[0][0] + 10000;
-						localStorage['stu_arr_0_lastUpgraded'] = +new Date();
-						$('#xuehao').val(stu_arr[0][0]).change();
+						stu_arr[0] = +stu_arr[0] + 10000;
+						jzgc.user.attrSave('lastUpgraded', +new Date());
+						$('#xuehao').val(stu_arr[0]).change();
 						$('#ext-tip').removeClass().addClass('alert alert-success').html('如果学校还没有更新学号，将会提示恢复原学号。');
 						$('<button type="button" class="close" title="隐藏">&times;</button>')
 							.click(function(){
@@ -211,8 +223,8 @@ jzgc.index = {
 				}
 			}
 			
-			$('#xuehao').val(stu_arr[0][0]).change();
-			$('#password').val(stu_arr[0][1]);
+			$('#xuehao').val(stu_arr[0]).change();
+			$('#password').val(stu_arr[1]);
 		}
 
 		$('<h2>教务处通知</h2><div id="orig-announcement"></div>')
