@@ -4,13 +4,13 @@ Ajax function
 jzgc.ajax = {
 	// data: {xuehao, password, kaoshi}
 	getExamResult: function(data, successCallback, failCallback){
-		if(localStorage && localStorage['stu_arr_0']){
-			var stu_arr = [(localStorage['stu_arr_0'] || '').split(';')];
+		if(jzgc.user.isAvailable()){
+			var stu_arr = jzgc.user.get(0);
 			if(!data.xuehao){
-				data.xuehao = stu_arr[0][0];
+				data.xuehao = stu_arr[0];
 			}
 			if(!data.password){
-				data.password = stu_arr[0][1];
+				data.password = stu_arr[1];
 			}
 		}
 		if(!data.kaoshi) return false;
@@ -25,15 +25,25 @@ jzgc.ajax = {
 			},
 			success: function(data) {
 				if(data.indexOf('3;url=Search.htm') != -1){
+					// I am sorry but the encoding there is wrong,
+					// and thus I cannot judge the error type... 
 					if(typeof failCallback == 'function') failCallback('certError', data);
 					return false;
 				}
 				// Thanks to jQuery.load(): removing the scripts
 				// to avoid any 'Permission Denied' errors in IE
-				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ""));
-				$d = $d.find('table:eq(3)');
-
-				if(typeof successCallback == 'function') successCallback(jzgc.ajax.getTableArr($d));
+				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")), ret;
+				
+				if(jzgc.result && typeof jzgc.result.fetchResultData == 'function'){
+					ret = jzgc.result.fetchResultData($d);
+				}else{
+					$d = $d.find('table:eq(3)');
+					ret = jzgc.ajax.getTableArr($d);
+					ret.isOldType = true;
+				}
+				
+				$d = undefined;
+				if(typeof successCallback == 'function') successCallback(ret);
 			}
 		});
 	},
@@ -62,5 +72,39 @@ jzgc.ajax = {
 		});
 
 		return r;
+	},
+	getExamList: function(successCallback, failCallback){
+		$.ajax({
+			url: 'http://jszx.stedu.net/jszxcj/search.htm',
+			type: 'GET',
+			dataType: 'html',
+			error: function(jqXHR, textStatus, errorThrown){
+				if(typeof failCallback = 'function') failCallback(textStatus, errorThrown);
+			},
+			success: function(data) {
+				// Thanks to jQuery.load(): removing the scripts
+				// to avoid any 'Permission Denied' errors in IE
+				var $data = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")),
+					$ks = $('#kaoshi', $data),
+					ret = {examList:[]};
+
+				if(!$ks.length){
+					if(typeof failCallback == 'function') failCallback('resolveErr', data);
+					return;
+				}
+
+				if(jzgc.index && typeof jzgc.index.fetchIndexData == 'function'){
+					ret = jzgc.index.fetchIndexData($data);
+				}else{
+					$ks.find('option').each(function(){
+						if(this.defaultSelected) ret.examListCurrent = this.value;
+						ret.examList[this.value] = this.text.replace(/(\s)/g,'');
+					});
+				}
+				
+				$data = $ks = undefined;
+				if(typeof successCallback == 'function') successCallback(ret);
+			}
+		});
 	}
 };
