@@ -40,9 +40,9 @@ jzgc.index = {
 		//$f;
 		var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal"></form>');
 		$('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>').appendTo($f);
-		$('<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>').appendTo($f);
+		$('<div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>').appendTo($f);
 		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
-		$('<div class="form-actions"><input type="submit" class="btn btn-primary" value="查询" /> <a role="button" class="btn" href="javascript:void(0)" title="导出当前学号下所有考试的成绩数据" id="export-btn">导出</a></div>').appendTo($f);
+		$('<div class="form-actions"><input id="submit-btn" type="submit" class="btn btn-primary" value="查询" /> <a role="button" class="btn" href="javascript:void(0)" title="导出当前学号下所有考试的成绩数据" id="export-btn">导出</a></div>').appendTo($f);
 
 		var $exams = $('<div id="exams-list" class="hide" />'), $examCurrent;
 		for(var i in indexData.examList){
@@ -77,7 +77,7 @@ jzgc.index = {
 		// 当填入学号后
 		$('#xuehao', $f).change(function(){
 			var no = this.value, $exams = $('#exams-list').detach(), month = new Date().getMonth(),
-				vf = false, vc = false; // 第一项 input; 学校选择的 input
+				vf = false, vc = false, vca = false; // 第一项 input; 学校选择的 input；后期选择的 input
 
 			if(no.indexOf('1') == 0){
 				$exams.find('label').each(function(i,t){
@@ -89,6 +89,7 @@ jzgc.index = {
 						var ti = $t.find('input')[0];
 						if(!vf) vf = ti;
 						if(ti.value == indexData.examListCurrent) vc = ti;
+						if(ti.checked) vca = ti;
 					}
 				});
 			}
@@ -102,6 +103,7 @@ jzgc.index = {
 						var ti = $t.find('input')[0];
 						if(!vf) vf = ti;
 						if(ti.value == indexData.examListCurrent) vc = ti;
+						if(ti.checked) vca = ti;
 					}
 				});
 			}
@@ -115,6 +117,7 @@ jzgc.index = {
 						var ti = $t.find('input')[0];
 						if(!vf) vf = ti;
 						if(ti.value == indexData.examListCurrent) vc = ti;
+						if(ti.checked) vca = ti;
 					}
 				});
 			}
@@ -151,13 +154,15 @@ jzgc.index = {
 			}
 
 			if(vf){
-				$exams.find('input').removeAttr('checked');
+				if(!$exams.is('.load-selected')) $exams.find('input').removeAttr('checked');
+				var vfc; // v_final_checked
 				// console.log(vc, vf);
 				if(vc && !$(vc).parent().is('.hide')){ // 如果学校提供的被选中的项在不折叠范围
-					vc.checked = true;
+					vfc = vc;
 				}else{ // 否则选中第一项
-					vf.checked = true;
+					vfc = vf;
 				}
+				if(!$exams.is('.load-selected')) vfc.checked = true;
 				
 				$('#exam-control .controls').removeClass('expanded').addClass('collapsed');
 				$exams.show().find('label.hide').hide().end().find('label:not(.hide)').show();
@@ -170,12 +175,21 @@ jzgc.index = {
 				$('#exam-control .controls .help-block').show();
 			}
 			$exams.prependTo('#exam-control .controls');
+			if($('#form-stuinfo').is('.konami-mode')) vfc.focus();
+			// console.log(vca, $(vca).parent().is('.hide'));
+			// if(vca && $(vca).parent().is('.hide')) $('#expand_all').click();
+			$exams.removeClass('load-selected');
 		});
 
 		$f.submit(function(){
 			$('body').fadeTo(100, 0.25);
-			jzgc.user.save($('#xuehao').val(), $('#password').val());
-			window.history.replaceState($f.serialize(), document.title, location.href);
+			if($(this).is('.konami-mode')){
+				var val = $('#xuehao').val();
+				$('<input type="text" id="xuehao" name="xuehao" />').val(val + jzgc.config.konamiCode).replaceAll('#xuehao');
+			}else{
+				jzgc.user.save($('#xuehao').val(), $('#password').val());
+			}
+			window.history.replaceState($f.serialize() + (val ? '&konamiMode=true' : ''), document.title, location.href);
 		});
 
 		$f.find('#exam-control .controls').append($exams.append($exams_act));
@@ -237,6 +251,14 @@ jzgc.index = {
 			.filter('#orig-announcement').append('<p>' + indexData.notes.announcement.replace(/(\n|\r)/g,'</p><p>') + '</p>')
 			.end().appendTo($dest);
 
+		// Konami
+		var konami = new Konami(this.doKonami);
+
 		// $f = undefined;
+	},
+	doKonami: function(){
+		$('#submit-btn').removeClass().addClass('btn btn-inverse').attr('title', '免密码查询');
+		$('#form-stuinfo').addClass('konami-mode');
+		$('#password').val('').removeAttr('required').parents('.control-group').hide();
 	}
 };

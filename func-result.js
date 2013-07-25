@@ -56,7 +56,12 @@ jzgc.result = {
 	},
 	renderPage: function(resultData, $dest){
 		// 考生信息
-		$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>');
+		$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm" id="back-btn">主页</a> <span class="divider">&rsaquo;</span></li></ul>');
+
+		$('#back-btn', $dest).click(function(){
+			history.back();
+			return false;
+		});
 
 		$('#breadcrumb', $dest).append('<li title="学号"><i class="icon-user" /> '+ resultData.meta['学号'] +'</li> <li title="姓名" class="dropdown">'+ resultData.meta['姓名'] +' <a role="button" href="javascript:void(0)" id="meta-detail-btn" class="dropdown-toggle" title="更多信息" data-toggle="dropdown"><i class="icon-chevron-down"></i></a><ul role="menu" aria-labelledby="meta-detail-btn" id="meta-detail-menu" class="dropdown-menu"></ul> <span class="divider">&rsaquo;</span></li> <li class="active" title="考试场次（名称可能与首页不符）"><i class="icon-book" /> '+ resultData.meta['考试场次'] +'</li>');
 		var $mdm = $('#meta-detail-menu', $dest);
