@@ -21,7 +21,7 @@ jzgc.ajax = {
 			data: data,
 			dataType: 'html',
 			error: function(jqXHR, textStatus, errorThrown){
-				if(typeof failCallback = 'function') failCallback(textStatus, errorThrown);
+				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
 			},
 			success: function(data) {
 				if(data.indexOf('3;url=Search.htm') != -1){
