@@ -42,7 +42,7 @@ jzgc.index = {
 		$('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>').appendTo($f);
 		$('<div class="control-group"><label class="control-label" for="inputPassword">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>').appendTo($f);
 		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
-		$('<div class="form-actions"><input type="submit" class="btn btn-primary" value="查询" /> <a role="button" class="btn" href="javascript:void(0)" title="导出成绩数据" id="export-btn">导出</a></div>').appendTo($f);
+		$('<div class="form-actions"><input type="submit" class="btn btn-primary" value="查询" /> <a role="button" class="btn" href="javascript:void(0)" title="导出当前学号下所有考试的成绩数据" id="export-btn">导出</a></div>').appendTo($f);
 
 		var $exams = $('<div id="exams-list" class="hide" />'), $examCurrent;
 		for(var i in indexData.examList){
@@ -123,12 +123,18 @@ jzgc.index = {
 			if($('#ext-tip').is('.alert-40, alert-28')) $('#ext-tip').hide();
 			if(no.indexOf('3') == 0){
 				if(month > 3 && month < 7 && $('#ext-tip').text() == ''){ // 5-7 月
-					$('#ext-tip').removeClass().addClass('alert alert-success alert-40').html('<strong title="祝好 :)">Best wishes!</strong> 在这里查分数的日子不多了，希望那最后一次不在这里查分数的考试一切顺利！<br /><span class="muted">其实对你来说这个扩展快要退休了……</span>').show();
+					$('#ext-tip').removeClass().addClass('alert alert-success alert-40').html('<strong title="祝好 :)">Best wishes!</strong> 在这里查分数的日子不多了，希望那最后一次不在这里查分数的考试一切顺利！<br />在退休前，我还可以帮你导出所有的成绩数据。').show();
 					$('<button type="button" class="close" title="隐藏">&times;</button>')
 						.click(function(){
 							$(this).parent().hide().end().remove();
 							return false;
 						}).prependTo('#ext-tip');
+					$('<a role="button" class="btn" href="javascript:void(0)" title="导出当前学号下所有考试的成绩数据">导出</a>')
+						.click(function(){
+							$('#export-btn').click();
+							return false;
+						}).appendTo('#ext-tip');
+					
 				}
 			}
 			if(no.indexOf('2') == 0){
@@ -190,7 +196,7 @@ jzgc.index = {
 				jzgc.user.save($('#xuehao').val(), $('#password').val());
 				jzgc.export.showUI();
 			}else{
-				alert('抱歉，本功能不可用。');
+				alert('抱歉，本功能不可用。请联系开发者。');
 			}
 			return false;
 		});
