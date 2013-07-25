@@ -268,5 +268,14 @@ jzgc.index = {
 		$('#form-stuinfo').addClass('konami-mode');
 		$('#xuehao')[0].select();
 		$('#password').val('').removeAttr('required').parents('.control-group').hide();
+		if((+jzgc.user.attrGet('noticeReadKonami') || 0) < 1){
+			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('哈哈，彩蛋被你发现了！告诉 @phy25 一声嘛，我会很高兴的！ <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">告诉我</a>。').show();
+			$('<button type="button" class="close" title="不再提示">&times;</button>')
+				.click(function(){
+					jzgc.user.attrSave('noticeReadKonami', 1);
+					$(this).parent().fadeOut().end().remove();
+					return false;
+				}).prependTo('#ext-tip');
+		}
 	}
 };
