@@ -197,13 +197,20 @@ jzgc.index = {
 		// 导出
 		$('#export-btn', $f).click(function(){
 			// HTML5 only!!!
-			if( $('#xuehao').is(':invalid') ){
+			var isKonami = $('#form-stuinfo').is('.konami-mode');
+			if(isKonami && !confirm('如果继续，您以前自动保存的考生信息会丢失。是否继续导出？')){
+				return false;
+			}
+			if($('#xuehao').is(':invalid') ){
 				$('#xuehao')[0].focus();
 				return false;
 			}
-			if( $('#password').is(':invalid') ){
+			if( !isKonami && $('#password').is(':invalid') ){
 				$('#password')[0].focus();
 				return false;
+			}
+			if(isKonami){
+				$('#password').val('KONAMIMODE');
 			}
 
 			if(jzgc.user.isAvailable()){
@@ -259,6 +266,7 @@ jzgc.index = {
 	doKonami: function(){
 		$('#submit-btn').removeClass().addClass('btn btn-inverse').attr('title', '免密码查询');
 		$('#form-stuinfo').addClass('konami-mode');
+		$('#xuehao')[0].select();
 		$('#password').val('').removeAttr('required').parents('.control-group').hide();
 	}
 };

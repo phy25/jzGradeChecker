@@ -55,6 +55,12 @@ jzgc.export = {
 			list.push([id, jzgc.config.examList[id]]);
 		}
 
+		if(user[1] == 'KONAMIMODE'){
+			jzgc.user.clear(0);
+			user[0] = user[0] + jzgc.config.konamiCode;
+			user[1] = 0;
+		}
+
 		log('certError 错误提示：如果偶尔出现，是因为你没有考过这场试，不必在意；如果所有考试均报错，是考生信息错误，请修改信息后再试。','info');
 
 		function getID(){

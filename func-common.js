@@ -54,6 +54,15 @@ jzgc.user = {
 			localStorage['stu_arr_0_'+key] :
 			false;
 	},
+	clear: function(id){
+		// Ignore ID; clear infomation only (attr uncleared)
+		if(localStorage){
+			localStorage['stu_arr_0'] = undefined;
+			return true;
+		}else{
+			return false;
+		}
+	},
 	isAvailable: function(id){
 		if(this._isSaveable()){
 			if(id === undefined){
@@ -102,15 +111,16 @@ var Konami = function(callback){
 		input:"",
 		pattern:"38384040373937396665",		
 		load: function(link) {					
-			this.addEvent(document,"keydown", function(e,ref_obj) {											
+			this.addEvent(document,"keydown", function(e, ref_obj) {											
 				if (ref_obj) konami = ref_obj; // IE
 				konami.input+= e ? e.keyCode : event.keyCode;
 				if (konami.input.length > konami.pattern.length)
 					konami.input = konami.input.substr((konami.input.length - konami.pattern.length));
 				if (konami.input == konami.pattern) {
 					konami.code(link);
-					konami.input="";
-					return;
+					konami.input = "";
+					e.preventDefault();
+					return false;
 				}
 			},this);
 	  		this.iphone.load(link);
