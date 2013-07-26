@@ -5,7 +5,7 @@ Common functions
 if(!jzgc) var jzgc = {};
 
 jzgc.config = {
-	version: ['chrome-extension', '0.7.2', 'http://github.phy25.com/jzGradeChecker/'],
+	version: ['chrome-extension', '0.7.3', 'http://github.phy25.com/jzGradeChecker/'],
 	// A sequential exam list **TODO**
 	examListOrganized: [],
 	konamiCode: "' or ''='"
