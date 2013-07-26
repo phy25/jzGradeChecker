@@ -163,6 +163,7 @@ jzgc.index = {
 					vfc = vf;
 				}
 				if(!$exams.is('.load-selected')) vfc.checked = true;
+				// console.log($exams.is('.load-selected'), vc.checked, vf.checked, vfc.checked, vca.checked);
 				
 				$('#exam-control .controls').removeClass('expanded').addClass('collapsed');
 				$exams.show().find('label.hide').hide().end().find('label:not(.hide)').show();
@@ -175,10 +176,13 @@ jzgc.index = {
 				$('#exam-control .controls .help-block').show();
 			}
 			$exams.prependTo('#exam-control .controls');
-			if($('#form-stuinfo').is('.konami-mode')) vfc.focus();
-			// console.log(vca, $(vca).parent().is('.hide'));
+			// if($('#form-stuinfo').is('.konami-mode')) vfc.focus();
 			// if(vca && $(vca).parent().is('.hide')) $('#expand_all').click();
 			$exams.removeClass('load-selected');
+		}).keydown(function(e){
+			if(e.keyCode == 9 && e.shiftKey == false && $('#form-stuinfo').is('.konami-mode')){
+				$(e.target).one('change', function(){$('#exams-list input:checked').focus();});
+			}
 		});
 
 		$f.submit(function(){

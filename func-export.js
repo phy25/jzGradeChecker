@@ -36,10 +36,12 @@ jzgc.export = {
 			$('#breadcrumb', $export).append('<li title="学号"><i class="icon-user" /> <span id="bc_xuehao">'+ user[0] +'</span></li> <li id="bc_name"><span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
 			$('<div id="export-progress" class="progress progress-striped active"><div id="export-progress-bar" class="bar"></div></div>').appendTo($export);
 			$('<pre id="export-log" class="pre-scrollable"></pre>').appendTo($export);
-			$('<a id="export-stopnow" href="javascript:void(0)" role="button" title="在当前考试下载完成后，立即停止继续下载" class="btn btn-danger">到此为止吧</a>').click(function(){
+			$('<p id="export-options" class="form-inline">&nbsp; <label class="checkbox"><input type="checkbox" id="export-average-checkbox" checked="checked" />导出平均分数据（可能不完整）</label></p>').appendTo($export);
+
+			$('<a id="export-stopnow" href="javascript:void(0)" role="button" title="在当前考试下载完成后，立即停止继续下载" class="btn btn-danger">停止</a>').click(function(){
 				window.jzgcStopNow = true;
 				$(this).addClass('disabled').text('就到此为止');
-			}).appendTo($export);
+			}).prependTo($('#export-options', $export));
 
 			$('#content').after($export);
 
@@ -47,7 +49,7 @@ jzgc.export = {
 		};
 	},
 	run: function(user){
-		var $log = $('#export-log').css('height', '15em').append('<p>正在开始导出... 为了避免给学校服务器造成太大的压力，请耐心等待导出。</p>'), ret = {created: +new Date(), exams:[]}, dataFirst, list = [], pointer = 0, timeout = 2000;
+		var $log = $('#export-log').css('height', '15em').append('<p>正在开始导出... 为了避免给学校服务器造成太大的压力，请耐心等待导出。</p>'), ret = {created: +new Date(), exams:[], xuehao: user[0]}, dataFirst, list = [], pointer = 0, timeout = 2000;
 		function log(t, type){
 			$('<p />').text(t).addClass(type ? ('text-' + type) : '').prependTo($log);
 		}
@@ -103,13 +105,13 @@ jzgc.export = {
 			);
 		}
 		function complete(){
-			$('#export-stopnow').remove();
 			if(dataFirst){
 				ret.notes = dataFirst.notes;
-				ret.averageHTML = dataFirst.averageHTML;
-				ret.xuehao = dataFirst.notes['学号'];
-				ret.name = dataFirst.notes['姓名'];
+				if($('#export-average-checkbox')[0].checked) ret.averageHTML = dataFirst.averageHTML;
+				ret.xuehao = dataFirst.meta['学号'];
+				ret.name = dataFirst.meta['姓名'];
 			}
+			$('#export-options').remove();
 			if(ret.exams.length > 0){
 				if(window.jzgcStopNow){
 					log('导出已完成', 'success');
@@ -117,8 +119,19 @@ jzgc.export = {
 					log('导出已停止', 'success');
 				}
 				$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-success');
-				$('#content-export').append('<h2>结果在这里，拷贝走吧</h2><p><span class="label label-info">怎么用？</span> 反正数据都在这里头了，先存着就是了。<strong>请手工复制并保存下面文本框中的内容。</strong> <br />以后我们会开发读取这种格式的工具，敬情留意。</p><textarea id="result" class="input-xxlarge" rows="6"></textarea>');
-				$('#result').text(JSON.stringify(ret))[0].select();
+				var fileName = 'exams-' + ret.xuehao + (ret.name?('-'+ret.name):'') +'.json';
+				$('#content-export').append('<h2>结果在这里，拷贝走吧</h2><p>反正数据都在这里头了，先存着就是了。以后我们会开发读取这种格式的工具，敬情留意。</p><p><span class="label label-info">ProTip</span> 文件是 JSON 格式，所以可以先用 JSON 文件查看器凑合看一下。</p><p>请复制并保存文本框中的内容 <span>或点击 <a href="javascript:void(0)" id="save-btn" role="button" class="btn btn-success btn-small" title="下载导出数据为 '+fileName+'"><i class="icon-file" /> 保存文件</a></span></p><textarea id="result" class="input-xxlarge" rows="6"></textarea><p>最后，把导出的使用体验告诉 @phy25 一声嘛，我会很高兴的！以后开发出读取工具了我还可以通知你呢。 <a href="http://github.phy25.com/jzGradeChecker/exportgotit.html" class="btn btn-small btn-success" target="_blank"><i class="icon-thumbs-up" /> 告诉我</a></p>');
+				$('#result').text(JSON.stringify(ret))[0];
+
+				try{ var isFileSaverSupported = !!new Blob(); } catch(e){}
+				if(isFileSaverSupported){
+					$('#save-btn').click(function(){
+						var blob = new Blob([JSON.stringify(ret)], {type: "application/json;charset=utf-8"});
+						saveAs(blob, fileName);
+					}).on('dragstart', function(){alert('不支持拖拽下载文件，抱歉啦。');return false;});
+				}else{
+					$('#save-btn').parent().hide();
+				}
 			}else{
 				$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-danger');
 				log('导出已停止，没有获取到数据', 'error');
