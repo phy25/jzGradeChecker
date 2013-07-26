@@ -23,7 +23,8 @@ window.onpopstate = function(e) {
 		}
 
 		var q = parseQuery(e.state);
-		var $radio = $('#exams-list').addClass('load-selected').find('input[value='+q['kaoshi']+']').attr('checked', true);
+		var $radio = $('#exams-list').find('input[value='+q['kaoshi']+']').attr('checked', true);
+		if($radio.length) $radio.end().addClass('load-selected');
 
 		if(window.sessionStorage && sessionStorage['result_error']){
 			if(sessionStorage['result_error'] == 'cert'){
@@ -58,16 +59,15 @@ window.onpopstate = function(e) {
 				});
 			}
 			delete sessionStorage['result_error'];
-		}else{
-			if(q.xuehao){
-				$('#xuehao').val(decodeURIComponent(q.xuehao || '').replace(/\D/g, '').replace(jzgc.config.konamiCode, '')).change();
-				$('#password').val(q.password).change();
-			}
-			if($radio.parent().is('.hide')){
-				$('#expand_all').click();
-			}
-			if(q.konamiMode) jzgc.index.doKonami();
 		}
+		if(q.xuehao){
+			$('#xuehao').val(decodeURIComponent(q.xuehao || '').replace(/\D/g, '').replace(jzgc.config.konamiCode, '')).change();
+			$('#password').val(q.password).change();
+		}
+		if($radio.parent().is('.hide')){
+			$('#expand_all').click();
+		}
+		if(q.konamiMode) jzgc.index.doKonami();
 	}, c = 0;
 	f();
 };
