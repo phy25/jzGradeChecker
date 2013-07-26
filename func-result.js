@@ -85,14 +85,10 @@ jzgc.result = {
 				if(gd.series[a].name == '序'){
 					series[1] = {name: '级排名', data: gd.series[a].data, color: '#049CDB'};
 				}
-				if(gd.series[a].name == '市序'){
-					series[2] = {name: '市排名', data: gd.series[a].data, color: '#49AFCD'};
-				}
 			}
 
 			// 去除空集
-			if(series[2].data[0] == 0) series.splice(2,1);
-			if(series[0].data[0] == 0) series.splice(0,1);
+			if(series[0].data[0] == 0) series.splice(0,1);// 前序
 			
 			// var colors = Highcharts.getOptions().colors;
 			$('<div id="chart" />').appendTo($dest).highcharts({
@@ -145,8 +141,18 @@ jzgc.result = {
 			$tbody = $table.find('tbody:first'),
 			gd = resultData.gradeData;
 
-		if(!gd.series[3] || gd.series[3].data[0] == 0) gd.series.splice(3,1); // 市序
-		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 序
+		// 市序
+		var hasCityRank = false;
+		if(gd.series[3]){
+			for(i in gd.series[3].data){
+				if(gd.series[3].data[i] > 0) hasCityRank = true;
+			}
+		}
+		if(!hasCityRank){
+			gd.series.splice(3,1);
+		}
+
+		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 前序
 
 		for(i in gd.series){
 			$('<th />').text(gd.series[i].name).appendTo($thead);
