@@ -114,9 +114,9 @@ jzgc.export = {
 			$('#export-options').remove();
 			if(ret.exams.length > 0){
 				if(window.jzgcStopNow){
-					log('导出已完成', 'success');
-				}else{
 					log('导出已停止', 'success');
+				}else{
+					log('导出已完成', 'success');
 				}
 				$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-success');
 				var fileName = 'exams-' + ret.xuehao + (ret.name?('-'+ret.name):'') +'.json';
