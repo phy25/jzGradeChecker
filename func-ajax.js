@@ -16,7 +16,7 @@ jzgc.ajax = {
 		if(!data.kaoshi) return false;
 		
 		$.ajax({
-			url: 'http://jszx.stedu.net/jszxcj/search.asp',
+			url: jzgc.config.urls.examResult,
 			type: 'POST',
 			data: data,
 			dataType: 'html',
@@ -75,7 +75,7 @@ jzgc.ajax = {
 	},
 	getExamList: function(successCallback, failCallback){
 		$.ajax({
-			url: 'http://jszx.stedu.net/jszxcj/search.htm',
+			url: jzgc.config.urls.examList,
 			type: 'GET',
 			dataType: 'html',
 			error: function(jqXHR, textStatus, errorThrown){
