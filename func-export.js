@@ -51,7 +51,7 @@ jzgc.export = {
 	run: function(user){
 		var $log = $('#export-log').css('height', '15em').append('<p>正在开始导出... 为了避免给学校服务器造成太大的压力，请耐心等待导出。</p>'), ret = {created: +new Date(), exams:[], xuehao: user[0]}, dataFirst, list = [], pointer = 0, timeout = 2000, errorCount = 0;
 		function log(t, type){
-			$('<p />').text(t).addClass(type ? ('text-' + type) : '').prependTo($log);
+			$('<p />').html(t).addClass(type ? ('text-' + type) : '').prependTo($log);
 		}
 		for(id in jzgc.config.examList){
 			list.push([id, jzgc.config.examList[id]]);
@@ -100,7 +100,7 @@ jzgc.export = {
 					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');
 					if(errorCount !== false) errorCount++;
 
-					if(errorCount > 5 && pointer == errorCount){
+					if(errorCount > 4 && pointer == errorCount){
 						errorCount = false;
 						$('#export-progress-bar').addClass('bar-warning');
 						log('<strong>您的考生信息可能有误，建议您检查一下。导出会继续进行。</strong>', 'warning');
