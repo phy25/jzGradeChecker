@@ -195,7 +195,7 @@ jzgc.index = {
 			$exams.removeClass('load-selected');
 		}).keydown(function(e){
 			if(e.keyCode == 9 && e.shiftKey == false && $('#form-stuinfo').is('.konami-mode')){
-				$(e.target).one('change', function(){$('#exams-list input:checked').focus();});
+				$(this).one('change', function(){$('#exams-list input:checked').focus();});
 			}
 		});
 
