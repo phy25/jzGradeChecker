@@ -141,7 +141,7 @@ jzgc.result = {
 			$tbody = $table.find('tbody:first'),
 			gd = resultData.gradeData;
 
-		// 市序
+		// 市序判断
 		var hasCityRank = false;
 		if(gd.series[3]){
 			for(i in gd.series[3].data){
@@ -160,7 +160,11 @@ jzgc.result = {
 		for(i in gd.subjects){
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
 			for(sei in gd.series){
-				$('<td />').text(gd.series[sei].data[i]).appendTo($tr);
+				var data = gd.series[sei].data[i];
+				if(data == -1 || data == 0){
+					data = '<span title="无排名" class="no-data">-</span>';
+				}
+				$('<td />').html(data).appendTo($tr);
 			}
 			$tr.appendTo($tbody);
 		}

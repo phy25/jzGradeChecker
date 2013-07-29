@@ -38,9 +38,11 @@ window.onpopstate = function(e) {
 					$('#xuehao').val(stu_arr_0[0]).change();
 
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>扩展猜错了，下次查询再升年级吧。请重新进行查询。</div>');
+					$('#us-change').click();
 				}else{
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查下再试试吧。</div>');
-					var $form_stuinfo = $('#form-stuinfo').children('div').addClass('error').one('change', 'input', function(){
+					$('#us-change').click();
+					var $form_stuinfo = $('#group-stuinfo').children('div').addClass('error').one('change', 'input', function(){
 						// $('#result_error').remove();
 						// 暂时注释掉避免降低用户体验
 						$form_stuinfo.removeClass('error');
@@ -60,14 +62,16 @@ window.onpopstate = function(e) {
 			}
 			delete sessionStorage['result_error'];
 		}
-		if(q.xuehao){
-			$('#xuehao').val(decodeURIComponent(q.xuehao || '').replace(/\D/g, '').replace(jzgc.config.konamiCode, '')).change();
-			$('#password').val(q.password).change();
-		}
+		
 		if($radio.parent().is('.hide')){
 			$('#expand_all').click();
 		}
-		if(q.konamiMode) jzgc.index.doKonami();
+		if(q.konamiMode){
+			if(q.xuehao){
+				$('#xuehao').val(decodeURIComponent(q.xuehao || '').replace(/\D/g, '').replace(jzgc.config.konamiCode, '')).change();
+			}
+			jzgc.index.doKonami();
+		}
 	}, c = 0;
 	f();
 };

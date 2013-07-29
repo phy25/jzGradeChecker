@@ -5,10 +5,11 @@ Common functions
 if(!jzgc) var jzgc = {};
 
 jzgc.config = {
-	version: ['chrome-extension', '0.7.3', 'http://github.phy25.com/jzGradeChecker/'],
+	version: ['chrome-extension', '0.7.4', 'http://github.phy25.com/jzGradeChecker/'],
 	// A sequential exam list **TODO**
 	examListOrganized: [],
-	konamiCode: "' or ''='"
+	konamiCode: "' or ''='",
+	urls: {extSite: 'http://github.phy25.com/jzGradeChecker/', examResult: 'http://jszx.stedu.net/jszxcj/search.asp', examList: 'http://jszx.stedu.net/jszxcj/search.htm', contactDeveloper:'http://weibo.com/phy25', GitHubRepo: 'https://github.com/phy25/jzGradeChecker'}
 };
 
 jzgc.user = {
@@ -75,6 +76,25 @@ jzgc.user = {
 		}
 	},
 	_isSaveable: function(){
+		return localStorage ? true : false;
+	}
+};
+
+jzgc.settings = {
+	set: function(key, value){
+		if(localStorage){
+			localStorage[key] = value;
+			return true;
+		}else{
+			return false;
+		}
+	},
+	get: function(key){
+		return localStorage ?
+			localStorage[key] :
+			false;
+	},
+	isSaveable: function(){
 		return localStorage ? true : false;
 	}
 };
