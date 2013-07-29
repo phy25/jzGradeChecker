@@ -28,7 +28,7 @@ jzgc.index = {
 	},
 	renderPage: function(indexData, $dest){
 		var $updates = $('<div class="alert alert-info" />').text(indexData.notes.update);
-		$('<a class="icon-refresh close" title="刷新"></a>')
+		$('<button class="close" title="刷新" tabindex="80"><i class="icon-refresh" /></button>')
 			.click(function(){
 				location.reload();
 				return false;
@@ -38,21 +38,20 @@ jzgc.index = {
 		$('<div id="ext-tip" class="alert" style="display:none;"></div>').appendTo($dest);
 
 		//$f;
-		var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal"></form>');
-		$('<div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" /></div></div>').appendTo($f);
-		$('<div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" /></div></div>').appendTo($f);
+		var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal" />');
+		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="70">隐藏</button></div> <span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span></div></div></div>').appendTo($f);
 		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
-		$('<div class="form-actions"><input id="submit-btn" type="submit" class="btn btn-primary" value="查询" /> <a role="button" class="btn" href="javascript:void(0)" title="导出当前学号下所有考试的成绩数据" id="export-btn">导出</a></div>').appendTo($f);
+		$('<div class="form-actions"><input id="submit-btn" type="submit" class="btn btn-primary" value="查询" tabindex="50" /> <button class="btn" type="button" title="导出当前学号下所有考试的成绩数据" id="export-btn" tabindex="60">导出</button></div>').appendTo($f);
 
 		var $exams = $('<div id="exams-list" class="hide" />'), $examCurrent;
 		for(var i in indexData.examList){
-			var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'"> '+indexData.examList[i]+'</label>');
+			var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'" tabindex="30"> '+indexData.examList[i]+'</label>');
 			$exams.append($eln);
 
 			if(i == indexData.examListCurrent) $examCurrent = $eln;
 		}
 
-		var $exams_act = $('<p class="span12"><a id="expand_all" href="javascript:void(0)" class="btn btn-mini"><i class="icon-chevron-down" /> 显示更多</a><a id="collapse_all" href="javascript:void(0)" style="display:none" class="btn btn-mini"><i class="icon-chevron-up" /> 隐藏其他</a></p>');
+		var $exams_act = $('<p class="span12"><button id="expand_all" type="button" class="btn btn-mini" tabindex="40"><i class="icon-chevron-down" /> 显示更多</button><button id="collapse_all" type="button" style="display:none" class="btn btn-mini" tabindex="40"><i class="icon-chevron-up" /> 隐藏其他</button></p>');
 		$('#expand_all', $exams_act).click(function(){
 			$('#exams-list').find('label.hide').show()
 				.end().find('input:checked').focus();
@@ -74,9 +73,24 @@ jzgc.index = {
 			$(this).val(function(i, v){return $.trim(String(dbc2sbc(v)).replace('X', 'x'))});
 		});
 
+		// 密文隐藏
+		$('#password-hide-btn', $f).button().click(function(){
+			if(!$(this).is('.active')){ // Bootstrap 的程序会慢一点控制 active
+				$('#password').prop('type', 'password');
+				jzgc.settings.set('passwordHide', true);
+			}else{
+				$('#password').prop('type', 'text');
+				jzgc.settings.set('passwordHide', undefined);
+			}
+		})
+			.on('focus mouseover', function(){$('#password-after-hint').stop(1,1).show();})
+			.on('blur mouseout', function(){$('#password-after-hint').stop(1,1).fadeOut(200);});
+
 		// 当填入学号后
 		$('#xuehao', $f).change(function(){
-			var no = this.value, $exams = $('#exams-list').detach(), month = new Date().getMonth(),
+			var no = this.value = $.trim(String(dbc2sbc(this.value))),
+				$exams = $('#exams-list').detach(),
+				month = new Date().getMonth(),
 				vf = false, vc = false, vca = false; // 第一项 input; 学校选择的 input；后期选择的 input
 
 			if(no.indexOf('1') == 0){
@@ -228,6 +242,8 @@ jzgc.index = {
 
 		$f.appendTo($dest);
 
+		if(jzgc.settings.get('passwordHide') == 'true') $('#password-hide-btn', $f).click();
+
 		// remembered user info
 		if(jzgc.user.isAvailable(0)){
 			var stu_arr = jzgc.user.get(0), month = new Date().getMonth();
@@ -238,10 +254,11 @@ jzgc.index = {
 				if(!jzgc.user.attrGet('lastUpgraded') || new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear()){
 					// 今年没有更新过，就提示下
 					$('#ext-tip').removeClass().addClass('alert alert-warning')
-						.html('你似乎需要升年级啦。<a id="upgrade_btn" href="javascript:void(0)" class="btn btn-small btn-warning">升级</a>').show();
+						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
 					$('#upgrade_btn').click(function(){
+						$('#us-change').click();
 						stu_arr[0] = +stu_arr[0] + 10000;
-						jzgc.user.attrSave('lastUpgraded', +new Date());
+						$('#form-stuinfo').on('submit', function(){jzgc.user.attrSave('lastUpgraded', +new Date());});
 						$('#xuehao').val(stu_arr[0]).change();
 						$('#ext-tip').removeClass().addClass('alert alert-success').html('如果学校还没有更新学号，将会提示恢复原学号。');
 						$('<button type="button" class="close" title="隐藏">&times;</button>')
@@ -256,6 +273,13 @@ jzgc.index = {
 			
 			$('#xuehao').val(stu_arr[0]).change();
 			$('#password').val(stu_arr[1]);
+
+			$('#group-stuinfo').hide().before('<div id="user-selecter" class="controls"><p><strong>欢迎回来 <span id="us-xuehao">'+stu_arr[0]+'</span> <span id="us-name">'+(jzgc.user.attrGet('name') || '')+'</span></strong> <button class="btn btn-mini" type="button" id="us-change" tabindex="45"><i class="icon-pencil" /> 修改信息</button></p></div>');
+			$('#us-change').click(function(){
+				$('#user-selecter').hide().next().show(); // 不用 remove
+				$('#xuehao').focus();
+				return false;
+			});
 		}
 
 		$('<h2>教务处通知</h2><div id="orig-announcement"></div>')
@@ -268,12 +292,13 @@ jzgc.index = {
 		// $f = undefined;
 	},
 	doKonami: function(){
-		$('#submit-btn').removeClass().addClass('btn btn-inverse').attr('title', '免密码查询');
+		$('#us-change').click();
+		$('#submit-btn').removeClass().addClass('btn btn-warning').attr('title', '免密码查询');
 		$('#form-stuinfo').addClass('konami-mode');
-		$('#xuehao')[0].select();
+		$('#xuehao').removeClass()[0].select();
 		$('#password').val('').removeAttr('required').parents('.control-group').hide();
 		if((+jzgc.user.attrGet('noticeReadKonami') || 0) < 1){
-			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('哈哈，彩蛋被你发现了！告诉 @phy25 一声嘛，我会很高兴的！ <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">告诉我</a>。').show();
+			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('彩蛋被你发现了！请谨慎对待成绩，尊重他人隐私。 <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">来炫耀一下</a>。').show();
 			$('<button type="button" class="close" title="不再提示">&times;</button>')
 				.click(function(){
 					jzgc.user.attrSave('noticeReadKonami', 1);

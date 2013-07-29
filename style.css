@@ -6,8 +6,8 @@ h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro 
 .strong{font-weight: bold !important;}
 
 /* Index */
-#xuehao, #password{
-	height:2em;
+#xuehao, #password, #password-hide-btn{
+	height: 30px;
 }
 #exam-control .controls.expanded label{
 	font-weight: bold;

@@ -17,18 +17,17 @@ function startExecution(){
 				sessionStorage['result_error'] = innerText.indexOf('考生号或密码无效') != -1 ? 'cert': 'exam';
 			}
 			window.history.back();
-		}else{
-			// Save the time to give hints on index.js
-			if(jzgc.user.isAvailable()){
-				jzgc.user.attrSave('lastChecked', +new Date());
-			}
 		}
-
+		
 		// 去掉固有的 style
 		$('link:first').remove();
 		
 		
 		var resultData = jzgc.result.fetchResultData($(document.body));
+
+		// Save the time to give hints on index.js
+		jzgc.user.attrSave('lastChecked', +new Date());
+		jzgc.user.attrSave('name', resultData.meta['姓名']);
 		
 		// Start to render page
 		var $container = $('<div id="container" class="container-fluid"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
