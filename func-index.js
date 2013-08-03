@@ -39,7 +39,7 @@ jzgc.index = {
 
 		//$f;
 		var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal" />');
-		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="70">隐藏</button></div> <span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span></div></div></div>').appendTo($f);
+		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="25">隐藏</button></div> <span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span></div></div></div>').appendTo($f);
 		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
 		$('<div class="form-actions"><input id="submit-btn" type="submit" class="btn btn-primary" value="查询" tabindex="50" /> <button class="btn" type="button" title="导出当前学号下所有考试的成绩数据" id="export-btn" tabindex="60">导出</button></div>').appendTo($f);
 
@@ -280,6 +280,8 @@ jzgc.index = {
 				$('#xuehao').focus();
 				return false;
 			});
+		}else{
+			$('#xuehao').focus();
 		}
 
 		$('<h2>教务处通知</h2><div id="orig-announcement"></div>')
