@@ -9,7 +9,8 @@ jzgc.config = {
 	// A sequential exam list **TODO**
 	examListOrganized: [],
 	konamiCode: "' or ''='",
-	urls: {extSite: 'http://github.phy25.com/jzGradeChecker/', examResult: 'http://jszx.stedu.net/jszxcj/search.asp', examList: 'http://jszx.stedu.net/jszxcj/search.htm', contactDeveloper:'http://weibo.com/phy25', GitHubRepo: 'https://github.com/phy25/jzGradeChecker'}
+	urls: {extSite: 'http://github.phy25.com/jzGradeChecker/', examResult: 'http://jszx.stedu.net/jszxcj/search.asp', examList: 'http://jszx.stedu.net/jszxcj/search.htm', contactDeveloper:'http://weibo.com/phy25', GitHubRepo: 'https://github.com/phy25/jzGradeChecker'},
+	attrs: ['color', 'lastChecked', 'lastUpgraded', 'name', 'noticeRead', 'noticeReadKonami']
 };
 
 jzgc.user = {
@@ -58,7 +59,11 @@ jzgc.user = {
 	clear: function(id){
 		// Ignore ID; clear infomation only (attr uncleared)
 		if(localStorage){
-			localStorage['stu_arr_0'] = undefined;
+			localStorage.removeItem('stu_arr_0');
+			var attrs = jzgc.config.attrs;
+			for(key in attrs){
+				localStorage.removeItem('stu_arr_0_' + attrs[key]);
+			}
 			return true;
 		}else{
 			return false;
@@ -69,7 +74,7 @@ jzgc.user = {
 			if(id === undefined){
 				return true;
 			}else{
-				return this.get(id)[0] > 0;
+				return +this.get(id)[0] > 0;
 			}
 		}else{
 			return false;

@@ -205,6 +205,11 @@ jzgc.index = {
 				var val = $('#xuehao').val();
 				$('<input type="text" id="xuehao" name="xuehao" />').val(val + jzgc.config.konamiCode).replaceAll('#xuehao');
 			}else{
+				if(jzgc.user.isAvailable(0) && jzgc.user.get(0)[1] != $('#password').val()){
+					// 如果密码变了（= 换了个人）
+					jzgc.user.clear(0);
+				}
+
 				jzgc.user.save($('#xuehao').val(), $('#password').val());
 			}
 			window.history.replaceState($f.serialize() + (val ? '&konamiMode=true' : ''), document.title, location.href);
