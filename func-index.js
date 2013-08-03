@@ -256,8 +256,12 @@ jzgc.index = {
 				(stu_arr[0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
 				|| (stu_arr[0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
 				){
-				if(!jzgc.user.attrGet('lastUpgraded') || new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear()){
-					// 今年没有更新过，就提示下
+				if(
+					(!jzgc.user.attrGet('lastUpgraded')
+					|| new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear())
+					&& jzgc.user.attrGet('lastChecked')
+					){
+					// 今年没有更新过，就提示下；并且之前已经成功查询过
 					$('#ext-tip').removeClass().addClass('alert alert-warning')
 						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
 					$('#upgrade_btn').click(function(){
