@@ -59,7 +59,7 @@ jzgc.export = {
 
 		if(user[1] == 'KONAMIMODE'){
 			jzgc.user.clear(0);
-			user[0] = user[0] + jzgc.config.konamiCode;
+			user[0] = user[0];
 			user[1] = 0;
 		}
 
@@ -75,6 +75,7 @@ jzgc.export = {
 						dataFirst = jQuery.extend(true, {}, data);
 						$('#bc_xuehao').text(data.meta['学号']);
 						$('#bc_name').attr('title', '姓名').prepend(data.meta['姓名']);
+						if(user[1] != 0) jzgc.user.attrSave('name', data.meta['姓名']);
 					}
 					data.notes = undefined;
 					data.averageHTML = undefined;

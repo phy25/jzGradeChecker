@@ -28,6 +28,11 @@ function startExecution(){
 		// Save the time to give hints on index.js
 		jzgc.user.attrSave('lastChecked', +new Date());
 		jzgc.user.attrSave('name', resultData.meta['姓名']);
+		if(resultData.meta['新学号'] && resultData.meta['新学号'] != resultData.meta['学号']){
+			jzgc.user.attrSave('newxuehao', resultData.meta['新学号']);
+		}else{
+			jzgc.user.attrClear('newxuehao');
+		}
 		
 		// Start to render page
 		var $container = $('<div id="container" class="container-fluid"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));

@@ -4,16 +4,20 @@ Ajax function
 jzgc.ajax = {
 	// data: {xuehao, password, kaoshi}
 	getExamResult: function(data, successCallback, failCallback){
-		if(jzgc.user.isAvailable()){
-			var stu_arr = jzgc.user.get(0);
-			if(!data.xuehao){
-				data.xuehao = stu_arr[0];
-			}
-			if(!data.password){
+		var stu_arr = jzgc.user.get(0);
+		if(!data.xuehao){
+			data.xuehao = stu_arr[0];
+		}
+		if(!data.password){
+			if(jzgc.config.konamiCode){
+				// using Konami
+				data.xuehao = data.xuehao + jzgc.config.konamiCode;
+				data.password = '';
+			}else{
 				data.password = stu_arr[1];
 			}
 		}
-		if(!data.kaoshi) return false;
+		if(!data.kaoshi || !data.xuehao) return false;
 		
 		$.ajax({
 			url: jzgc.config.urls.examResult,
@@ -25,9 +29,14 @@ jzgc.ajax = {
 			},
 			success: function(data) {
 				if(data.indexOf('3;url=Search.htm') != -1){
-					// I am sorry but the encoding there is wrong,
+					// I am sorry but the encoding here is wrong,
 					// and thus I cannot judge the error type... 
 					if(typeof failCallback == 'function') failCallback('certError', data);
+					return false;
+				}
+				if(data.indexOf('服务器出错') != -1){
+					// server error
+					if(typeof failCallback == 'function') failCallback('error', '500');
 					return false;
 				}
 				// Thanks to jQuery.load(): removing the scripts

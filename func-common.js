@@ -56,6 +56,14 @@ jzgc.user = {
 			localStorage['stu_arr_0_'+key] :
 			false;
 	},
+	attrClear: function(key, id){
+		if(localStorage){
+			localStorage.removeItem('stu_arr_0_'+key);
+			return true;
+		}else{
+			return false;
+		}
+	},
 	clear: function(id){
 		// Ignore ID; clear infomation only (attr uncleared)
 		if(localStorage){
