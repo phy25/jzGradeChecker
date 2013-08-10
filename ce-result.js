@@ -18,6 +18,13 @@ function startExecution(){
 			}
 			window.history.back();
 		}
+
+		if(innerText.indexOf('该页无法显示') != -1 || innerText.indexOf('服务器出错') != -1){
+			if(window.sessionStorage){
+				sessionStorage['result_error'] = 'server';
+			}
+			window.history.back();
+		}
 		
 		// 去掉固有的 style
 		$('link:first').remove();
