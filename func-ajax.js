@@ -24,6 +24,7 @@ jzgc.ajax = {
 			type: 'POST',
 			data: data,
 			dataType: 'html',
+			timeout: 10000,
 			error: function(jqXHR, textStatus, errorThrown){
 				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
 			},
@@ -87,6 +88,7 @@ jzgc.ajax = {
 			url: jzgc.config.urls.examList,
 			type: 'GET',
 			dataType: 'html',
+			timeout: 10000,
 			error: function(jqXHR, textStatus, errorThrown){
 				if(typeof failCallback = 'function') failCallback(textStatus, errorThrown);
 			},
