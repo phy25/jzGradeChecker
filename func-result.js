@@ -301,7 +301,7 @@ jzgc.result = {
 		if($grade_this.length == 0){
 			$average.filter('#average').show();
 			$('#expand_average', $average).hide();
-			$('#collapse_average', $average).css('display', 'block');
+			$('#collapse_average', $average).css('display', 'inline-block');
 		}else{
 			$grade_this = undefined;
 		}
