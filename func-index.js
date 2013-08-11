@@ -39,7 +39,7 @@ jzgc.index = {
 
 		//$f;
 		var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal" />');
-		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="70">隐藏</button></div> <span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span></div></div></div>').appendTo($f);
+		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="25">隐藏</button></div> <span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span></div></div></div>').appendTo($f);
 		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
 		$('<div class="form-actions"><input id="submit-btn" type="submit" class="btn btn-primary" value="查询" tabindex="50" /> <button class="btn" type="button" title="导出当前学号下所有考试的成绩数据" id="export-btn" tabindex="60">导出</button></div>').appendTo($f);
 
@@ -205,6 +205,11 @@ jzgc.index = {
 				var val = $('#xuehao').val();
 				$('<input type="text" id="xuehao" name="xuehao" />').val(val + jzgc.config.konamiCode).replaceAll('#xuehao');
 			}else{
+				if(jzgc.user.isAvailable(0) && jzgc.user.get(0)[1] != $('#password').val()){
+					// 如果密码变了（= 换了个人）
+					jzgc.user.clear(0);
+				}
+
 				jzgc.user.save($('#xuehao').val(), $('#password').val());
 			}
 			window.history.replaceState($f.serialize() + (val ? '&konamiMode=true' : ''), document.title, location.href);
@@ -248,11 +253,15 @@ jzgc.index = {
 		if(jzgc.user.isAvailable(0)){
 			var stu_arr = jzgc.user.get(0), month = new Date().getMonth();
 			if(
-				(stu_arr[0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
+				(stu_arr[0].indexOf('2') == 0 && month == 8) // 高三：9月
 				|| (stu_arr[0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
 				){
-				if(!jzgc.user.attrGet('lastUpgraded') || new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear()){
-					// 今年没有更新过，就提示下
+				if(
+					(!jzgc.user.attrGet('lastUpgraded')
+					|| new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear())
+					&& jzgc.user.attrGet('lastChecked')
+					){
+					// 今年没有更新过，就提示下；并且之前已经成功查询过
 					$('#ext-tip').removeClass().addClass('alert alert-warning')
 						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
 					$('#upgrade_btn').click(function(){
@@ -280,6 +289,8 @@ jzgc.index = {
 				$('#xuehao').focus();
 				return false;
 			});
+		}else{
+			$('#xuehao').focus();
 		}
 
 		$('<h2>教务处通知</h2><div id="orig-announcement"></div>')

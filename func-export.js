@@ -33,7 +33,7 @@ jzgc.export = {
 
 			$('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>').appendTo($export);
 
-			$('#breadcrumb', $export).append('<li title="学号"><i class="icon-user" /> <span id="bc_xuehao">'+ user[0] +'</span></li> <li id="bc_name"><span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
+			$('#breadcrumb', $export).append('<li title="学号"><i class="icon-user" /> <span id="bc_xuehao">'+ user[0] +'</span></li> <li><span id="bc_name">'+ jzgc.user.attrGet('name') +'</span> <span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
 			$('<div id="export-progress" class="progress progress-striped active"><div id="export-progress-bar" class="bar"></div></div>').appendTo($export);
 			$('<pre id="export-log" class="pre-scrollable"></pre>').appendTo($export);
 			$('<p id="export-options" class="form-inline">&nbsp; <label class="checkbox"><input type="checkbox" id="export-average-checkbox" checked="checked" />导出平均分数据（可能不完整）</label></p>').appendTo($export);
@@ -59,12 +59,13 @@ jzgc.export = {
 
 		if(user[1] == 'KONAMIMODE'){
 			jzgc.user.clear(0);
-			user[0] = user[0] + jzgc.config.konamiCode;
+			user[0] = user[0];
 			user[1] = 0;
 		}
 
 		log('certError 错误提示：如果偶尔出现，是因为你没有考过这场试，不必在意；如果所有考试均报错，是考生信息错误，请修改信息后再试。','info');
 		$(window).on('beforeunload', function(){return "导出仍在进行。如果现在退出，导出的数据将不会保存。\n仍要退出吗？";});
+		document.title = '【导出中】金中成绩查询';
 
 		function getID(){
 			// log('即将下载 '+ list[pointer][1] + ' (' + list[pointer][0] + ')');
@@ -74,7 +75,8 @@ jzgc.export = {
 					if(!dataFirst){
 						dataFirst = jQuery.extend(true, {}, data);
 						$('#bc_xuehao').text(data.meta['学号']);
-						$('#bc_name').attr('title', '姓名').prepend(data.meta['姓名']);
+						$('#bc_name').attr('title', '姓名').text(data.meta['姓名']);
+						if(user[1] != 0) jzgc.user.attrSave('name', data.meta['姓名']);
 					}
 					data.notes = undefined;
 					data.averageHTML = undefined;
@@ -103,7 +105,16 @@ jzgc.export = {
 					if(errorCount > 4 && pointer == errorCount){
 						errorCount = false;
 						$('#export-progress-bar').addClass('bar-warning');
-						log('<strong>您的考生信息可能有误，建议您检查一下。导出会继续进行。</strong>', 'warning');
+						if(t == 'certError'){
+							log('<strong>您的考生信息可能有误，建议您检查一下。导出会继续进行。</strong>', 'warning');
+						}
+						if(t == 'timeout' || d == 'Server Error'){
+							log('<strong>学校服务器可能暂时罢工，建议您稍后再做导出。导出会继续进行。</strong>', 'warning');
+						}
+						if(t == 'error' && !d){
+							log('<strong>您的网络可能有问题，建议您检查一下。导出会继续进行。</strong>', 'warning');
+						}
+						document.title = '【！！！】金中成绩查询';
 					}
 					if(pointer == list.length || window.jzgcStopNow){
 						complete();
@@ -115,6 +126,7 @@ jzgc.export = {
 		}
 		function complete(){
 			$(window).off('beforeunload');
+			document.title = '【导出完成】金中成绩查询';
 			if(dataFirst){
 				ret.notes = dataFirst.notes;
 				if($('#export-average-checkbox')[0].checked) ret.averageHTML = dataFirst.averageHTML;
@@ -143,7 +155,7 @@ jzgc.export = {
 					$('#save-btn').parent().hide();
 				}
 			}else{
-				$('#export-progress').removeClass('active progress-striped').find('div:first').addClass('bar-danger');
+				$('#export-progress').removeClass('active progress-striped').find('div:first').removeClass().addClass('bar bar-danger');
 				log('导出已停止，没有获取到数据', 'error');
 			}
 		}

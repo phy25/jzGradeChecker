@@ -40,7 +40,7 @@ window.onpopstate = function(e) {
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>扩展猜错了，下次查询再升年级吧。请重新进行查询。</div>');
 					$('#us-change').click();
 				}else{
-					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查下再试试吧。</div>');
+					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查一下再试试吧。</div>');
 					$('#us-change').click();
 					var $form_stuinfo = $('#group-stuinfo').children('div').addClass('error').one('change', 'input', function(){
 						// $('#result_error').remove();
@@ -48,7 +48,7 @@ window.onpopstate = function(e) {
 						$form_stuinfo.removeClass('error');
 					});
 				}
-			}else{
+			}else if(sessionStorage['result_error'] == 'exam'){
 				// 无成绩
 				$('h1:first').after('<div id="result_error" class="alert alert-error" title="肯定会有的，只是等多久的问题 :)">查不到 <strong>'+ $radio.parent().text() +'</strong> 的数据。</div>');
 				if($radio.parent().append('<span class="help-inline">无成绩数据</span>').is('.hide')){
@@ -59,6 +59,9 @@ window.onpopstate = function(e) {
 					// 暂时注释掉避免降低用户体验
 					$('#exam-control').removeClass('error');
 				});
+			}else{
+				// 服务器错误
+				$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>服务器错误。</strong>检查一下再试试吧，或者等明天老师修好服务器了再来。</div>');
 			}
 			delete sessionStorage['result_error'];
 		}

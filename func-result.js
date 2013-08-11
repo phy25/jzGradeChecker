@@ -260,10 +260,30 @@ jzgc.result = {
 		$notes.appendTo($dest);
 
 		// 平均分
-		var $average = $('<div id="average" class="hide"></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
+		var $average = $('<div id="average" class="hide"><h2>平均分数据</h2><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
 
-		$average.filter('#average').html('<h2>平均分数据</h2>' + resultData.averageHTML);
-		
+		var avgs = resultData.averageHTML.split('<hr>');
+		for(i in avgs){
+			var $h = $(avgs[i]), $t = $h.filter('p:has(font[size=6])');
+			// console.log($h, $t);
+			if($t.length){
+				$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+$t.text()+'</a></li>');
+				$('<div id="average_tab'+i+'" class="tab-pane" />').append($h.not($t)).appendTo($average.find('#average-tab-content'));
+			}
+		}
+
+		var grade_this = new Date().getFullYear() - resultData.meta['学号'].substr(0, 1);
+
+		var $grade_this = $('#average_nav a', $average).click(function(e){
+			e.preventDefault();
+			$(this).tab('show');
+		}).filter(':contains("' + grade_this + '")', $average).parent().addClass('active').find('a:first');
+
+		if(/^#(\w|-)+$/.test($grade_this.attr('href'))){
+			// 防止 XSS
+			$($grade_this.attr('href'), $average).addClass('active');
+		}
+
 		$('#expand_average', $average).click(function(){
 			var offset = $('#average').stop(1,1).slideDown()
 				.offset();
@@ -278,8 +298,16 @@ jzgc.result = {
 			$('#expand_average').show().focus();
 		});
 
+		if($grade_this.length == 0){
+			$average.filter('#average').show();
+			$('#expand_average', $average).hide();
+			$('#collapse_average', $average).css('display', 'inline-block');
+		}else{
+			$grade_this = undefined;
+		}
+
 		// 平均分高亮
-		$average.find('hr:first').remove();
+		// $average.find('hr:first').remove();
 		$average.find('table').addClass('table table-condensed table-bordered examData').removeAttr('style width border cellpadding cellspacing bordercolor');
 		$average.find('colgroup').remove();
 		$average.find('tr').removeAttr('style height');
