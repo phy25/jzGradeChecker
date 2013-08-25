@@ -5,12 +5,12 @@ Common functions
 if(!jzgc) var jzgc = {};
 
 jzgc.config = {
-	version: ['chrome-extension', '0.7.5', 'http://github.phy25.com/jzGradeChecker/'],
+	version: ['chrome-extension', '0.7.6', 'http://github.phy25.com/jzGradeChecker/'],
 	// A sequential exam list **TODO**
 	examListOrganized: [],
 	konamiCode: "' or ''='",
 	urls: {extSite: 'http://github.phy25.com/jzGradeChecker/', examResult: 'http://jszx.stedu.net/jszxcj/search.asp', examList: 'http://jszx.stedu.net/jszxcj/search.htm', contactDeveloper:'http://weibo.com/phy25', GitHubRepo: 'https://github.com/phy25/jzGradeChecker'},
-	attrs: ['color', 'lastChecked', 'lastUpgraded', 'name', 'noticeRead', 'noticeReadKonami']
+	attrs: ['color', 'lastChecked', 'lastUpgraded', 'name', 'noticeRead', 'noticeReadKonami', 'xuehaoNew', 'xuehaoBefore']
 };
 
 jzgc.user = {
@@ -92,6 +92,9 @@ jzgc.user = {
 		return localStorage ? true : false;
 	}
 };
+
+// Migration from 0.7.5
+jzgc.user.attrClear('newxuehao');
 
 jzgc.settings = {
 	set: function(key, value){

@@ -63,7 +63,7 @@ jzgc.export = {
 			user[1] = 0;
 		}
 
-		log('certError 错误提示：如果偶尔出现，是因为你没有考过这场试，不必在意；如果所有考试均报错，是考生信息错误，请修改信息后再试。','info');
+		log('certError 错误提示：如果偶尔出现，是因为你没有考过这场试，不必在意；如果所有考试均报错，是考生信息错误。','info');
 		$(window).on('beforeunload', function(){return "导出仍在进行。如果现在退出，导出的数据将不会保存。\n仍要退出吗？";});
 		document.title = '【导出中】金中成绩查询';
 
@@ -106,13 +106,17 @@ jzgc.export = {
 						errorCount = false;
 						$('#export-progress-bar').addClass('bar-warning');
 						if(t == 'certError'){
-							log('<strong>您的考生信息可能有误，建议您检查一下。导出会继续进行。</strong>', 'warning');
+							if(user[0].indexOf('3') == 0){
+								log('<strong>您的考生信息可能有误。如果您已经毕业，学校可能已经删除了您的成绩数据，您不能在这里导出。导出会继续尝试进行。</strong>', 'warning');
+							}else{
+								log('<strong>您的考生信息可能有误，建议您检查一下。导出会继续尝试进行。</strong>', 'warning');
+							}
 						}
 						if(t == 'timeout' || d == 'Server Error'){
-							log('<strong>学校服务器可能暂时罢工，建议您稍后再做导出。导出会继续进行。</strong>', 'warning');
+							log('<strong>学校服务器可能暂时罢工，建议您稍后再做导出。导出会继续尝试进行。</strong>', 'warning');
 						}
 						if(t == 'error' && !d){
-							log('<strong>您的网络可能有问题，建议您检查一下。导出会继续进行。</strong>', 'warning');
+							log('<strong>您的网络可能有问题，建议您检查一下。导出会继续尝试进行。</strong>', 'warning');
 						}
 						document.title = '【！！！】金中成绩查询';
 					}

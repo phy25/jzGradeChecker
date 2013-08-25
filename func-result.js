@@ -272,12 +272,20 @@ jzgc.result = {
 			}
 		}
 
-		var grade_this = new Date().getFullYear() - resultData.meta['学号'].substr(0, 1);
+		var grade_this = (resultData.meta['学籍号'] || '').substr(0, 2); // temp
+		if(grade_this){ // 能读到学籍号就用学籍号判断级数
+			grade_this = new Date().getFullYear().toString().substr(0, 2) + grade_this;
+		}else{
+			grade_this = new Date().getFullYear() - resultData.meta['学号'].substr(0, 1);
+			if(new Date().getMonth() > 6){ // 8-12 月
+				grade_this++;
+			}
+		}
 
 		var $grade_this = $('#average_nav a', $average).click(function(e){
 			e.preventDefault();
 			$(this).tab('show');
-		}).filter(':contains("' + grade_this + '")', $average).parent().addClass('active').find('a:first');
+		}).filter(':contains("' + grade_this.toString() + '")', $average).parent().addClass('active').find('a:first');
 
 		if(/^#(\w|-)+$/.test($grade_this.attr('href'))){
 			// 防止 XSS

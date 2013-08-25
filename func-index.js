@@ -28,9 +28,9 @@ jzgc.index = {
 	},
 	renderPage: function(indexData, $dest){
 		var $updates = $('<div class="alert alert-info" />').text(indexData.notes.update);
-		$('<button class="close" title="刷新" tabindex="80"><i class="icon-refresh" /></button>')
+		$('<button class="close" title="强制刷新" tabindex="80"><i class="icon-refresh" /></button>')
 			.click(function(){
-				location.reload();
+				location = '?'+ (+new Date());
 				return false;
 			}).prependTo($updates);
 		$updates.appendTo($dest);
@@ -205,7 +205,7 @@ jzgc.index = {
 				var val = $('#xuehao').val();
 				$('<input type="text" id="xuehao" name="xuehao" />').val(val + jzgc.config.konamiCode).replaceAll('#xuehao');
 			}else{
-				if(jzgc.user.isAvailable(0) && jzgc.user.get(0)[1] != $('#password').val()){
+				if(jzgc.user.isAvailable(0) && jzgc.user.get(0)[1] != $('#password').val() && confirm("你似乎修改了密码。要清除上一个查询者的所有本地设置吗（建议清除）？")){
 					// 如果密码变了（= 换了个人）
 					jzgc.user.clear(0);
 				}
@@ -252,9 +252,10 @@ jzgc.index = {
 		// remembered user info
 		if(jzgc.user.isAvailable(0)){
 			var stu_arr = jzgc.user.get(0), month = new Date().getMonth();
+			// 加 10000 的年级升级
 			if(
-				(stu_arr[0].indexOf('2') == 0 && month == 8) // 高三：9月
-				|| (stu_arr[0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
+				(stu_arr[0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
+				|| (stu_arr[0].indexOf('1') == 0 && month > 6 && month < 10) // 高二：8-10月
 				){
 				if(
 					(!jzgc.user.attrGet('lastUpgraded')
@@ -263,9 +264,10 @@ jzgc.index = {
 					){
 					// 今年没有更新过，就提示下；并且之前已经成功查询过
 					$('#ext-tip').removeClass().addClass('alert alert-warning')
-						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
+						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning" tabindex="5">升级</button>').show();
 					$('#upgrade_btn').click(function(){
 						$('#us-change').click();
+						jzgc.user.attrSave('xuehaoBefore', stu_arr[0]);
 						stu_arr[0] = +stu_arr[0] + 10000;
 						$('#form-stuinfo').on('submit', function(){jzgc.user.attrSave('lastUpgraded', +new Date());});
 						$('#xuehao').val(stu_arr[0]).change();
@@ -278,6 +280,31 @@ jzgc.index = {
 						return false;
 					});
 				}
+			}
+
+			// 分班的升级
+			if(
+				stu_arr[0].indexOf('1') == 0 && month > 0 && month < 5 // 高一：2-5月
+				&& (!jzgc.user.attrGet('lastUpgraded')
+				|| new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear())
+				&& jzgc.user.attrGet('lastChecked') && jzgc.user.attrGet('xuehaoNew')
+				){
+				$('#ext-tip').removeClass().addClass('alert alert-warning')
+					.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
+				$('#upgrade_btn').click(function(){
+					$('#us-change').click();
+					jzgc.user.attrSave('xuehaoBefore', stu_arr[0]);
+					stu_arr[0] = jzgc.user.attrGet('xuehaoNew');
+					$('#form-stuinfo').on('submit', function(){jzgc.user.attrSave('lastUpgraded', +new Date());});
+					$('#xuehao').val(stu_arr[0]).change();
+					$('#ext-tip').removeClass().addClass('alert alert-success').html('如果学校还没有更新学号，将会提示恢复原学号。');
+					$('<button type="button" class="close" title="隐藏">&times;</button>')
+						.click(function(){
+							$(this).parent().hide().end().remove();
+							return false;
+						}).prependTo('#ext-tip');
+					return false;
+				});
 			}
 			
 			$('#xuehao').val(stu_arr[0]).change();
@@ -309,7 +336,7 @@ jzgc.index = {
 		$('#xuehao').removeClass()[0].select();
 		$('#password').val('').removeAttr('required').parents('.control-group').hide();
 		if((+jzgc.user.attrGet('noticeReadKonami') || 0) < 1){
-			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('彩蛋被你发现了！请谨慎对待成绩，尊重他人隐私。 <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">来炫耀一下</a>。').show();
+			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('彩蛋被你发现了！请合理使用此功能，尊重他人隐私。 <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">来炫耀一下</a>。').show();
 			$('<button type="button" class="close" title="不再提示">&times;</button>')
 				.click(function(){
 					jzgc.user.attrSave('noticeReadKonami', 1);
