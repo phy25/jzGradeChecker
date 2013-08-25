@@ -252,6 +252,7 @@ jzgc.index = {
 		// remembered user info
 		if(jzgc.user.isAvailable(0)){
 			var stu_arr = jzgc.user.get(0), month = new Date().getMonth();
+			// 加 10000 的年级升级
 			if(
 				(stu_arr[0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
 				|| (stu_arr[0].indexOf('1') == 0 && month > 6 && month < 10) // 高二：8-10月
@@ -266,6 +267,7 @@ jzgc.index = {
 						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
 					$('#upgrade_btn').click(function(){
 						$('#us-change').click();
+						jzgc.user.attrSave('xuehaoBefore', stu_arr[0]);
 						stu_arr[0] = +stu_arr[0] + 10000;
 						$('#form-stuinfo').on('submit', function(){jzgc.user.attrSave('lastUpgraded', +new Date());});
 						$('#xuehao').val(stu_arr[0]).change();
@@ -278,6 +280,31 @@ jzgc.index = {
 						return false;
 					});
 				}
+			}
+
+			// 分班的升级
+			if(
+				stu_arr[0].indexOf('1') == 0 && month > 0 && month < 5 // 高一：2-5月
+				&& (!jzgc.user.attrGet('lastUpgraded')
+				|| new Date().getYear() != new Date(jzgc.user.attrGet('lastUpgraded')).getYear())
+				&& jzgc.user.attrGet('lastChecked') && jzgc.user.attrGet('xuehaoNew')
+				){
+				$('#ext-tip').removeClass().addClass('alert alert-warning')
+					.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
+				$('#upgrade_btn').click(function(){
+					$('#us-change').click();
+					jzgc.user.attrSave('xuehaoBefore', stu_arr[0]);
+					stu_arr[0] = jzgc.user.attrGet('xuehaoNew');
+					$('#form-stuinfo').on('submit', function(){jzgc.user.attrSave('lastUpgraded', +new Date());});
+					$('#xuehao').val(stu_arr[0]).change();
+					$('#ext-tip').removeClass().addClass('alert alert-success').html('如果学校还没有更新学号，将会提示恢复原学号。');
+					$('<button type="button" class="close" title="隐藏">&times;</button>')
+						.click(function(){
+							$(this).parent().hide().end().remove();
+							return false;
+						}).prependTo('#ext-tip');
+					return false;
+				});
 			}
 			
 			$('#xuehao').val(stu_arr[0]).change();

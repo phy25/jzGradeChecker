@@ -33,11 +33,12 @@ window.onpopstate = function(e) {
 					// 5 秒前更新过
 					jzgc.user.attrSave('lastUpgraded', 0); // 重设掉
 					var stu_arr_0 = jzgc.user.get(0);
-					if(stu_arr_0[0] > 20100) stu_arr_0[0] = +stu_arr_0[0] - 10000;
+					if(jzgc.user.attrGet('xuehaoBefore')) stu_arr_0[0] = jzgc.user.attrGet('xuehaoBefore');
+					jzgc.user.attrClear('xuehaoBefore');
 					jzgc.user.saveArray(stu_arr_0, 0);
 					$('#xuehao').val(stu_arr_0[0]).change();
 
-					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>扩展猜错了，下次查询再升年级吧。请重新进行查询。</div>');
+					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>下次查询再试着升年级吧。已经恢复了你原来的学号，请直接提交查询。</div>');
 					$('#us-change').click();
 				}else{
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查一下再试试吧。</div>');
@@ -64,6 +65,8 @@ window.onpopstate = function(e) {
 				$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>服务器错误。</strong>检查一下再试试吧，或者等明天老师修好服务器了再来。</div>');
 			}
 			delete sessionStorage['result_error'];
+		}else{
+			jzgc.user.attrClear('xuehaoBefore');
 		}
 		
 		if($radio.parent().is('.hide')){
