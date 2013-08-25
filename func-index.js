@@ -253,8 +253,8 @@ jzgc.index = {
 		if(jzgc.user.isAvailable(0)){
 			var stu_arr = jzgc.user.get(0), month = new Date().getMonth();
 			if(
-				(stu_arr[0].indexOf('2') == 0 && month == 8) // 高三：9月
-				|| (stu_arr[0].indexOf('1') == 0 && month > 7 && month < 10) // 高二：9-10月
+				(stu_arr[0].indexOf('2') == 0 && month > 6 && month < 9) // 高三：8-9月
+				|| (stu_arr[0].indexOf('1') == 0 && month > 6 && month < 10) // 高二：8-10月
 				){
 				if(
 					(!jzgc.user.attrGet('lastUpgraded')
