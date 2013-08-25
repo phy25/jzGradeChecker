@@ -28,9 +28,9 @@ jzgc.index = {
 	},
 	renderPage: function(indexData, $dest){
 		var $updates = $('<div class="alert alert-info" />').text(indexData.notes.update);
-		$('<button class="close" title="刷新" tabindex="80"><i class="icon-refresh" /></button>')
+		$('<button class="close" title="强制刷新" tabindex="80"><i class="icon-refresh" /></button>')
 			.click(function(){
-				location.reload();
+				location = '?'+ (+new Date());
 				return false;
 			}).prependTo($updates);
 		$updates.appendTo($dest);
@@ -205,7 +205,7 @@ jzgc.index = {
 				var val = $('#xuehao').val();
 				$('<input type="text" id="xuehao" name="xuehao" />').val(val + jzgc.config.konamiCode).replaceAll('#xuehao');
 			}else{
-				if(jzgc.user.isAvailable(0) && jzgc.user.get(0)[1] != $('#password').val()){
+				if(jzgc.user.isAvailable(0) && jzgc.user.get(0)[1] != $('#password').val() && confirm("你似乎修改了密码。要清除上一个查询者的所有本地设置吗（建议清除）？")){
 					// 如果密码变了（= 换了个人）
 					jzgc.user.clear(0);
 				}
@@ -264,7 +264,7 @@ jzgc.index = {
 					){
 					// 今年没有更新过，就提示下；并且之前已经成功查询过
 					$('#ext-tip').removeClass().addClass('alert alert-warning')
-						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning"  tabindex="5">升级</button>').show();
+						.html('你似乎需要升年级啦。<button type="button" id="upgrade_btn" class="btn btn-small btn-warning" tabindex="5">升级</button>').show();
 					$('#upgrade_btn').click(function(){
 						$('#us-change').click();
 						jzgc.user.attrSave('xuehaoBefore', stu_arr[0]);

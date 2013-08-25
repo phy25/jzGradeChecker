@@ -29,7 +29,8 @@ window.onpopstate = function(e) {
 		if(window.sessionStorage && sessionStorage['result_error']){
 			if(sessionStorage['result_error'] == 'cert'){
 				// 考生信息错误
-				if(+new Date() - +jzgc.user.attrGet('lastUpgraded') < 5000){
+				var date = new Date();
+				if(+date - +jzgc.user.attrGet('lastUpgraded') < 5000){
 					// 5 秒前更新过
 					jzgc.user.attrSave('lastUpgraded', 0); // 重设掉
 					var stu_arr_0 = jzgc.user.get(0);
@@ -41,7 +42,18 @@ window.onpopstate = function(e) {
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>下次查询再试着升年级吧。已经恢复了你原来的学号，请直接提交查询。</div>');
 					$('#us-change').click();
 				}else{
-					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查一下再试试吧。</div>');
+					if(jzgc.user.get(0)[0].indexOf('3') == 0){ // 高三提示
+						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong> <span>你毕业了吗？ <button type="button" id="result_error_isover_yes" class="btn btn-small btn-primary" tabindex="5">是</button> <button type="button" id="result_error_isover_no" class="btn btn-small" tabindex="6">否</button></span></div>');
+						$('#result_error_isover_yes').click(function(){
+							$('#result_error span').html('可能因为你毕业了，师弟师妹已经薪火相传，继承了你的学号。你已经不能在这里查询成绩了。');
+						});
+						$('#result_error_isover_no').click(function(){
+							$('#result_error span').html('检查一下再试试吧。');
+						});
+					}else{
+						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查一下再试试吧。</div>');
+					}
+
 					$('#us-change').click();
 					var $form_stuinfo = $('#group-stuinfo').children('div').addClass('error').one('change', 'input', function(){
 						// $('#result_error').remove();
