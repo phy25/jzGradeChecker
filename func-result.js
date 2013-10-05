@@ -263,12 +263,18 @@ jzgc.result = {
 		var $average = $('<div id="average" class="hide"><h2>平均分数据</h2><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
 
 		var avgs = resultData.averageHTML.split('<hr>');
+
 		for(i in avgs){
 			var $h = $(avgs[i]), $t = $h.filter('p:has(font[size=6])');
 			// console.log($h, $t);
+			$('<div id="average_tab'+i+'" class="tab-pane" />').append($h.not($t)).appendTo($average.find('#average-tab-content'));
 			if($t.length){
 				$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+$t.text()+'</a></li>');
-				$('<div id="average_tab'+i+'" class="tab-pane" />').append($h.not($t)).appendTo($average.find('#average-tab-content'));
+			}else{
+				var caption = $h.filter('p:first').text().split('级');
+				if(caption[1] !== undefined){
+					$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+caption[0]+'级</a></li>');
+				}
 			}
 		}
 
