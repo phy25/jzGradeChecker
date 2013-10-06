@@ -1,1 +1,94 @@
 html, body{height:100%;}
+table{font-size:1em !important;border:none;}
+td, th{border:none;}
+h1, h2, h3{font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif !important;}
+table.examData td, table.examData th{text-align: center; vertical-align: middle;}
+
+
+#exams-menu-well {
+  width: 210px;
+  margin: 30px 0 0;
+  padding: 10px 5px;
+}
+#exams-menu-well.affix {
+  top: 10px;
+}
+#exams-menu-well.affix-bottom {
+  position: absolute;
+  top: auto;
+  bottom: 270px;
+}
+
+
+/* Responsive
+-------------------------------------------------- */
+
+/* Desktop large
+------------------------- */
+@media (min-width: 1200px) {
+  #exams-menu-well {
+    width: 250px;
+  }
+}
+
+/* Desktop
+------------------------- */
+@media (max-width: 980px) {
+  /* When affixed, space properly */
+  #exams-menu-well {
+    top: 0;
+    width: 200px;
+    margin-top: 30px;
+    margin-right: 0;
+  }
+}
+
+/* Tablet to desktop
+------------------------- */
+@media (min-width: 768px) and (max-width: 979px) {
+  /* Remove any padding from the body */
+  body {
+    padding-top: 0;
+  }
+  /* Adjust sidenav width */
+  #exams-menu-well {
+    width: 165px;
+    margin-top: 20px;
+  }
+  #exams-menu-well.affix {
+    top: 0;
+  }
+}
+
+/* Tablet
+------------------------- */
+@media (max-width: 767px) {
+  /* Remove any padding from the body */
+  body {
+    padding-top: 0;
+  }
+  /* Sidenav */
+  #exams-menu-well {
+    width: auto;
+    margin-bottom: 20px;
+  }
+  #exams-menu-well.affix {
+    position: static;
+    width: auto;
+    top: 0;
+  }
+}
+
+/* Landscape phones
+------------------------- */
+@media (max-width: 480px) {
+  /* Remove padding above jumbotron */
+  body {
+    padding-top: 0;
+  }
+
+  /* Change up some type stuff */
+  h3 small {
+    display: block;
+  }
+}

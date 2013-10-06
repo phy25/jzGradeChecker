@@ -1,19 +1,21 @@
+var jzgc = {};
+
 $(function(){
 	var json = false, examsByKey = {}, examsIDs = [];
-	$('body').on('drop', fileHandler)
-		.on('dragenter dragover', function(event){
+	$('body').on('drop.dnd', fileHandler)
+		.on('dragenter dragover dragexit dragend drop', function(event){
 			event.stopPropagation && event.stopPropagation();
 			event.preventDefault && event.preventDefault();
+		})
+		.on('dragenter.dnd', function(event){
 			var $dh = $('#drop-hint');
 			if(!$dh.length){
-				$dh = $('<div id="drop-hint" class="alert alert-info"><i class="icon-file"></i> 请放下文件。</div>').prependTo('#content');
+				$dh = $('<div id="drop-hint" class="alert alert-info"><i class="icon-file"></i> 请放下文件。</div>').prependTo('#landing');
 			}
 			$dh.show();
 			return false;
 		})
-		.on('dragexit dragend', function(event){
-			event.stopPropagation && event.stopPropagation();
-			event.preventDefault && event.preventDefault();
+		.on('dragend.dnd', function(event){
 			$('#drop-hint').hide();
 			return false;
 		});
@@ -28,8 +30,8 @@ $(function(){
 	}
 
 	function fileHandler(event){
-		if(event.preventDefault){event.preventDefault();}
 		$('#drop-hint').hide();
+		$('body').off('.dnd');
 
 		var files = event.originalEvent[event.originalEvent.dataTransfer ? 'dataTransfer' : 'target'].files;
 		if(files.length == 0) return false;
@@ -51,7 +53,7 @@ $(function(){
 		json = $.parseJSON(j);
 		var created = new Date(json.created);
 		$('#landing').remove();
-		var $c = $('#content').show();
+		var $c = $('#main').show();
 		$c.find('#title-name').text(json.name);
 		$c.find('#title-xuehao').text(json.xuehao);
 		$c.find('#title-count').text(json.exams.length);
@@ -60,19 +62,40 @@ $(function(){
 		var $m = $c.find('#exams-menu');
 		for(eid in json.exams){
 			var id = json.exams[eid].id.toString();
+			if(id.length == 2) id = id + '9';
 			examsByKey[id] = json.exams[eid];
 			examsIDs.push(id);
 		}
 
 		examsIDs.sort();
 		
-		for(i in examsIDs){
-			var eid = examsIDs[i];
-			$m.append('<li><a href="#exam-'+examsByKey[eid].id+'">'+examsByKey[eid].examName+'</a></li>');
-			var $e = $('<div class="page-header"><h3 id="exam-'+examsByKey[eid].id+'">'+examsByKey[eid].examName+' <small>总分排名 '+getTotalRank(examsByKey[eid])+'</small></h3></div>');
-			$e.appendTo($c);
+		$c.find('#meta h3 small').append('<a href="#'+json.exams[0].id+'">'+json.exams[0].examName+'</a>');
+		var $meta = $c.find('#meta ul:first'), metaarr = json.exams[0].meta;
+		for(n in metaarr){
+			if(n == '考试场次') continue;
+			$c.find('#meta ul:first').append('<li>'+n+': '+metaarr[n]+'</li>');
 		}
 		
+
+		var etitle = '';
+		for(i in examsIDs){
+			var e = examsByKey[examsIDs[i]];
+			if(etitle != e.examName.substr(0, 2)){
+				etitle = e.examName.substr(0, 2);
+				$m.append('<li class="nav_header">'+etitle+'</li>');
+			}
+			$m.append('<li><a href="#exam-'+e.id+'">'+e.examName+'</a></li>');
+
+			var $e = $('<section id="exam-'+e.id+'"><div class="page-header"><h3>'+e.examName+' <small>总分排名 '+getTotalRank(e)+'</small></h3></div></section>');
+			jzgc.result.renderTable(e.gradeData, $e);
+			$e.appendTo($c.find('#content'));
+		}
+
+		$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
+		$avg = $('<section id="averagedata"><div class="page-header"><h3>平均分数据</h3></div></section>').append(json.averageHTML).appendTo($c.find('#content'));
+		
+		$('body').scrollspy({offset: 20, target: '#exams-menu-well'});
+		$('#exams-menu-well').affix({offset: 80});
 	}
 	function getTotalRank(examData){
 		var ti = false;
