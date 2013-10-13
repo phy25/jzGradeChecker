@@ -49,15 +49,27 @@ $(function(){
 		return false;
 	}
 
+	function isJSONvalid(j){
+		if(j.created && j.xuehao && json.exams && json.exams.length>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
 	function loadJSON(j){
 		json = $.parseJSON(j);
+		if(!isJSONvalid(json)){
+			alert('读取文件时出错：文件格式错误。');
+			location.reload();
+			return;
+		}
 		var created = new Date(json.created);
 		$('#landing').remove();
 		var $c = $('#main').show();
 		$c.find('#title-name').text(json.name);
 		$c.find('#title-xuehao').text(json.xuehao);
-		$c.find('#title-count').text(json.exams.length);
 		$c.find('time:first').text(created.toLocaleDateString()).attr('title', created.toUTCString());
+		$c.find('#exams-count-badge').text(json.exams.length).attr('title', '共有 '+json.exams.length+' 场考试');
 
 		var $m = $c.find('#exams-menu');
 		for(eid in json.exams){
@@ -69,7 +81,7 @@ $(function(){
 
 		examsIDs.sort();
 		
-		$c.find('#meta h3 small').append('<a href="#'+json.exams[0].id+'">'+json.exams[0].examName+'</a>');
+		// $c.find('#meta h3 small').append('<a href="#'+json.exams[0].id+'">'+json.exams[0].examName+'</a>');
 		var $meta = $c.find('#meta ul:first'), metaarr = json.exams[0].meta;
 		for(n in metaarr){
 			if(n == '考试场次') continue;
@@ -91,10 +103,12 @@ $(function(){
 			$e.appendTo($c.find('#content'));
 		}
 
-		$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
-		$avg = $('<section id="averagedata"><div class="page-header"><h3>平均分数据</h3></div></section>').append(json.averageHTML).appendTo($c.find('#content'));
+		if(json.averageHTML){
+			$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
+			$avg = $('<section id="averagedata"><div class="page-header"><h3>平均分数据</h3></div></section>').append(json.averageHTML).appendTo($c.find('#content'));
+		}
 		
-		$('body').scrollspy({offset: 20, target: '#exams-menu-well'});
+		$('body').scrollspy({offset: 25, target: '#exams-menu-well'});
 		$('#exams-menu-well').affix({offset: 80});
 	}
 	function getTotalRank(examData){
