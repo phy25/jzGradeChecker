@@ -76,99 +76,10 @@ jzgc.result = {
 		$('#breadcrumb', $dest).append('<li class="btn-group pull-right"><a id="color-select-btn" class="btn btn-small btn-info dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" title="设置着色样式"><i class="icon-adjust icon-white" /> <span>着色</span></a><ul class="dropdown-menu" role="menu" aria-labelledby="color-select-btn" id="color-select-menu"><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="0" tabindex="-1" class="strong">默认</a></li><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="1" tabindex="-1">股市</a></li><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="2" tabindex="-1">现代</a></li></ul></li>');
 
 		// 图表
-		(function(){
-			var gd = resultData.gradeData, subjects = gd.subjects, series = [];
-			for(a in gd.series){
-				if(gd.series[a].name == '前序'){
-					series[0] = {name: '前排名', data: gd.series[a].data, color: '#BBB'};
-				}
-				if(gd.series[a].name == '序'){
-					series[1] = {name: '级排名', data: gd.series[a].data, color: '#049CDB'};
-				}
-			}
-
-			// 去除空集
-			if(series[0].data[0] == 0) series.splice(0,1);// 前序
-			
-			// var colors = Highcharts.getOptions().colors;
-			$('<div id="chart" />').appendTo($dest).highcharts({
-				chart: {type: 'column'},
-				title: {text: null},
-				xAxis: {categories: subjects},
-				yAxis: {
-					min: 0,
-					reversed: true,
-					title: {
-						text: '排名'
-					}
-				},
-				series: series,
-				tooltip: {
-					headerFormat: '<span>{point.key}</span><br />',
-					pointFormat: '<span style="color:{series.color};">{series.name}</span> <b>{point.y}</b><br />',
-					footerFormat: '',
-					shared: true,
-					useHTML: true
-				},
-				plotOptions: {
-					column: {
-						pointPadding: 0.2,
-						borderWidth: 0,
-						dataLabels: {
-							enabled: true,
-							style: {fontWeight: 'bold'}
-						}
-					},
-					series: {
-						allowPointSelect: true,
-						states: {
-							select: {
-								color: null,
-								borderWidth: 1,
-								borderColor: '#f89406'
-							}
-						}
-					}
-				}
-			});
-			var resize = function(){var $c = $('#chart'); $c.highcharts().setSize($c[0].offsetWidth, $c[0].offsetHeight); $c = undefined;};
-			$(window).on('resize orientationchange', resize); // Tablet support added
-		})();
+		this.renderChart(resultData.gradeData, $('<div id="chart" />').appendTo($dest));
 
 		// 成绩
-		var $table = $('<table id="gradeTable" class="table table-hover table-striped examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
-			$thead = $table.find('thead tr:first'),
-			$tbody = $table.find('tbody:first'),
-			gd = resultData.gradeData;
-
-		// 市序判断
-		var hasCityRank = false;
-		if(gd.series[3]){
-			for(i in gd.series[3].data){
-				if(gd.series[3].data[i] > 0) hasCityRank = true;
-			}
-		}
-		if(!hasCityRank){
-			gd.series.splice(3,1);
-		}
-
-		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 前序
-
-		for(i in gd.series){
-			$('<th />').text(gd.series[i].name).appendTo($thead);
-		}
-		for(i in gd.subjects){
-			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
-			for(sei in gd.series){
-				var data = gd.series[sei].data[i];
-				if(data == -1 || data == 0){
-					data = '<span title="无排名" class="no-data">-</span>';
-				}
-				$('<td />').html(data).appendTo($tr);
-			}
-			$tr.appendTo($tbody);
-		}
-		$table.appendTo($dest);
+		this.renderTable(resultData.gradeData, $dest);
 
 		// 成绩着色
 		$('#color-select-menu', $dest).on('click', 'a', function(){
@@ -375,5 +286,100 @@ jzgc.result = {
 		});
 
 		return r;
+	},
+	renderTable: function(gd, $appendTo){
+		var $table = $('<table id="gradeTable" class="table table-hover table-striped examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
+			$thead = $table.find('thead tr:first'),
+			$tbody = $table.find('tbody:first');
+
+		// 市序判断
+		var hasCityRank = false;
+		if(gd.series[3]){
+			for(i in gd.series[3].data){
+				if(gd.series[3].data[i] > 0) hasCityRank = true;
+			}
+		}
+		if(!hasCityRank){
+			gd.series.splice(3,1);
+		}
+
+		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 前序
+
+		for(i in gd.series){
+			$('<th />').text(gd.series[i].name).appendTo($thead);
+		}
+		for(i in gd.subjects){
+			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
+			for(sei in gd.series){
+				var data = gd.series[sei].data[i];
+				if(data == -1 || data == 0){
+					data = '<span title="无排名" class="no-data">-</span>';
+				}
+				$('<td />').html(data).appendTo($tr);
+			}
+			$tr.appendTo($tbody);
+		}
+		$table.appendTo($appendTo);
+	},
+	renderChart: function(gd, $dest){
+		var subjects = gd.subjects, series = [];
+		for(a in gd.series){
+			if(gd.series[a].name == '前序'){
+				series[0] = {name: '前排名', data: gd.series[a].data, color: '#BBB'};
+			}
+			if(gd.series[a].name == '序'){
+				series[1] = {name: '级排名', data: gd.series[a].data, color: '#049CDB'};
+			}
+		}
+
+		// 去除空集
+		if(series[0].data[0] == 0) series.splice(0,1);// 前序
+		
+		// var colors = Highcharts.getOptions().colors;
+		$dest.highcharts({
+			chart: {type: 'column'},
+			title: {text: null},
+			xAxis: {categories: subjects},
+			yAxis: {
+				min: 0,
+				reversed: true,
+				title: {
+					text: '排名'
+				}
+			},
+			series: series,
+			tooltip: {
+				headerFormat: '<span>{point.key}</span><br />',
+				pointFormat: '<span style="color:{series.color};">{series.name}</span> <b>{point.y}</b><br />',
+				footerFormat: '',
+				shared: true,
+				useHTML: true
+			},
+			plotOptions: {
+				column: {
+					pointPadding: 0.2,
+					borderWidth: 0,
+					dataLabels: {
+						enabled: true,
+						style: {fontWeight: 'bold'}
+					}
+				},
+				series: {
+					allowPointSelect: true,
+					states: {
+						select: {
+							color: null,
+							borderWidth: 1,
+							borderColor: '#f89406'
+						}
+					}
+				}
+			}
+		});
+		$(window).on('resize orientationchange', function(){
+			var $c = $('#chart');
+			$c.highcharts().setSize($c[0].offsetWidth, $c[0].offsetHeight);
+			$c = undefined;
+		}); // Tablet support added
 	}
 };

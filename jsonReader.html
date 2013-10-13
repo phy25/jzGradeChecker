@@ -4,31 +4,51 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>导出数据查看 - 金中成绩查询</title>
+<link rel="shortcut icon" type="image/png" href="icon.png" />
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-<link href="style.css" rel="stylesheet" />
+<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
 <link href="jsonReader.css" rel="stylesheet" />
 <script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap-nav.min.js"></script>
 <script type="text/javascript" src="jsonReader.js"></script>
+<script type="text/javascript" src="func-result.js"></script>
 </head>
 <body class="loaded">
 <div id="container" class="container">
-<h1>金中成绩查询 &rsaquo; 导出数据查看</h1>
+<h1>金中成绩查询</h1>
 <div id="landing">
 	<div id="not-supported" class="alert alert-error">您的浏览器不支持直接读取本地文件，您无法使用本工具。</div>
-	<div id="on-construction" class="alert alert-warning">本工具功能还不完善，还不能查看所有数据。</div>
-	<p>本工具可以读取您使用 jzGradeChecker 导出的成绩数据文件（以 .json 为后缀）。</p>
-	<p>读取后，您可以保存整个页面。</p>
-	<p>把导出的文件拖动到这里来，或 <a href="javascript:void(0)" id="selectFile" class="btn"><i class="icon-file"></i> 选择文件</a></p>
+	<div class="hero-unit">
+	  <h2>导出数据查看工具</h2>
+	  <p>本工具可以读取您使用 jzGradeChecker 导出的成绩数据文件（以 .json 为后缀）。</p>
+	  <p>您可以手工复制网页中的内容到 Excel 等软件中。</p>
+	  <p>
+	    拖动文件到这里或 <a href="javascript:void(0)" id="selectFile" class="btn btn-large"><i class="icon-file"></i> 选择文件</a>
+	  </p>
+	</div>
 </div>
-<div id="content" class="hide">
+<div id="main" class="hide">
 	<!--<div class="page-header"><h3><span id="title-name">00000</span> <span id="title-xuehao">XXX</span> <small><span id="title-count">1</span> 场考试，导出于 <time>XXX</time></small></h3></div>-->
 	<ul class="breadcrumb">
-		<li class="active"><i class="icon-user"></i> <span id="title-name">00000</span> <span id="title-xuehao">XXX</span> <span class="divider">/</span></li>
-		<li><time>XXXXXXXX</time> 的数据</li>
+		<li><i class="icon-user"></i> <span id="title-name">00000</span> <span id="title-xuehao">XXX</span> <span class="divider">&rsaquo;</span></li>
+		<li class="active"><time>XXXXXXXX</time> 导出数据 <span id="exams-count-badge" class="badge badge-success">0</span></li>
 	</ul>
-	<div class="page-header"><h3>考试索引</h3></div>
-	<ul id="exams-menu"></ul>
-		
+	<div class="row">
+		<div class="span3">
+			<div id="exams-menu-well" class="well">
+				<ul id="exams-menu" class="nav nav-list">
+					<li class="active"><a href="#meta">个人信息</a></li>
+					<li class="divider"></li>
+				</ul>
+			</div>
+		</div>
+		<div id="content" class="span9">
+			<section id="meta">
+				<div class="page-header"><h3>个人信息</h3></div>
+				<ul></ul>
+			</section>
+		</div>
+	</div>
 </div>
 <p class="text-right"><small><i class="icon-heart"></i> <a href="http://github.phy25.com/jzGradeChecker/" class="muted" id="ext-copyright" title="访问扩展网站">jzGradeChecker</a></small></p>
 </div>
