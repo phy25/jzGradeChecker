@@ -2,6 +2,10 @@
 Common functions for Chrome extension
 */
 
+$(function(){
+	$('head').append('<link rel="shortcut icon" type="image/png" href="'+ chrome.extension.getURL("icon.png") +'" />');
+});
+
 jzgc.ce = {
 	checkErrorPage: function(force){
 		if(force || (document.body && document.body.innerText.indexOf('您未被授权查看该页') != -1)){
