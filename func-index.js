@@ -39,7 +39,7 @@ jzgc.index = {
 
 		//$f;
 		var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal" />');
-		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="25">隐藏</button></div> <span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span></div></div></div>').appendTo($f);
+		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="25">隐藏</button></div> <!--<span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span>--></div></div></div>').appendTo($f);
 		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
 		$('<div class="form-actions"><input id="submit-btn" type="submit" class="btn btn-primary" value="查询" tabindex="50" /> <div class="btn-group"><button class="btn" type="button" title="导出当前学号下所有考试的成绩数据" id="export-btn" tabindex="60">导出</button><button id="export-more-btn" class="btn dropdown-toggle fixheight" data-toggle="dropdown" tabindex="61"><span class="caret"></span></button><ul class="dropdown-menu" role="menu" aria-labelledby="export-more-btn" id="export-more-menu"><li role="presentation"><a href="'+ chrome.extension.getURL("jsonReader.html") +'" role="menuitem" tabindex="-1">导出数据查看器</a></li></ul></div> </div>').appendTo($f);
 
@@ -70,7 +70,12 @@ jzgc.index = {
 		}
 
 		$('#password', $f).change(function(){
-			$(this).val(function(i, v){return $.trim(String(dbc2sbc(v)).replace('X', 'x'))});
+			$(this).val(function(i, v){
+				if(v == '     '){
+					jzgc.index.doKonami();
+				}
+				return $.trim(String(dbc2sbc(v)).replace('X', 'x'))
+			});
 		});
 
 		// 密文隐藏
@@ -82,9 +87,9 @@ jzgc.index = {
 				$('#password').prop('type', 'text');
 				jzgc.settings.set('passwordHide', undefined);
 			}
-		})
-			.on('focus mouseover', function(){$('#password-after-hint').stop(1,1).show();})
-			.on('blur mouseout', function(){$('#password-after-hint').stop(1,1).fadeOut(200);});
+		});
+			// .on('focus mouseover', function(){$('#password-after-hint').stop(1,1).show();})
+			// .on('blur mouseout', function(){$('#password-after-hint').stop(1,1).fadeOut(200);});
 
 		// 当填入学号后
 		$('#xuehao', $f).change(function(){
@@ -336,7 +341,7 @@ jzgc.index = {
 		$('#xuehao').removeClass()[0].select();
 		$('#password').val('').removeAttr('required').parents('.control-group').hide();
 		if((+jzgc.user.attrGet('noticeReadKonami') || 0) < 1){
-			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('彩蛋被你发现了！请合理使用此功能，尊重他人隐私。 <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">来炫耀一下</a>。').show();
+			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('请尊重他人隐私，合理使用此功能。 <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">来签到一下</a>。').show();
 			$('<button type="button" class="close" title="不再提示">&times;</button>')
 				.click(function(){
 					jzgc.user.attrSave('noticeReadKonami', 1);
