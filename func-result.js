@@ -252,7 +252,6 @@ jzgc.result = {
 			$average.find('tr').each(function(i, t){
 				var $t = $(t);
 				if($t.find('td:first').text().replace(/(\s)/g,'') == subjectType){
-					console.log($t.find('td:first').text());
 					$t.next().addBack().addClass('info');
 					$t.find('td').css('font-weight', 'bold');
 				}
