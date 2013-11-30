@@ -247,10 +247,12 @@ jzgc.result = {
 			}
 		});
 
-		if(resultData.meta['科类']){
+		var subjectType = this.getSubjectType(resultData);
+		if(subjectType){
 			$average.find('tr').each(function(i, t){
 				var $t = $(t);
-				if($t.find('td:first').text().replace(/(\s)/g,'') == resultData.meta['科类']){
+				if($t.find('td:first').text().replace(/(\s)/g,'') == subjectType){
+					console.log($t.find('td:first').text());
 					$t.next().addBack().addClass('info');
 					$t.find('td').css('font-weight', 'bold');
 				}
@@ -259,6 +261,22 @@ jzgc.result = {
 
 		$average.appendTo($dest);
 		$dest = undefined;
+	},
+	getSubjectType: function(d){
+		var hasST, ST; // ST = S / L
+		for(i in d.gradeData.subjects){
+			if(d.gradeData.subjects[i] == '综合'){
+				hasST = true;
+			}
+			// 据说这里体现偏好
+			if(d.gradeData.subjects[i] == '物理'){
+				ST = 'S';
+			}
+			if(d.gradeData.subjects[i] == '地理'){
+				ST = 'L';
+			}
+		}
+		return hasST ? (ST == 'L' ? '文科' : '理科') : false;
 	},
 	getTableData: function($Elem, useInt){
 		var r = {'subjects':[], 'series':[]},
