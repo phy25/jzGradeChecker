@@ -40,30 +40,11 @@ jzgc.index = {
 		//$f;
 		var $f = $('<form id="form-stuinfo" action="search.asp" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal" />');
 		$('<div id="group-stuinfo"><div class="control-group"><label class="control-label" for="xuehao">学号</label><div class="controls"><input type="number" id="xuehao" name="xuehao" placeholder="五位数班学号" required="required" min="10101" max="32100" class="input-xlarge" tabindex="10" /></div></div><div class="control-group"><label class="control-label" for="password">密码</label><div class="controls"><div class="input-append"><input type="text" id="password" name="password" placeholder="身份证号码等" required="required" class="input-large" tabindex="20" /><button class="btn" type="button" title="密文显示密码" id="password-hide-btn" data-toggle="button" tabindex="25">隐藏</button></div> <!--<span class="help-inline hide" id="password-after-hint">不想按密码？可以按咒语免密码登录。</span>--></div></div></div>').appendTo($f);
-		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div class="controls row-fluid"><span class="help-block">请先输入学号</span></div></div>').appendTo($f);
+		$('<div class="control-group" id="exam-control"><label class="control-label" for="kaoshi">考试</label><div id="exam-selector" class="controls"></div></div>').appendTo($f);
 		$('<div class="form-actions"><input id="submit-btn" type="submit" class="btn btn-primary" value="查询" tabindex="50" /> <div class="btn-group"><button class="btn" type="button" title="导出当前学号下所有考试的成绩数据" id="export-btn" tabindex="60">导出</button><button id="export-more-btn" class="btn dropdown-toggle fixheight" data-toggle="dropdown" tabindex="61"><span class="caret"></span></button><ul class="dropdown-menu" role="menu" aria-labelledby="export-more-btn" id="export-more-menu"><li role="presentation"><a href="'+ chrome.extension.getURL("jsonReader.html") +'" role="menuitem" tabindex="-1">导出数据查看器</a></li></ul></div> </div>').appendTo($f);
 
-		var $exams = $('<div id="exams-list" class="hide" />'), $examCurrent;
-		for(var i in indexData.examList){
-			var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+i+'" tabindex="30"> '+indexData.examList[i]+'</label>');
-			$exams.append($eln);
-
-			if(i == indexData.examListCurrent) $examCurrent = $eln;
-		}
-
-		var $exams_act = $('<p class="span12"><button id="expand_all" type="button" class="btn btn-mini" tabindex="40"><i class="icon-chevron-down" /> 显示更多</button><button id="collapse_all" type="button" style="display:none" class="btn btn-mini" tabindex="40"><i class="icon-chevron-up" /> 隐藏其他</button></p>');
-		$('#expand_all', $exams_act).click(function(){
-			$('#exams-list').find('label.hide').show()
-				.end().find('input:checked').focus();
-			$(this).hide().parent().parent().removeClass('collapsed').addClass('expanded');
-			$('#collapse_all').show();
-		});
-		$('#collapse_all', $exams_act).click(function(){
-			$('#exams-list').find('label.hide').hide()
-				.end().find('input:checked').focus();
-			$(this).hide().parent().parent().removeClass('expanded').addClass('collapsed');
-			$('#expand_all').show();
-		});
+		this.renderExamSelector(indexData, $f.find('#exam-selector'), $('#xuehao', $f));
+		this.bindExamSelector(indexData, $f.find('#exam-selector'), $('#xuehao', $f));
 
 		function dbc2sbc(t){
 			return (t || '').replace(/[\uff01-\uff5e]/g, function(a){return String.fromCharCode(a.charCodeAt(0)-65248);}).replace(/\u3000/g," ");
@@ -220,8 +201,6 @@ jzgc.index = {
 			window.history.replaceState($f.serialize() + (val ? '&konamiMode=true' : ''), document.title, location.href);
 		});
 
-		$f.find('#exam-control .controls').append($exams.append($exams_act));
-
 		// 导出
 		$('#export-btn', $f).click(function(){
 			// HTML5 only!!!
@@ -333,6 +312,42 @@ jzgc.index = {
 		var konami = new Konami(this.doKonami);
 
 		// $f = undefined;
+	},
+	renderExamSelector: function(indexData, $dest){
+		$dest.addClass('row-fluid').html('<span class="help-block">请先输入学号</span>');
+
+		var $exams = $('<div id="exams-list" class="hide" />');
+
+		// 渐进部署，先排序，不分类
+		var examList = jzgc.ajax.sortExamList(indexData.examList);
+		console.log(examList);
+		for(var i in examList){
+			var $eln = $('<label class="radio span5"><input type="radio" name="kaoshi" value="'+examList[i]['id']+'" tabindex="30"> '+examList[i]['name']+'</label>');
+			$exams.append($eln);
+		}
+
+		var $exams_act = $('<p class="span12"><button id="expand_all" type="button" class="btn btn-mini" tabindex="40"><i class="icon-chevron-down" /> 显示更多</button><button id="collapse_all" type="button" style="display:none" class="btn btn-mini" tabindex="40"><i class="icon-chevron-up" /> 隐藏其他</button></p>');
+		
+		$dest.append($exams.append($exams_act));
+
+		// <div class="tabbable tabs-left" id="exam-selector"><ul class="nav nav-tabs"><li class="active"><a href="#grade10"><input type="checkbox" title="全不选" checked /> 高一 <span class="badge badge-success">6</span></a></li></ul><div class="tab-content"><div class="tab-pane active row-fluid" id="grade10"><label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="10" checked="checked" disabled> 高一上学期10月考 <span class="text-info">（已读取）</span></label></div></div></div>
+	},
+	bindExamSelector: function(indexData, $dest){
+		$('#expand_all', $dest).click(function(){
+			$('#exams-list').find('label.hide').show()
+				.end().find('input:checked').focus();
+			$(this).hide().parent().parent().removeClass('collapsed').addClass('expanded');
+			$('#collapse_all').show();
+		});
+		$('#collapse_all', $dest).click(function(){
+			$('#exams-list').find('label.hide').hide()
+				.end().find('input:checked').focus();
+			$(this).hide().parent().parent().removeClass('expanded').addClass('collapsed');
+			$('#expand_all').show();
+		});
+	},
+	selectExamSelector: function(grade, $dest){
+
 	},
 	doKonami: function(){
 		$('#us-change').click();
