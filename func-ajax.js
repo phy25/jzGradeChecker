@@ -123,14 +123,14 @@ jzgc.ajax = {
 		for(eid in examList){
 			var id = eid.toString();
 			if(id.length == 2) id = id + '9';
-			examsByKey[id] = examList[eid];
+			examsByKey[id] = eid;
 			examsIDs.push(id);
 		}
 
 		examsIDs.sort();
 		
 		for(i in examsIDs){
-			ret.push({id: examsIDs[i], name: examsByKey[examsIDs[i]]});
+			ret.push({id: examsByKey[examsIDs[i]], name: examList[examsByKey[examsIDs[i]]]});
 		}
 
 		return ret;
