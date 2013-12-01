@@ -123,7 +123,7 @@ jzgc.utils = {
 		}
 
 		$('body').fadeTo(100, 0.25)
-			.on('contextmenu dblclick', this.loadingEffOff);
+			.one('contextmenu dblclick', this.loadingEffOff);
 	},
 	loadingEffOff: function(){
 		$('body').fadeTo(100, 1);
