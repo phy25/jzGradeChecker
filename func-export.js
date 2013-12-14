@@ -87,8 +87,8 @@ jzgc.export = {
 					}
 					data.notes = undefined;
 					data.averageHTML = undefined;
-					data.id = list[pointer][0];
-					data.examName = list[pointer][1];
+					data.id = examID;
+					data.examName = data.meta['考试场次'];
 					ret.exams.push(data);
 
 					var rankthis, ranklast;
