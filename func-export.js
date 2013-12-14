@@ -36,6 +36,7 @@ jzgc.export = {
 			$('#breadcrumb', $export).append('<li title="学号"><i class="icon-user" /> <span id="bc_xuehao">'+ user[0] +'</span></li> <li><span id="bc_name">'+ jzgc.user.attrGet('name') +'</span> <span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
 			$('<div id="export-progress" class="progress progress-striped active"><div id="export-progress-bar" class="bar"></div></div>').appendTo($export);
 			$('<pre id="export-log" class="pre-scrollable"></pre>').appendTo($export);
+			$('<table id="export-table" class="table"><caption></caption><thead><tr><th>学号</th><th>姓名</th><th>性别</th><th>排名</th><th>前排名</th></tr></thead><tbody></tbody></table>').appendTo($export);
 			$('<p id="export-options" class="form-inline">&nbsp; <label class="checkbox"><input type="checkbox" id="export-average-checkbox" checked="checked" />导出平均分数据（可能不完整）</label></p>').appendTo($export);
 
 			$('<a id="export-stopnow" href="javascript:void(0)" role="button" title="在当前考试下载完成后，立即停止继续下载" class="btn btn-danger">停止</a>').click(function(){
@@ -57,10 +58,11 @@ jzgc.export = {
 			list.push([id, jzgc.config.examList[id]]);
 		}
 
-		if(user[1] == 'KONAMIMODE'){
-			jzgc.user.clear(0);
-			user[0] = user[0];
-			user[1] = 0;
+		// batch
+		var endxuehao = prompt('输入终止学号', user[0]), thisxuehao = false, examID = prompt('输入考试序号');
+		if(endxuehao == false || examID == false){
+			alert('输入错误。');
+			location.reload();
 		}
 
 		log('certError 错误提示：如果偶尔出现，是因为你没有考过这场试，不必在意；如果所有考试均报错，是考生信息错误。','info');
@@ -69,14 +71,19 @@ jzgc.export = {
 
 		function getID(){
 			// log('即将下载 '+ list[pointer][1] + ' (' + list[pointer][0] + ')');
+			if(thisxuehao == false){
+				thisxuehao = user[0];
+			}else{
+				thisxuehao++;
+			}
+
 			jzgc.ajax.getExamResult(
-				{xuehao: user[0], password: user[1], kaoshi: list[pointer][0]},
+				{xuehao: thisxuehao, password: 0, kaoshi: examID},
 				function(data){
 					if(!dataFirst){
 						dataFirst = jQuery.extend(true, {}, data);
-						$('#bc_xuehao').text(data.meta['学号']);
-						$('#bc_name').attr('title', '姓名').text(data.meta['姓名']);
-						if(user[1] != 0) jzgc.user.attrSave('name', data.meta['姓名']);
+						$('#export-table caption').text(data.meta['考试场次']);
+						$('#bc_name').attr('title', '姓名').text('BATCHMODE');
 					}
 					data.notes = undefined;
 					data.averageHTML = undefined;
@@ -84,32 +91,48 @@ jzgc.export = {
 					data.examName = list[pointer][1];
 					ret.exams.push(data);
 
-					log('已保存 ' + list[pointer][1] + ' (' + list[pointer][0] + ') ');
-					pointer++;
-					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');
+					var rankthis, ranklast;
+					for(var sui in data.gradeData.subjects){
+						if(data.gradeData.subjects[sui] == '总分'){
+							for(var sei in data.gradeData.series){
+								if(data.gradeData.series[sei]['name'] == '序'){
+									rankthis = data.gradeData.series[sei]['data'][sui];
+								}
+								if(data.gradeData.series[sei]['name'] == '前序'){
+									ranklast = data.gradeData.series[sei]['data'][sui];
+								}
+							}
+							break;
+						}
+					}
+					$('#export-table tbody').append('<tr><td>'+data.meta['学号']+'</td><td>'+data.meta['姓名']+'</td><td>'+data.meta['性别']+'</td><td>'+rankthis+'</td><td>'+ranklast+'</td></tr>');
 
-					if(pointer == list.length || window.jzgcStopNow){
+					log('已保存 ' + data.meta['姓名'] + ' (' + data.meta['学号'] + ') ');
+					pointer++;
+					$('#export-progress-bar').css('width', pointer / (endxuehao - user[0] + 1) * 100 +'%');
+
+					if(thisxuehao == endxuehao || window.jzgcStopNow){
 						complete();
 					}else{
 						setTimeout(getID, timeout);
 					}
 				},
 				function(t, d){
-					log('保存 ' + list[pointer][1] + ' (' + list[pointer][0] + ') 时错误：' + (t=='error' ? d :t ), 'error');
-					if(console) console.error(list[pointer][0], t, d);
+					log('保存  (' + thisxuehao + ') 时错误：' + (t=='error' ? d :t ), 'error');
+					if(console) console.error(thisxuehao, t, d);
 
 					pointer++;
-					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');
+					$('#export-progress-bar').css('width', pointer / (endxuehao - user[0] + 1) * 100 +'%');
 					if(errorCount !== false) errorCount++;
 
-					if(errorCount > 4 && pointer == errorCount){
+					if(errorCount > 3 && pointer == errorCount){
 						errorCount = false;
 						$('#export-progress-bar').addClass('bar-warning');
 						if(t == 'certError'){
 							if(user[0].indexOf('3') == 0){
 								log('<strong>您的考生信息可能有误。如果您已经毕业，学校可能已经删除了您的成绩数据，您不能在这里导出。导出会继续尝试进行。</strong>', 'warning');
 							}else{
-								log('<strong>您的考生信息可能有误，建议您检查一下。导出会继续尝试进行。</strong>', 'warning');
+								log('<strong>出错好多次了，检查一下呗。导出会继续尝试进行。</strong>', 'warning');
 							}
 						}
 						if(t == 'timeout' || d == 'Server Error'){
@@ -120,7 +143,7 @@ jzgc.export = {
 						}
 						document.title = '【！！！】金中成绩查询';
 					}
-					if(pointer == list.length || window.jzgcStopNow){
+					if(thisxuehao == endxuehao || window.jzgcStopNow){
 						complete();
 					}else{
 						setTimeout(getID, timeout);
@@ -132,10 +155,7 @@ jzgc.export = {
 			$(window).off('beforeunload');
 			document.title = '【导出完成】金中成绩查询';
 			if(dataFirst){
-				ret.notes = dataFirst.notes;
 				if($('#export-average-checkbox')[0].checked) ret.averageHTML = dataFirst.averageHTML;
-				ret.xuehao = dataFirst.meta['学号'];
-				ret.name = dataFirst.meta['姓名'];
 			}
 			$('#export-options').remove();
 			if(ret.exams.length > 0){
@@ -146,7 +166,7 @@ jzgc.export = {
 				}
 				$('#export-progress').removeClass('active progress-striped').find('div:first').removeClass().addClass('bar bar-success');
 				var fileName = 'exams-' + ret.xuehao + (ret.name?('-'+ret.name):'') +'.json';
-				$('#content-export').append('<h2>终于导出了 '+ret.exams.length+' 场考试的数据</h2><p>反正数据都在这里头了，先存着就是了。您可以在成绩查询页面的“导出”按钮旁的下拉菜单中找到查看器。<a href="'+ chrome.extension.getURL("jsonReader.html") +'" class="btn btn-small" target="_blank">打开查看器</a></p><p><span class="label label-info">ProTip</span> 文件是 JSON 格式，技术宅们也可以自己读数据出来。</p><p>请复制并保存文本框中的内容 <span>或直接 <a href="javascript:void(0)" id="save-btn" role="button" class="btn btn-primary btn-small" title="下载导出数据为 '+fileName+'"><i class="icon-file icon-white" /> 保存文件</a></span></p><textarea id="result" class="input-xxlarge" rows="6"></textarea><p>有空的话，来吐槽导出的使用体验吧！ <a href="http://github.phy25.com/jzGradeChecker/exportgotit.html" class="btn btn-small btn-success" target="_blank"><i class="icon-comment icon-white" /> 吐个槽</a></p>');
+				$('#content-export').append('<h2>导出了 '+ret.exams.length+' 位同学的数据</h2><p>反正数据都在这里头了，先存着就是了。您可以在成绩查询页面的“导出”按钮旁的下拉菜单中找到查看器。<a href="'+ chrome.extension.getURL("jsonReader.html") +'" class="btn btn-small" target="_blank">打开查看器</a></p><p><span class="label label-info">ProTip</span> 文件是 JSON 格式，技术宅们也可以自己读数据出来。</p><p>请复制并保存文本框中的内容 <span>或直接 <a href="javascript:void(0)" id="save-btn" role="button" class="btn btn-primary btn-small" title="下载导出数据为 '+fileName+'"><i class="icon-file icon-white" /> 保存文件</a></span></p><textarea id="result" class="input-xxlarge" rows="6"></textarea><p>有空的话，来吐槽导出的使用体验吧！ <a href="http://github.phy25.com/jzGradeChecker/exportgotit.html" class="btn btn-small btn-success" target="_blank"><i class="icon-comment icon-white" /> 吐个槽</a></p>');
 				$('#result').text(JSON.stringify(ret))[0];
 
 				try{ var isFileSaverSupported = !!new Blob(); } catch(e){}
