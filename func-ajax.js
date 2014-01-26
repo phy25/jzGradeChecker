@@ -117,5 +117,49 @@ jzgc.ajax = {
 				if(typeof successCallback == 'function') successCallback(ret);
 			}
 		});
+	},
+	sortExamList: function(examList){
+		var examsByKey = [], examsIDs = [], ret = [];
+		for(eid in examList){
+			var id = eid.toString();
+			if(id.length == 2) id = id + '9';
+			examsByKey[id] = eid;
+			examsIDs.push(id);
+		}
+
+		examsIDs.sort();
+		
+		for(i in examsIDs){
+			ret.push({id: examsByKey[examsIDs[i]], name: examList[examsByKey[examsIDs[i]]]});
+		}
+
+		return ret;
+	},
+	categorizeExamList: function(examList){
+		if(!(examList[0] && examList[0]['id'])){
+			examList = this.sortExamList(examList);
+		}
+
+		var ret = {'grade10':[], 'grade11':[], 'grade12': [], 'other': []};
+		for(i in examList){
+			if(examList[i]['name'].indexOf('高一') != -1){
+				ret['grade10'].push(examList[i]);
+				continue;
+			}
+			if(examList[i]['name'].indexOf('高二') != -1){
+				ret['grade11'].push(examList[i]);
+				continue;
+			}
+			if(examList[i]['name'].indexOf('高三') != -1 || examList[i]['name'].indexOf('高考') != -1){
+				ret['grade12'].push(examList[i]);
+				continue;
+			}
+			ret['other'].push(examList[i]);
+		}
+		if(ret['other'].length == 0){
+			delete ret['other']; // 只能用 delete 了
+		}
+
+		return ret;
 	}
 };

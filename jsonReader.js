@@ -49,20 +49,31 @@ $(function(){
 		return false;
 	}
 
-	function isJSONvalid(j){
-		if(j.created && j.xuehao && json.exams && json.exams.length>0){
-			return true;
+	var parseJSON = (JSON && JSON.parse) ? JSON.parse: $.parseJSON;
+	function JSONLoadValidation(j){
+		var obj;
+		try{
+			obj = parseJSON(j);	
+		}
+		catch(e){
+			console.error(e);
+			return false;
+		}
+
+		if(obj.created && obj.xuehao && obj.exams && obj.exams.length>0){
+			return obj;
 		}else{
 			return false;
 		}
 	}
 	function loadJSON(j){
-		json = $.parseJSON(j);
-		if(!isJSONvalid(json)){
+		json = JSONLoadValidation(j);
+		if(json == false){
 			alert('读取文件时出错：文件格式错误。');
 			location.reload();
-			return;
+			return false;
 		}
+		
 		var created = new Date(json.created);
 		$('#landing').remove();
 		var $c = $('#main').show();

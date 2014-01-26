@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>金中成绩查询</title>
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="style.css" rel="stylesheet" />
+<link href="ce.css" rel="stylesheet" />
+<script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="ce-export.js"></script>
+</head>
+<body class="loaded">
+<div id="container" class="container">
+<h1>金中成绩查询</h1>
+<div class="alert alert-error" id="alert-dev">界面只体现视觉效果，还不能使用！</div>
+<div class="page-header"><h3>成绩数据导出</h3></div>
+<form class="form-horizontal" enctype="application/x-www-form-urlencoded" id="form-stuinfo" method="post" name="form-stuinfo">
+	<div class="controls" id="user-selecter">
+		<p><strong>欢迎回来 <span id="us-xuehao">31940</span> <span id="us-name">潘弘宇</span></strong> <button class="btn btn-mini" id="us-change" tabindex="45" type="button">修改信息</button></p>
+	</div>
+
+	<div id="group-stuinfo" style="display: none;">
+		<div class="control-group">
+			<label class="control-label" for="xuehao">学号</label>
+
+			<div class="controls">
+				<input class="input-xlarge" id="xuehao" max="32100" min="10101" name="xuehao" placeholder="五位数班学号" required="required" tabindex="10" type="number">
+			</div>
+		</div>
+
+		<div class="control-group">
+			<label class="control-label" for="password">密码</label>
+
+			<div class="controls">
+				<div class="input-append">
+					<input class="input-large" id="password" name="password" placeholder="身份证号码等" required="required" tabindex="20" type="text"><button class="btn" data-toggle="button" id="password-hide-btn" tabindex="25" title="密文显示密码" type="button">隐藏</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="exported-file">已导出成绩（可选）</label>
+
+		<div class="controls">
+			<input id="exported-file" name="exported-file" type="file" accept=".json" /> 或拖动文件到这里
+			<p class="help-block">已经导出过成绩的话，打开导出的 <code>.json</code> 文件，可以只抓取没有导出过的考试，节省时间。<br />可以不选择文件，导出为全新的数据文件。</p>
+		</div>
+	</div>
+	<div class="control-group" id="exam-control">
+		<label class="control-label" for="kaoshi">考试</label>
+
+		<div class="controls">
+			<div class="tabbable tabs-left" id="exam-selector">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="#grade10"><input type="checkbox" title="全不选" checked /> 高一 <span class="badge badge-success">6</span></a></li>
+					<li><a href="#grade11"><input type="checkbox" title="全选" id="grade11_checkbox" /> 高二 <span class="badge">1</span></a></li>
+					<li><a href="#grade12"><input type="checkbox" title="全选" /> 高三 <span class="badge"></span></a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active row-fluid" id="grade10">
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="10" checked="checked" disabled> 高一上学期10月考 <span class="text-info">（已读取）</span></label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="11" checked="checked"> 高一上学期期中</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="12" checked="checked"> 高一上学期期末</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="13" checked="checked"> 高一下学期期中</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="14" checked="checked"> 高一下学期期末</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="15" checked="checked"> 高一下期末市统测</label>
+					</div>
+					<div class="tab-pane row-fluid" id="grade11">
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="20" checked="checked" disabled> 高二上学期10月考 <span class="text-info">（已读取）</span></label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="21"> 高二上学期期中</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="22"> 高二上学期期末</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="23"> 高二下学期期中</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="24"> 高二下学期期末</label>
+						<label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="25"> 高二下期末市统测</label>
+					</div>
+					<div class="tab-pane row-fluid" id="grade12">
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="30"> 高三上摸底考试</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="31"> 高三上学期期中</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="32"> 高三上学期期末</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="33"> 高三下学期期中</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="34"> 高三下学期期末</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="35"> 高三一模考试</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="36"> 高三二模考试</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="37"> 高三三模考试</label>
+						<label class="radio span5" style="display: block;"><input name="kaoshi" tabindex="30" type="checkbox" value="38"> 英语听说高考</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">附加选项</label>
+
+		<div class="controls">
+			<label for="export-avg" title="" class="checkbox"><input type="checkbox" name="export-avg" id="export-avg" /> 导出平均分数据（可能不完整）</label>
+		</div>
+	</div>
+
+	<div class="form-actions">
+		<input class="btn btn-primary" id="submit-btn" tabindex="50" type="submit" value="导出">
+	</div>
+</form>
+</div>
+</body>

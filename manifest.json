@@ -4,7 +4,7 @@
   "name": "jzGradeChecker",
   "short_name": "金中成绩查询",
   "description": "汕头市金山中学学生成绩查询界面优化插件。",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "icons": {
     "16": "icon.png",
     "128": "icon.png",
@@ -40,6 +40,7 @@
   "web_accessible_resources": [
     "bootstrap/img/glyphicons-halflings.png",
     "bootstrap/img/glyphicons-halflings-white.png",
-    "icon.png"
+    "icon.png",
+    "jsonReader.html"
   ]
 }
