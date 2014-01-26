@@ -250,8 +250,8 @@ jzgc.result = {
 		var subjectType = this.getSubjectType(resultData);
 		if(subjectType){
 			$average.find('tr').each(function(i, t){
-				var $t = $(t);
-				if($t.find('td:first').text().replace(/(\s)/g,'') == subjectType){
+				var $t = $(t), title = $t.find('td:first').text().replace(/(\s)/g,'');
+				if(title == subjectType || title == subjectType.substr(0, 1)){
 					$t.next().addBack().addClass('info');
 					$t.find('td').css('font-weight', 'bold');
 				}
