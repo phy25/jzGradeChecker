@@ -60,6 +60,11 @@ $(function(){
 			return false;
 		}
 
+		if(obj.xuehao == undefined && obj.exams && obj.exams[0] && obj.exams[0].meta){
+			// Trying to fix it
+			obj.xuehao = obj.exams[0].meta['原学号'] || obj.exams[0].meta['学号'];
+		}
+
 		if(obj.created && obj.xuehao && obj.exams && obj.exams.length>0){
 			return obj;
 		}else{
