@@ -90,7 +90,7 @@ jzgc.ajax = {
 			dataType: 'html',
 			timeout: 10000,
 			error: function(jqXHR, textStatus, errorThrown){
-				if(typeof failCallback = 'function') failCallback(textStatus, errorThrown);
+				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
 			},
 			success: function(data) {
 				// Thanks to jQuery.load(): removing the scripts
