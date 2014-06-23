@@ -15,7 +15,7 @@
   ],
   "app": {
     "launch": {
-      "local_path": "redirect.html"
+      "local_path": "app.html"
     }
   },
   "content_scripts": [

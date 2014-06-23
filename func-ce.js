@@ -55,11 +55,12 @@ jzgc.ce = {
 		if(typeof complete == 'function') this._conflictCheckOnComplete = complete;
 
 		if(document.body){
-			if(document.title == '金中成绩查询'){
+			if(document.jzgcEnabled === true){
 				// 另一个扩展 Javascript 已经接管页面
 				console.error('Attempting to start an instance while another instance exists already');
 			}else{
 				document.title = '金中成绩查询';
+				document.jzgcEnabled = true;
 				if(typeof this._conflictCheckOnComplete == 'function') this._conflictCheckOnComplete();
 			}
 		}else{

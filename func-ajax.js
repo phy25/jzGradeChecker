@@ -2,7 +2,31 @@
 Ajax function
 */
 jzgc.ajax = {
-	// data: {xuehao, password, kaoshi}
+	getIndex: function(successCallback, failCallback){
+		$.ajax({
+			url: jzgc.config.urls.examList,
+			type: 'GET',
+			dataType: 'html',
+			timeout: 10000,
+			error: function(jqXHR, textStatus, errorThrown){
+				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
+			},
+			success: function(data) {
+				// Thanks to jQuery.load(): removing the scripts
+				// to avoid any 'Permission Denied' errors in IE
+				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")), ret;
+				
+				if(jzgc.index && typeof jzgc.index.fetchIndexData == 'function'){
+					ret = jzgc.index.fetchIndexData($d);
+				}else{
+					if(typeof failCallback == 'function') failCallback('parseError');
+				}
+				
+				$d = undefined;
+				if(typeof successCallback == 'function') successCallback(ret);
+			}
+		});
+	},
 	getExamResult: function(data, successCallback, failCallback){
 		var stu_arr = jzgc.user.get(0);
 		if(!data.xuehao){
