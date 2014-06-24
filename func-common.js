@@ -5,11 +5,9 @@ Common functions
 if(!jzgc) var jzgc = {};
 
 jzgc.config = {
-	version: ['chrome-extension', '0.7.12', 'http://github.phy25.com/jzGradeChecker/'],
-	// A sequential exam list **TODO**
-	examListOrganized: [],
+	version: ['chrome-extension', '0.7.12', 'http://jzgc.phy25.com/'],
 	konamiCode: "' or ''='",
-	urls: {extSite: 'http://github.phy25.com/jzGradeChecker/', examResult: 'http://jszx.stedu.net/jszxcj/search.asp', examList: 'http://jszx.stedu.net/jszxcj/search.htm', contactDeveloper:'http://weibo.com/phy25', GitHubRepo: 'https://github.com/phy25/jzGradeChecker'},
+	urls: {extSite: 'http://jzgc.phy25.com/', examResult: 'http://jszx.stedu.net/jszxcj/search.asp', examList: 'http://jszx.stedu.net/jszxcj/search.htm', contactDeveloper:'http://weibo.com/phy25', GitHubRepo: 'https://github.com/phy25/jzGradeChecker'},
 	attrs: ['color', 'lastChecked', 'lastUpgraded', 'name', 'noticeRead', 'noticeReadKonami', 'xuehaoNew', 'xuehaoBefore']
 };
 
