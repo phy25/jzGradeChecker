@@ -360,7 +360,7 @@ jzgc.index = {
 		$('#xuehao').removeClass()[0].select();
 		$('#password').val('').removeAttr('required').parents('.control-group').hide();
 		if((+jzgc.user.attrGet('noticeReadKonami') || 0) < 1){
-			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('请尊重他人隐私，合理使用此功能。 <a href="http://github.phy25.com/jzGradeChecker/konamigotit.html">来签到一下</a>。').show();
+			$('#ext-tip').removeClass().addClass('alert alert-success alert-konami').html('请尊重他人隐私，合理使用此功能。 <a href="'+jzgc.config.urls.extSite+'konamigotit.html">来签到一下</a>。').show();
 			$('<button type="button" class="close" title="不再提示">&times;</button>')
 				.click(function(){
 					jzgc.user.attrSave('noticeReadKonami', 1);

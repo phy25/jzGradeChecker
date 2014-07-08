@@ -114,18 +114,116 @@ $(function(){
 			}
 			$m.append('<li><a href="#exam-'+e.id+'">'+e.examName+'</a></li>');
 
-			var $e = $('<section id="exam-'+e.id+'"><div class="page-header"><h3>'+e.examName+' <small>总分排名 '+getTotalRank(e)+'</small></h3></div></section>');
+			var $e = $('<section id="exam-'+e.id+'"><h3>'+e.examName+' <small>总分排名 '+(getTotalRank(e) || '未知')+'</small></h3></section>');
 			jzgc.result.renderTable(e.gradeData, $e);
 			$e.appendTo($c.find('#content'));
 		}
 
 		if(json.averageHTML){
 			$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
-			$avg = $('<section id="averagedata"><div class="page-header"><h3>平均分数据</h3></div></section>').append(json.averageHTML).appendTo($c.find('#content'));
+			$avg = $('<section id="averagedata"><h3>平均分数据</h3></section>').append(json.averageHTML).appendTo($c.find('#content'));
 		}
 		
 		$('body').scrollspy({offset: 25, target: '#exams-menu-well'});
 		$('#exams-menu-well').affix({offset: 80});
+		$('#chart-reset').click(resetChart);
+		$('#chart-option').submit(function(event){
+			event.preventDefault();
+			var subject = $('#chart-subject').val(), categories = [], series = [{name:'分数', data: [], yAxis:0}, {name:'排名', data:[], yAxis:1}],
+				$table = $('<table class="table table-hover table-striped examData"><thead><tr><th>考试</th><th>分数</th><th>排名</th><th></th></tr></thead><tbody></tbody></table>'), $tbody = $table.find('tbody:first');
+			for(i in examsIDs){
+				var e = examsByKey[examsIDs[i]], hasit = false, cur = [];
+				for (n in e.gradeData.subjects){
+					if(e.gradeData.subjects[n] == subject){
+						cur[0] = e.examName;
+						cur[1] = e.gradeData.series[0].data[n];
+						cur[2] = e.gradeData.series[1].data[n];
+						series[0].data.push(cur[1]);
+						series[1].data.push(cur[2]);
+						hasit = true;
+					}
+				}
+				if(hasit){
+					categories.push(e.examName);
+					$('<tr><td><a href="#exam-'+e.id+'">'+cur[0]+'</a></td><td>'+cur[1]+'</td><td>'+cur[2]+'</td><td><a title="去除异常点" href="javascript:void(0)" class="removePoint"><i class="icon-trash"></i></a></td></tr>').appendTo($tbody);
+				}
+			}
+			if(categories.length > 0){
+				$tbody.find('a.removePoint').click(function(){
+					var $tr = $(this).parents('tr'), i = $tbody.find('tr').index($tr), hc = $('#chart-charts').highcharts();
+					hc.series[0].data[i].remove(false);
+					hc.series[1].data[i].remove(false);
+					hc.redraw();
+					$tr.remove();
+				});
+				$('#chart-table').empty().append($table);
+				$('#chart-charts').highcharts({
+					chart: {type: 'line'},
+					title: {text: null},
+					xAxis: {categories: categories, labels:{enabled:false}},
+					yAxis: [{
+						title: {text: '分数'},
+						allowDecimals: false,
+					},{
+						title: {text: '排名'},
+						min: 0,
+						allowDecimals: false,
+						opposite: true,
+						reversed: true
+					}],
+					series: series,
+					tooltip: {
+						headerFormat: '<span>{point.key}</span><br />',
+						pointFormat: '<span style="color:{series.color};">{series.name}</span> <b>{point.y}</b><br />',
+						footerFormat: '',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0,
+							dataLabels: {
+								enabled: true,
+								style: {fontWeight: 'bold'}
+							}
+						},
+						series: {
+							allowPointSelect: true,
+							states: {
+								select: {
+									color: null,
+									borderWidth: 1,
+									borderColor: '#f89406'
+								}
+							}
+						}
+					}
+				});
+			}else{
+				$('#chart-table').empty().append('<p class="text-muted text-center">找不到此科目的结果</p>');
+				$('#chart-charts').highcharts().destroy();
+			}
+			return false;
+		});
+		$('#toggle-exam-data-generator').click(function(){
+			$('#exam-data-generator').toggle();
+		});
+		$('#exam-data-generator').submit(function(event){
+			event.preventDefault();
+			var d = '{"meta":{"原学号":"'+json.xuehao+'","新学号":"","姓名":"'+json.name+'","考试场次":"'+$('#edg-examname').val()+'","学号说明":"第1位－年级，第2-3位-班号，第4-5位-班内号"},"gradeData":{"subjects":["语文","数学","英语","语数英","综合","总分","物理","化学","生物"],"series":[{"name":"成绩","data":['+$('#chinese-mark').val()+','+$('#math-mark').val()+','+$('#english-mark').val()+','+$('#cme-mark').val()+','+$('#ligeneral-mark').val()+','+$('#total-mark').val()+','+$('#physics-mark').val()+','+$('#chemistry-mark').val()+','+$('#biology-mark').val()+']},{"name":"序","data":['+$('#chinese-rank').val()+','+$('#math-rank').val()+','+$('#english-rank').val()+','+$('#cme-rank').val()+','+$('#ligeneral-rank').val()+','+$('#total-rank').val()+','+$('#physics-rank').val()+','+$('#chemistry-rank').val()+','+$('#biology-rank').val()+']}]},"id":"'+$('#edg-examid').val()+'","examName":"'+$('#edg-examname').val()+'"}';
+			$('#edg-result').text(d)[0].select();
+			return false;
+		});
+		$('#edg-calculate').click(function(){
+			$('#cme-mark').val((+$('#chinese-mark').val())+(+$('#math-mark').val())+(+$('#english-mark').val()));
+			$('#ligeneral-mark').val((+$('#physics-mark').val())+(+$('#chemistry-mark').val())+(+$('#biology-mark').val()));
+			$('#total-mark').val((+$('#cme-mark').val())+(+$('#ligeneral-mark').val()));
+		});
+	}
+	function resetChart(){
+		$('#chart-table').empty();
+		$('#chart-charts').highcharts().destroy();
 	}
 	function getTotalRank(examData){
 		var ti = false;
@@ -135,7 +233,7 @@ $(function(){
 		if(ti === false) return 0;
 		for(i in examData.gradeData.series){
 			if(examData.gradeData.series[i].name == '序'){
-				return examData.gradeData.series[i].data[ti];
+				return examData.gradeData.series[i].data[ti] || 0;
 			}
 		}
 		return 0;

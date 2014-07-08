@@ -12,6 +12,7 @@
 <script type="text/javascript" src="bootstrap/js/bootstrap-nav.min.js"></script>
 <script type="text/javascript" src="jsonReader.js"></script>
 <script type="text/javascript" src="func-result.js"></script>
+<script type="text/javascript" src="highcharts.js"></script>
 </head>
 <body class="loaded">
 <div id="container" class="container">
@@ -37,15 +38,83 @@
 		<div class="span3">
 			<div id="exams-menu-well" class="well">
 				<ul id="exams-menu" class="nav nav-list">
-					<li class="active"><a href="#meta">个人信息</a></li>
+					<li><a href="#meta">个人信息</a></li>
+					<li><a href="#chart">图表和工具</a></li>
 					<li class="divider"></li>
 				</ul>
 			</div>
 		</div>
 		<div id="content" class="span9">
 			<section id="meta">
-				<div class="page-header"><h3>个人信息</h3></div>
+				<h3>个人信息</h3>
 				<ul></ul>
+			</section>
+			<section id="chart">
+				<h3>图表和工具</h3>
+				<form id="chart-option" class="form-horizontal" role="form">
+					<div class="control-group">						
+						<label for="chart-subject" class="control-label">科目</label>
+						<div class="controls">
+							<input type="text" id="chart-subject" class="form-control input-small" required />
+							<button type="submit" class="btn btn-primary">生成</button>
+							<button type="reset" id="chart-reset" class="btn">清除</button>
+							<button type="button" id="toggle-exam-data-generator" class="btn">(Pro) 生成考试 JSON</button>
+						</div>
+					</div>
+				</form>
+				<form id="exam-data-generator" class="hide form-horizontal">
+					<p>此功能只用于快速生成，数据结构可能出错，暂不提供文科，请见谅！</p>
+					<div class="control-group">						
+						<label class="control-label" for="edg-examname">考试</label>
+						<div class="controls">
+							<input type="text" class="form-control" id="edg-examname" placeholder="考试名" />
+							<input type="text" class="form-control input-mini" id="edg-examid" placeholder="ID" />
+						</div>
+					</div>
+					<table>
+						<tbody>
+							<tr>
+								<th>语文</th>
+								<th>数学</th>
+								<th>英语</th>
+							</tr>
+							<tr>
+								<td><input type="text" class="input-mini" id="chinese-mark" placeholder="分数"><input type="text" id="chinese-rank" class="input-mini" placeholder="排名"></td>
+								<td><input type="text" class="input-mini" id="math-mark" placeholder="分数"><input type="text" id="math-rank" class="input-mini" placeholder="排名"></td>
+								<td><input type="text" class="input-mini" id="english-mark" placeholder="分数"><input type="text" id="english-rank" class="input-mini" placeholder="排名"></td>
+
+							</tr>
+							<tr>
+								<th>物理</th>
+								<th>化学</th>
+								<th>生物</th>
+							</tr>
+							<tr>
+								<td><input type="text" class="input-mini" id="physics-mark" placeholder="分数"><input type="text" id="physics-rank" class="input-mini" placeholder="排名"></td>
+								<td><input type="text" class="input-mini" id="chemistry-mark" placeholder="分数"><input type="text" id="chemistry-rank" class="input-mini" placeholder="排名"></td>
+								<td><input type="text" class="input-mini" id="biology-mark" placeholder="分数"><input type="text" id="biology-rank" class="input-mini" placeholder="排名"></td>
+							</tr>
+							<tr>
+								<th>总分</th>
+								<th>语数英</th>
+								<th>综合</th>
+							</tr>
+							<tr>
+								<td><input type="text" class="input-mini" id="total-mark" placeholder="总分"><input type="text" id="total-rank" class="input-mini" placeholder="排名"></td>
+								<td><input type="text" class="input-mini" id="cme-mark" placeholder="总分"><input type="text" id="cme-rank" class="input-mini" placeholder="排名"></td>
+								<td><input type="text" class="input-mini" id="ligeneral-mark" placeholder="总分"><input type="text" id="ligeneral-rank" class="input-mini" placeholder="排名"></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="control-group">						
+						<div class="control-label"><button type="button" class="btn" id="edg-calculate">计算总分</button><button type="submit" class="btn btn-primary">生成</button><button type="reset" class="btn">清除</button></div>
+						<div class="controls">
+							<textarea id="edg-result" rows="5" class="form-control"></textarea>
+						</div>
+					</div>
+				</form>
+				<div id="chart-charts"></div>
+				<div id="chart-table"></div>
 			</section>
 		</div>
 	</div>

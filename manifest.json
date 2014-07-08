@@ -1,15 +1,16 @@
-
 {
   "manifest_version": 2,
   "name": "jzGradeChecker",
   "short_name": "金中成绩查询",
-  "description": "汕头市金山中学学生成绩查询界面优化插件。",
-  "version": "0.7.12",
+  "description": "汕头市金山中学学生成绩查询界面优化插件�?",
+  "version": "0.7.13",
   "icons": {
     "16": "icon.png",
     "128": "icon.png",
     "256": "icon-256.png"
   },
+  "homepage_url": "http://jzgc.phy25.com/",
+  "update_url": "http://jzgc.phy25.com/chrome-extension/updates.xml",
   "permissions": [
   
   ],

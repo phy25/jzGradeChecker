@@ -398,5 +398,8 @@ jzgc.result = {
 			$c.highcharts().setSize($c[0].offsetWidth, $c[0].offsetHeight);
 			$c = undefined;
 		}); // Tablet support added
+	},
+	renderAverageHTML: function(average, $dest){
+
 	}
 };
