@@ -14,7 +14,7 @@ function parseQuery(a){
 }
 
 // Pop state support
-window.onpopstate = function(e) {
+window.addEventListener('load', function() {
 	var f = function(){
 		c++;
 		if(!$('body').is('.loaded') && c<10){
@@ -22,9 +22,11 @@ window.onpopstate = function(e) {
 			return;
 		}
 
-		var q = parseQuery(e.state);
+		var q = parseQuery(history.state);
 		var $radio = $('#exams-list').find('input[value='+q['kaoshi']+']').attr('checked', true);
 		if($radio.length) $radio.end().addClass('load-selected');
+
+		if(!q['xuehao']) q['xuehao'] = '';
 
 		if(window.sessionStorage && sessionStorage['result_error']){
 			if(sessionStorage['result_error'] == 'cert'){
@@ -42,24 +44,35 @@ window.onpopstate = function(e) {
 					$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>下次查询再试着升年级吧。已经恢复了你原来的学号，请直接提交查询。</div>');
 					$('#us-change').click();
 				}else{
+					var month = new Date().getMonth();
 					if(q['xuehao'].indexOf('3') == 0){ // 高三提示
-						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong> <span>你毕业了吗？ <button type="button" id="result_error_isover_yes" class="btn btn-small btn-primary" tabindex="5">是</button> <button type="button" id="result_error_isover_no" class="btn btn-small" tabindex="6">否</button></span></div>');
+						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误。</strong> <span>你毕业了吗？ <button type="button" id="result_error_isover_yes" class="btn btn-small" tabindex="5">是</button> <button type="button" id="result_error_isover_no" class="btn btn-small" tabindex="6">否</button></span></div>');
 						$('#result_error_isover_yes').click(function(){
-							$('#result_error span').html('可能因为你毕业了，师弟师妹已经薪火相传，继承了你的学号。你已经不能在这里查询成绩了。');
+							$('#result_error span').html('可能因为你毕业了，师弟师妹已经薪火相传，继承了你的学号。你已经不能在这里查询成绩了 :( 。');
 						});
 						$('#result_error_isover_no').click(function(){
 							$('#result_error span').html('检查一下再试试吧。');
 						});
+					}else if(q['xuehao'].indexOf('1') == 0
+						&& q['xuehao'].indexOf('1') == 0 && month > 0 && month < 5 // 高一：2-5月
+						){ // 高一分班提示
+						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误。</strong> <span>'+decodeURIComponent(q.xuehao || '').replace(/\D/g, '').replace(jzgc.config.konamiCode, '')+' 这是你分班后的新学号吗？ <button type="button" id="result_error_isnew_yes" class="btn btn-small" tabindex="5">是</button> <button type="button" id="result_error_isnew_no" class="btn btn-small" tabindex="6">否</button></span></div>');
+						$('#result_error_isnew_yes').click(function(){
+							$('#result_error span').html('可能学校还没有修改学号，或者密码错误。请检查密码是否正确，或尝试使用旧学号登录。');
+						});
+						$('#result_error_isnew_no').click(function(){
+							$('#result_error span').html('请检查密码是否正确，并修改为新学号登录。');
+						});
 					}else{
-						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误 :( 。</strong>检查一下再试试吧。</div>');
+						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误。</strong>检查一下再试试吧。</div>');
 					}
 
 					$('#us-change').click();
-					var $form_stuinfo = $('#group-stuinfo').children('div').addClass('error').one('change', 'input', function(){
+					var $form_stuinfo = $('#group-stuinfo').one('change', 'input', function(){
 						// $('#result_error').remove();
-						// 暂时注释掉避免降低用户体验
+						// 暂时注释掉，避免控件位置突然移动，降低用户体验
 						$form_stuinfo.removeClass('error');
-					});
+					}).children('div').addClass('error');
 				}
 			}else if(sessionStorage['result_error'] == 'exam'){
 				// 无成绩
@@ -92,7 +105,7 @@ window.onpopstate = function(e) {
 		}
 	}, c = 0;
 	f();
-};
+});
 
 function startExecution(){
 	$(function(){
