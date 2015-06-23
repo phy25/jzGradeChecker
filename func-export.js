@@ -111,10 +111,12 @@ jzgc.export = {
 						errorCount = false;
 						$('#export-progress-bar').addClass('bar-warning');
 						if(t == 'certError'){
+							// 强制停止
+							window.jzgcStopNow = true;
 							if(user[0].indexOf('3') == 0){
-								log('<strong>您的考生信息可能有误。如果您已经毕业，学校可能已经删除了您的成绩数据，您不能在这里导出。导出会继续尝试进行。</strong>', 'warning');
+								log('<strong>您的学号或密码有误。如果您已经毕业，学校可能已经删除了您的成绩数据，您无法导出成绩。导出将停止进行。</strong>', 'warning');
 							}else{
-								log('<strong>您的考生信息可能有误，建议您检查一下。导出会继续尝试进行。</strong>', 'warning');
+								log('<strong>您的学号或密码有误，建议您检查一下。导出将停止进行。</strong>', 'warning');
 							}
 						}
 						if(t == 'timeout' || d == 'Server Error'){
