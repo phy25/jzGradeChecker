@@ -63,7 +63,7 @@ jzgc.export = {
 			user[1] = 0;
 		}
 
-		log('certError 错误提示：如果偶尔出现，是因为你没有考过这场试，不必在意；如果所有考试均报错，是考生信息错误。','info');
+		log('提示：有些高三的考试，学校不会把成绩放上网，也有些考试你并没有考过。这些考试没有数据，我们无能为力 :(','info');
 		$(window).on('beforeunload', function(){return "导出仍在进行。如果现在退出，导出的数据将不会保存。\n仍要退出吗？";});
 		document.title = '【导出中】金中成绩查询';
 
@@ -95,14 +95,19 @@ jzgc.export = {
 					}
 				},
 				function(t, d){
-					log('保存 ' + list[pointer][1] + ' (' + list[pointer][0] + ') 时错误：' + (t=='error' ? d :t ), 'error');
+					var errorShown = (t=='error' ? d :t );
+					if(t == 'certError') errorShown = '学号或密码错误';
+					if(t == 'examError') errorShown = '无成绩数据';
+					if(t == 'timeout') errorShown = '请求超时';
+
+					log('保存 ' + list[pointer][1] + ' (' + list[pointer][0] + ') 时错误：' + errorShown, 'error');
 					if(console) console.error(list[pointer][0], t, d);
 
 					pointer++;
 					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');
 					if(errorCount !== false) errorCount++;
 
-					if(errorCount > 4 && pointer == errorCount){
+					if(errorCount > 1 && pointer == errorCount){
 						errorCount = false;
 						$('#export-progress-bar').addClass('bar-warning');
 						if(t == 'certError'){

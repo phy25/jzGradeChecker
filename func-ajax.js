@@ -26,16 +26,22 @@ jzgc.ajax = {
 			dataType: 'html',
 			timeout: 30000,
 			beforeSend: function( xhr ) {
-				// the "BUG" existed for more than one year, and it is fixed by this now :)
+				/*
+				the "BUG" existed for more than one year, and it is fixed by this now
+				No more charset problem :)
+				*/
 				xhr.overrideMimeType( "application/x-www-form-urlencoded; charset=GB2312" );
 			}
 		}).done(function(data) {
 				if(data.indexOf('3;url=Search.htm') != -1){
 					if(typeof failCallback == 'function'){
-						if(data.indexOf('数据还没有导入')){
-							failCallback('examError', $(data).text());
+						var text = $(data).text().replace('3秒后自动返回', '');
+						if(data.indexOf('数据还没有导入') > 0){
+							failCallback('examError', text);
+						}else if(data.indexOf('考生号或密码无效') > 0){
+							failCallback('certError', text);
 						}else{
-							failCallback('certError', $(data).text());
+							failCallback('error', data);
 						}
 					}
 					return false;
