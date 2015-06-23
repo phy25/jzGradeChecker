@@ -24,7 +24,7 @@ jzgc.ajax = {
 			type: 'POST',
 			data: data,
 			dataType: 'html',
-			timeout: 10000,
+			timeout: 20000,
 			error: function(jqXHR, textStatus, errorThrown){
 				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
 			},
