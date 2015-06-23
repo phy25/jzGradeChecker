@@ -33,7 +33,7 @@ jzgc.export = {
 
 			$('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>').appendTo($export);
 
-			$('#breadcrumb', $export).append('<li title="原学号"><i class="icon-user" /> <span id="bc_xuehao">'+ user[0] +'</span></li> <li><span id="bc_name">'+ jzgc.user.attrGet('name') +'</span> <span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
+			$('#breadcrumb', $export).append('<li title="原学号"><i class="icon-user" /> <span id="bc_xuehao">'+ user[0] +'</span></li> <li><span id="bc_name">'+ (jzgc.user.attrGet('name') || '') +'</span> <span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
 			$('<div id="export-progress" class="progress progress-striped active"><div id="export-progress-bar" class="bar"></div></div>').appendTo($export);
 			$('<pre id="export-log" class="pre-scrollable"></pre>').appendTo($export);
 			$('<p id="export-options" class="form-inline">&nbsp; <label class="checkbox"><input type="checkbox" id="export-average-checkbox" checked="checked" />导出平均分数据（可能不完整）</label></p>').appendTo($export);
@@ -116,7 +116,7 @@ jzgc.export = {
 							if(user[0].indexOf('3') == 0){
 								log('<strong>您的学号或密码有误。如果您已经毕业，学校可能已经删除了您的成绩数据，您无法导出成绩。导出将停止进行。</strong>', 'warning');
 							}else{
-								log('<strong>您的学号或密码有误，建议您检查一下。导出将停止进行。</strong>', 'warning');
+								log('<strong>您的学号或密码有误，检查一下再试试吧。导出将停止进行。</strong>', 'warning');
 							}
 						}
 						if(t == 'timeout' || d == 'Server Error'){
@@ -137,7 +137,7 @@ jzgc.export = {
 		}
 		function complete(){
 			$(window).off('beforeunload');
-			document.title = '【导出完成】金中成绩查询';
+			document.title = (ret.exams.length>0?'【导出完成】':'【！！！】')+'金中成绩查询';
 			if(dataFirst){
 				ret.notes = dataFirst.notes;
 				if($('#export-average-checkbox')[0].checked) ret.averageHTML = dataFirst.averageHTML;
