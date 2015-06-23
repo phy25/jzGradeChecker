@@ -121,5 +121,7 @@ function startExecution(){
 
 		// Finally show the page
 		$('body').addClass('loaded');
+
+		jzgc.ajax.getExamResult({xuehao:'30101',kaoshi:'33'}, 0, function(a, b){console.error(a, b)});
 	});
 }
