@@ -64,7 +64,7 @@ window.addEventListener('load', function() {
 							$('#result_error span').html('请检查密码是否正确，并修改为新学号登录。');
 						});
 					}else{
-						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>考生信息错误。</strong>检查一下再试试吧。</div>');
+						$('h1:first').after('<div id="result_error" class="alert alert-error"><strong>学号或密码错误。</strong>检查一下再试试吧。</div>');
 					}
 
 					$('#us-change').click();

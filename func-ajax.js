@@ -24,15 +24,26 @@ jzgc.ajax = {
 			type: 'POST',
 			data: data,
 			dataType: 'html',
-			timeout: 10000,
-			error: function(jqXHR, textStatus, errorThrown){
-				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
-			},
-			success: function(data) {
+			timeout: 30000,
+			beforeSend: function( xhr ) {
+				/*
+				the "BUG" existed for more than one year, and it is fixed by this now
+				No more charset problem :)
+				*/
+				xhr.overrideMimeType( "application/x-www-form-urlencoded; charset=GB2312" );
+			}
+		}).done(function(data) {
 				if(data.indexOf('3;url=Search.htm') != -1){
-					// I am sorry but the encoding here is wrong,
-					// and thus I cannot judge the error type... 
-					if(typeof failCallback == 'function') failCallback('certError', data);
+					if(typeof failCallback == 'function'){
+						var text = $(data).text().replace('3秒后自动返回', '');
+						if(data.indexOf('数据还没有导入') > 0){
+							failCallback('examError', text);
+						}else if(data.indexOf('考生号或密码无效') > 0){
+							failCallback('certError', text);
+						}else{
+							failCallback('error', data);
+						}
+					}
 					return false;
 				}
 				if(data.indexOf('服务器出错') != -1){
@@ -54,8 +65,9 @@ jzgc.ajax = {
 				
 				$d = undefined;
 				if(typeof successCallback == 'function') successCallback(ret);
-			}
-		});
+			}).error(function(jqXHR, textStatus, errorThrown){
+				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
+			});
 	},
 	getTableArr: function($Elem){
 		var r = {'thead':[], 'tbody':[]}, $h, $b;
@@ -88,34 +100,32 @@ jzgc.ajax = {
 			url: jzgc.config.urls.examList,
 			type: 'GET',
 			dataType: 'html',
-			timeout: 10000,
-			error: function(jqXHR, textStatus, errorThrown){
-				if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
-			},
-			success: function(data) {
-				// Thanks to jQuery.load(): removing the scripts
-				// to avoid any 'Permission Denied' errors in IE
-				var $data = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")),
-					$ks = $('#kaoshi', $data),
-					ret = {examList:[]};
+			timeout: 10000
+		}).done(function(data) {
+			// Thanks to jQuery.load(): removing the scripts
+			// to avoid any 'Permission Denied' errors in IE
+			var $data = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")),
+				$ks = $('#kaoshi', $data),
+				ret = {examList:[]};
 
-				if(!$ks.length){
-					if(typeof failCallback == 'function') failCallback('resolveErr', data);
-					return;
-				}
-
-				if(jzgc.index && typeof jzgc.index.fetchIndexData == 'function'){
-					ret = jzgc.index.fetchIndexData($data);
-				}else{
-					$ks.find('option').each(function(){
-						if(this.defaultSelected) ret.examListCurrent = this.value;
-						ret.examList[this.value] = this.text.replace(/(\s)/g,'');
-					});
-				}
-				
-				$data = $ks = undefined;
-				if(typeof successCallback == 'function') successCallback(ret);
+			if(!$ks.length){
+				if(typeof failCallback == 'function') failCallback('resolveErr', data);
+				return;
 			}
+
+			if(jzgc.index && typeof jzgc.index.fetchIndexData == 'function'){
+				ret = jzgc.index.fetchIndexData($data);
+			}else{
+				$ks.find('option').each(function(){
+					if(this.defaultSelected) ret.examListCurrent = this.value;
+					ret.examList[this.value] = this.text.replace(/(\s)/g,'');
+				});
+			}
+			
+			$data = $ks = undefined;
+				if(typeof successCallback == 'function') successCallback(ret);
+		}).error(function(jqXHR, textStatus, errorThrown){
+			if(typeof failCallback == 'function') failCallback(textStatus, errorThrown);
 		});
 	},
 	sortExamList: function(examList){

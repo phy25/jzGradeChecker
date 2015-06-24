@@ -166,6 +166,7 @@ jzgc.result = {
 		// 备注
 		var $notes = $('<div id="notes" />');
 		for(i in resultData.notes){
+			if(resultData.notes[i].indexOf('平 均 成 绩 请 往 下 面 查 看') != -1) continue;
 			$notes.append('<p>' + resultData.notes[i] + '</p>');
 		}
 		$notes.appendTo($dest);
@@ -173,19 +174,40 @@ jzgc.result = {
 		// 平均分
 		var $average = $('<div id="average" class="hide"><h2>平均分数据</h2><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
 
-		var avgs = resultData.averageHTML.split('<hr>');
+		var avgs = resultData.averageHTML.split('<p><font size="6">');
 
 		for(i in avgs){
-			var $h = $(avgs[i]), $t = $h.filter('p:has(font[size=6])');
-			// console.log($h, $t);
-			$('<div id="average_tab'+i+'" class="tab-pane" />').append($h.not($t)).appendTo($average.find('#average-tab-content'));
+			var $h = $('<p><font size="6">'+avgs[i]), $t = $h.filter('p:has(font[size=6])');
+			//console.log($h, $t);
+
+			var caption = false;
 			if($t.length){
-				$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+$t.text()+'</a></li>');
+				caption = $t.text();
 			}else{
-				var caption = $h.filter('p:first').text().split('级');
-				if(caption[1] !== undefined){
-					$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+caption[0]+'级</a></li>');
+				caption = $h.filter('p:first').text();
+				if(caption.indexOf('级') != -1){
+					caption = caption.split('级')[0]+'级';
+				}else{
+					caption = caption;
 				}
+			}
+			$h = $h.not($t).not('hr'); // Prepare as content
+			console.log(caption, $h, $t);
+			if($.trim($h.text()) == '') continue; // 去除标题前的空部分
+
+			if(caption && caption.indexOf('级') != -1){
+				// see if there is anything duplicate
+				var $a_search = $('#average_nav>li>a:contains('+caption+')', $average);
+				if($a_search.length){
+					$($a_search.attr('href'), $average).append($h);
+				}else{
+					$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+caption+'</a></li>');
+					$('<div id="average_tab'+i+'" class="tab-pane" />').append($h).appendTo($average.find('#average-tab-content'));
+				}
+			}else{
+				// Not so ugly fallback
+				$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+(caption||('部分 '+i))+'</a></li>');
+				$('<div id="average_tab'+i+'" class="tab-pane" />').append($h).appendTo($average.find('#average-tab-content'));
 			}
 		}
 
