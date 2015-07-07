@@ -129,7 +129,7 @@ jzgc.result = {
 			}else{
 				chartSeries = chart.series[0];
 				if($('#ext-tip').length) $('#ext-tip').remove();
-				$('#breadcrumb').after('<div id="ext-tip" class="alert alert-info alert-color-select-nocolor">这次考试没有前次排序可以对比……所以色彩就随意啦。</div>');
+				$('#breadcrumb').after('<div id="ext-tip" class="alert alert-info alert-color-select-nocolor">这次考试没有前次排序可以对比，所以色彩就随意啦。</div>');
 				$('<button type="button" class="close" title="隐藏">&times;</button>')
 					.click(function(){
 						$(this).parent().fadeOut();
@@ -209,7 +209,7 @@ jzgc.result = {
 		var hasST = true, ST; // ST = Science / Literature
 		for(i in d.gradeData.subjects){
 			// 学校计算逻辑有变
-			if(d.gradeData.subjects[i].indexOf('理') != -1){
+			if(d.gradeData.subjects[i].indexOf('理科') != -1 || d.gradeData.subjects[i].indexOf('文综') != -1){
 				hasST = false;
 			}
 			// 据说这里体现 Coder 偏好
@@ -261,7 +261,6 @@ jzgc.result = {
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
 			for(sei in gd.series){
 				var data = gd.series[sei].data[i];
-				console.log(gd.series[sei].name, gd.series[sei].data[i]);
 				if(data == -1 || data == 0){
 					data = '<span title="无排名" class="no-data">-</span>';
 				}
@@ -327,9 +326,9 @@ jzgc.result = {
 					allowPointSelect: true,
 					states: {
 						select: {
-							color: null,
+							color: 'orange'/*,
 							borderWidth: 1,
-							borderColor: '#f89406'
+							borderColor: '#f89406'*/
 						}
 					}
 				}
