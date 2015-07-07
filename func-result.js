@@ -346,7 +346,7 @@ jzgc.result = {
 		var avgs = averageHTML.split('<p><font size="6">');
 
 		for(i in avgs){
-			var $h = $('<p><font size="6">'+avgs[i]), $t = $h.filter('p:has(font[size=6])');
+			var $h = $((i!=0?'<p><font size="6">':'')+avgs[i]), $t = $h.filter('p:has(font[size=6])');
 			//console.log($h, $t);
 
 			var caption = false;
@@ -383,12 +383,14 @@ jzgc.result = {
 			$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
 			$(this).hide();
 			$('#collapse_average').show().focus();
+			return false;
 		});
 		$('#collapse_average', $average).click(function(){
 			// $('body').stop(1,1).css('scrollTop', $('#gradeTable').offset().top);
 			$('#average').stop(1,1).slideUp();
 			$(this).hide();
 			$('#expand_average').show().focus();
+			return false;
 		});
 		$('#average_nav a', $average).click(function(e){
 			e.preventDefault();
@@ -430,7 +432,7 @@ jzgc.result = {
 
 		if(/^#(\w|-)+$/.test($grade_this.attr('href'))){
 			// 防止 XSS
-			$($grade_this.attr('href'), $average).addClass('active');
+			$($grade_this.attr('href'), $dest).addClass('active');
 		}
 
 		if($grade_this.length == 0){

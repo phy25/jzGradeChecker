@@ -115,17 +115,21 @@ $(function(){
 			$m.append('<li><a href="#exam-'+e.id+'">'+e.examName+'</a></li>');
 
 			var $e = $('<section id="exam-'+e.id+'"><h3>'+e.examName+' <small>总分排名 '+(getTotalRank(e) || '未知')+'</small></h3></section>');
+			e.gradeData = jzgc.result.gradeDataPreProcess(e.gradeData);
 			jzgc.result.renderTable(e.gradeData, $e);
 			$e.appendTo($c.find('#content'));
 		}
 
 		if(json.averageHTML){
 			$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
-			$avg = $('<section id="averagedata"><h3>平均分数据</h3></section>').append(json.averageHTML).appendTo($c.find('#content'));
+			$avg = $('<section id="averagedata"></section>');// <h3>平均分数据</h3>
+			jzgc.result.renderAverageHTML(json.averageHTML, $avg);
+			jzgc.result.renderAverageHTMLafter_logged(json.exams[0], $avg);
+			$avg.appendTo($c.find('#content'));
 		}
 		
 		$('body').scrollspy({offset: 25, target: '#exams-menu-well'});
-		$('#exams-menu-well').affix({offset: 80});
+		$('#exams-menu-well').affix({offset: 80}).on('activate', 'li', function(){$('#exams-menu-well').scrollTop($(this).position().top)});
 		$('#chart-reset').click(resetChart);
 		$('#chart-option').submit(function(event){
 			event.preventDefault();
