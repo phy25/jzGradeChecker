@@ -75,6 +75,8 @@ jzgc.result = {
 
 		$('#breadcrumb', $dest).append('<li class="btn-group pull-right"><a id="color-select-btn" class="btn btn-small btn-info dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" title="设置着色样式"><i class="icon-adjust icon-white" /> <span>着色</span></a><ul class="dropdown-menu" role="menu" aria-labelledby="color-select-btn" id="color-select-menu"><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="0" tabindex="-1" class="strong">默认</a></li><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="1" tabindex="-1">股市</a></li><li role="presentation"><a role="menuitem" href="javascript:void(0)" data-type="2" tabindex="-1">现代</a></li></ul></li>');
 
+		resultData.gradeData = this.gradeDataPreProcess(resultData.gradeData);
+
 		// 图表
 		this.renderChart(resultData.gradeData, $('<div id="chart" />').appendTo($dest));
 
@@ -177,11 +179,38 @@ jzgc.result = {
 
 		$dest = undefined; // Release memory?
 	},
+	gradeDataPreProcess: function(gd){
+		// 市序判断
+		var hasCityRank = false;
+		if(gd.series[3]){
+			for(i in gd.series[3].data){
+				if(gd.series[3].data[i] > 0) hasCityRank = true;
+			}
+		}
+		if(!hasCityRank){
+			gd.series.splice(3,1);
+		}
+
+		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 前序
+
+		// 总分后移
+		for(var i = gd.subjects.length-1; i>=0; i--){
+			if(gd.subjects[i].indexOf('总分') != -1){
+				gd.subjects.push(gd.subjects.splice(i, 1)[0]);
+				for(is in gd.series){
+					gd.series[is].data.push(gd.series[is].data.splice(i, 1)[0]);
+				}
+			}
+		}
+
+		return gd;
+	},
 	getSubjectType: function(d){
-		var hasST, ST; // ST = Science / Literature
+		var hasST = true, ST; // ST = Science / Literature
 		for(i in d.gradeData.subjects){
-			if(d.gradeData.subjects[i] == '综合'){
-				hasST = true;
+			// 学校计算逻辑有变
+			if(d.gradeData.subjects[i] == '理' || d.gradeData.subjects[i] == '文'){
+				hasST = false;
 			}
 			// 据说这里体现 Coder 偏好
 			if(d.gradeData.subjects[i] == '物理'){
@@ -225,19 +254,6 @@ jzgc.result = {
 			$thead = $table.find('thead tr:first'),
 			$tbody = $table.find('tbody:first');
 
-		// 市序判断
-		var hasCityRank = false;
-		if(gd.series[3]){
-			for(i in gd.series[3].data){
-				if(gd.series[3].data[i] > 0) hasCityRank = true;
-			}
-		}
-		if(!hasCityRank){
-			gd.series.splice(3,1);
-		}
-
-		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 前序
-
 		for(i in gd.series){
 			$('<th />').text(gd.series[i].name).appendTo($thead);
 		}
@@ -245,6 +261,7 @@ jzgc.result = {
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
 			for(sei in gd.series){
 				var data = gd.series[sei].data[i];
+				console.log(gd.series[sei].name, gd.series[sei].data[i]);
 				if(data == -1 || data == 0){
 					data = '<span title="无排名" class="no-data">-</span>';
 				}
@@ -255,19 +272,28 @@ jzgc.result = {
 		$table.appendTo($appendTo);
 	},
 	renderChart: function(gd, $dest){
-		var subjects = gd.subjects, series = [];
+		var subjects = gd.subjects.slice(0), series = [];
 		for(a in gd.series){
 			if(gd.series[a].name == '前序'){
-				series[0] = {name: '前排名', data: gd.series[a].data, color: '#BBB'};
+				series[0] = {name: '前排名', data: gd.series[a].data.slice(0), color: '#BBB'};
 			}
 			if(gd.series[a].name == '序'){
-				series[1] = {name: '级排名', data: gd.series[a].data, color: '#049CDB'};
+				series[1] = {name: '级排名', data: gd.series[a].data.slice(0), color: '#049CDB'};
 			}
 		}
 
-		// 去除空集
-		if(series[0].data[0] == 0) series.splice(0,1);// 前序
-		
+		for(i in subjects){
+			if(!series[1].data[i]){
+				// 去除空 subject
+				if(series[0]) series[0].data.splice(i,1);
+				series[1].data.splice(i,1);
+				subjects.splice(i,1);
+			}
+		}
+
+		// 手工修复 array 排序
+		if(!series[0]) series.splice(0,1);
+
 		// var colors = Highcharts.getOptions().colors;
 		$dest.highcharts({
 			chart: {type: 'column'},
@@ -342,7 +368,7 @@ jzgc.result = {
 
 			// caption && caption.indexOf('级') != -1
 			// see if there is any duplicate block
-			var $a_search = caption ? $('#average_nav>li>a:contains('+caption+')', $average) : {};
+			var $a_search = caption ? $('#average_nav>li>a:contains('+caption+')', $average) : [];
 			if($a_search.length && /^#(\w|-)+$/.test($a_search.attr('href'))){
 				$($a_search.attr('href'), $average).append($h);
 			}else{
