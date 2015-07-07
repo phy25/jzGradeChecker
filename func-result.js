@@ -172,124 +172,18 @@ jzgc.result = {
 		$notes.appendTo($dest);
 
 		// 平均分
-		var $average = $('<div id="average" class="hide"><h2>平均分数据</h2><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
+		this.renderAverageHTML(resultData.averageHTML, $dest);
+		this.renderAverageHTMLafter_logged(resultData, $dest);
 
-		var avgs = resultData.averageHTML.split('<p><font size="6">');
-
-		for(i in avgs){
-			var $h = $('<p><font size="6">'+avgs[i]), $t = $h.filter('p:has(font[size=6])');
-			//console.log($h, $t);
-
-			var caption = false;
-			if($t.length){
-				caption = $t.text();
-			}else{
-				caption = $h.filter('p:first').text();
-				if(caption.indexOf('级') != -1){
-					caption = caption.split('级')[0]+'级';
-				}else{
-					caption = caption;
-				}
-			}
-			$h = $h.not($t).not('hr'); // Prepare as content
-			console.log(caption, $h, $t);
-			if($.trim($h.text()) == '') continue; // 去除标题前的空部分
-
-			if(caption && caption.indexOf('级') != -1){
-				// see if there is anything duplicate
-				var $a_search = $('#average_nav>li>a:contains('+caption+')', $average);
-				if($a_search.length){
-					$($a_search.attr('href'), $average).append($h);
-				}else{
-					$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+caption+'</a></li>');
-					$('<div id="average_tab'+i+'" class="tab-pane" />').append($h).appendTo($average.find('#average-tab-content'));
-				}
-			}else{
-				// Not so ugly fallback
-				$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+(caption||('部分 '+i))+'</a></li>');
-				$('<div id="average_tab'+i+'" class="tab-pane" />').append($h).appendTo($average.find('#average-tab-content'));
-			}
-		}
-
-		var grade_this = (resultData.meta['学籍号'] || '').substr(0, 2); // temp
-		if(grade_this){ // 能读到学籍号就用学籍号判断级数
-			grade_this = new Date().getFullYear().toString().substr(0, 2) + grade_this;
-		}else{
-			grade_this = new Date().getFullYear() - resultData.meta['原学号'].substr(0, 1);
-			if(new Date().getMonth() > 6){ // 8-12 月
-				grade_this++;
-			}
-		}
-
-		var $grade_this = $('#average_nav a', $average).click(function(e){
-			e.preventDefault();
-			$(this).tab('show');
-		}).filter(':contains("' + grade_this.toString() + '")', $average).parent().addClass('active').find('a:first');
-
-		if(/^#(\w|-)+$/.test($grade_this.attr('href'))){
-			// 防止 XSS
-			$($grade_this.attr('href'), $average).addClass('active');
-		}
-
-		$('#expand_average', $average).click(function(){
-			var offset = $('#average').stop(1,1).slideDown()
-				.offset();
-			$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
-			$(this).hide();
-			$('#collapse_average').show().focus();
-		});
-		$('#collapse_average', $average).click(function(){
-			// $('body').stop(1,1).css('scrollTop', $('#gradeTable').offset().top);
-			$('#average').stop(1,1).slideUp();
-			$(this).hide();
-			$('#expand_average').show().focus();
-		});
-
-		if($grade_this.length == 0){
-			$average.filter('#average').show();
-			$('#expand_average', $average).hide();
-			$('#collapse_average', $average).css('display', 'inline-block');
-		}else{
-			$grade_this = undefined;
-		}
-
-		// 平均分高亮
-		// $average.find('hr:first').remove();
-		$average.find('table').addClass('table table-condensed table-bordered examData').removeAttr('style width border cellpadding cellspacing bordercolor');
-		$average.find('colgroup').remove();
-		$average.find('tr').removeAttr('style height');
-		$average.find('td').removeAttr('style width');
-		$average.find('p').each(function(i, t){
-			var text = t.innerText.replace(/(\s)/g,''), $t = $(t);
-			if(text == ''){
-				$t.remove();
-			}else if(text.indexOf('高') != -1){
-				$('<caption />').text(text).prependTo($t.next('table'));
-				$t.remove();
-			}
-		});
-
-		var subjectType = this.getSubjectType(resultData);
-		if(subjectType){
-			$average.find('tr').each(function(i, t){
-				var $t = $(t), title = $t.find('td:first').text().replace(/(\s)/g,'');
-				if(title == subjectType || title == subjectType.substr(0, 1)){
-					$t.next().addBack().addClass('info');
-					$t.find('td').css('font-weight', 'bold');
-				}
-			});
-		}
-
-		$average.appendTo($dest);
-		$dest = undefined;
+		$dest = undefined; // Release memory?
 	},
 	getSubjectType: function(d){
-		var hasST, ST; // ST = S / L
+		var hasST, ST; // ST = Science / Literature
 		for(i in d.gradeData.subjects){
 			if(d.gradeData.subjects[i] == '综合'){
 				hasST = true;
 			}
-			// 据说这里体现偏好
+			// 据说这里体现 Coder 偏好
 			if(d.gradeData.subjects[i] == '物理'){
 				ST = 'S';
 			}
@@ -421,7 +315,116 @@ jzgc.result = {
 			$c = undefined;
 		}); // Tablet support added
 	},
-	renderAverageHTML: function(average, $dest){
+	renderAverageHTML: function(averageHTML, $dest){
+		var $average = $('<div id="average" class="hide"><h2>平均分数据</h2><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
 
+		var avgs = averageHTML.split('<p><font size="6">');
+
+		for(i in avgs){
+			var $h = $('<p><font size="6">'+avgs[i]), $t = $h.filter('p:has(font[size=6])');
+			//console.log($h, $t);
+
+			var caption = false;
+			if($t.length){
+				caption = $t.text();
+			}else{
+				caption = $h.filter('p:first').text();
+				if(caption.indexOf('级') != -1){
+					caption = caption.split('级')[0]+'级';
+				}else{
+					caption = caption;
+				}
+			}
+			$h = $h.not($t).not('hr'); // Prepare as content
+			//console.log(caption, $h, $t);
+			if($.trim($h.text()) == '') continue; // 去除标题前的空部分
+
+
+			// caption && caption.indexOf('级') != -1
+			// see if there is any duplicate block
+			var $a_search = caption ? $('#average_nav>li>a:contains('+caption+')', $average) : {};
+			if($a_search.length && /^#(\w|-)+$/.test($a_search.attr('href'))){
+				$($a_search.attr('href'), $average).append($h);
+			}else{
+				// Not so ugly fallback
+				$('#average_nav', $average).append('<li><a href="#average_tab'+i+'">'+(caption||('部分 '+i))+'</a></li>');
+				$('<div id="average_tab'+i+'" class="tab-pane" />').append($h).appendTo($average.find('#average-tab-content'));
+			}
+		}
+
+		$('#expand_average', $average).click(function(){
+			var offset = $('#average').stop(1,1).slideDown()
+				.offset();
+			$('body').stop(1,1).animate({'scrollTop':offset.top}, 400);
+			$(this).hide();
+			$('#collapse_average').show().focus();
+		});
+		$('#collapse_average', $average).click(function(){
+			// $('body').stop(1,1).css('scrollTop', $('#gradeTable').offset().top);
+			$('#average').stop(1,1).slideUp();
+			$(this).hide();
+			$('#expand_average').show().focus();
+		});
+		$('#average_nav a', $average).click(function(e){
+			e.preventDefault();
+			$(this).tab('show');
+		});
+
+		// 美化
+		// $average.find('hr:first').remove();
+		$average.find('table').addClass('table table-condensed table-bordered examData').removeAttr('style width border cellpadding cellspacing bordercolor');
+		$average.find('colgroup').remove();
+		$average.find('tr').removeAttr('style height');
+		$average.find('td').removeAttr('style width');
+		$average.find('p').each(function(i, t){
+			var text = t.innerText.replace(/(\s)/g,''), $t = $(t);
+			if(text == ''){
+				$t.remove();
+			}else if(text.indexOf('高') != -1){
+				$('<caption />').text(text).prependTo($t.next('table'));
+				$t.remove();
+			}
+		});
+
+		$average.appendTo($dest);
+	},
+	renderAverageHTMLafter_logged: function(resultData, $dest){
+		// Automatic open average block
+		var grade_this = (resultData.meta['学籍号'] || '').substr(0, 2); // temp
+		if(grade_this){ // 能读到学籍号就用学籍号判断级数
+			grade_this = new Date().getFullYear().toString().substr(0, 2) + grade_this;
+		}else{
+			grade_this = new Date().getFullYear() - resultData.meta['原学号'].substr(0, 1);
+			if(new Date().getMonth() > 6){ // 8-12 月
+				grade_this++;
+			}
+		}
+
+		var $grade_this = $('#average_nav a:contains("' + grade_this.toString() + '")', $dest)
+			.parent().addClass('active').find('a:first');
+
+		if(/^#(\w|-)+$/.test($grade_this.attr('href'))){
+			// 防止 XSS
+			$($grade_this.attr('href'), $average).addClass('active');
+		}
+
+		if($grade_this.length == 0){
+			$dest.find('#average').show();
+			$('#expand_average', $dest).hide();
+			$('#collapse_average', $dest).css('display', 'inline-block');
+		}
+
+		// 平均分高亮
+		var $average = $dest.find('#average');
+		var subjectType = this.getSubjectType(resultData);
+		if(subjectType){
+			$average.find('tr').each(function(i, t){
+				var $t = $(t), title = $t.find('td:first').text().replace(/(\s)/g,'');
+				if(title == subjectType || title == subjectType.substr(0, 1)){
+					$t.next().addBack().addClass('info');
+					$t.find('td').css('font-weight', 'bold');
+				}
+			});
+		}
 	}
 };
