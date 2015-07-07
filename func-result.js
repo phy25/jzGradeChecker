@@ -209,7 +209,7 @@ jzgc.result = {
 		var hasST = true, ST; // ST = Science / Literature
 		for(i in d.gradeData.subjects){
 			// 学校计算逻辑有变
-			if(d.gradeData.subjects[i] == '理' || d.gradeData.subjects[i] == '文'){
+			if(d.gradeData.subjects[i].indexOf('理') != -1){
 				hasST = false;
 			}
 			// 据说这里体现 Coder 偏好
