@@ -123,8 +123,14 @@ $(function(){
 		if(json.averageHTML){
 			$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
 			$avg = $('<section id="averagedata"></section>');// <h3>平均分数据</h3>
+			/*
+			jzgc.result.extractAverageArrayToGradeData(json, json.exams[json.exams.length-1], json.exams[0].meta, '高三联考', json.created);
+			console.log($.map(json.exams, function(v){
+				return v.meta['考试场次'];
+			}));
+			*/
 			jzgc.result.renderAverageHTML(json.averageHTML, $avg);
-			jzgc.result.renderAverageAfter_logged(json.exams[0], $avg, json.created);
+			jzgc.result.renderAverageAfter_logged(json.exams[json.exams.length-1], $avg, json.created);
 			$avg.find('#average').show()
 				.end().find('#expand_average').hide()
 				.end().find('#collapse_average').css('display', 'inline-block')

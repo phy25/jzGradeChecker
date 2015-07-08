@@ -77,8 +77,8 @@ jzgc.result = {
 
 		resultData.gradeData = this.gradeDataPreProcess(resultData.gradeData);
 		resultData.averageArray = this.averageHTMLtoArray(resultData.averageHTML);
-		console.log(resultData.averageArray);
-		this.extractAverageArrayToGradeData(resultData.averageArray, resultData.meta);
+		var avgObject = this.extractAverageArrayToGradeData(resultData);
+		if(avgObject) resultData.gradeData = this.appendAverageData(avgObject, resultData.gradeData);
 
 		// 图表
 		this.renderChart(resultData.gradeData, $('<div id="chart" />').appendTo($dest));
@@ -280,7 +280,7 @@ jzgc.result = {
 			for(sei in gd.series){
 				var data = gd.series[sei].data[i];
 				if(data == -1 || data == 0){
-					data = '<span title="无排名" class="no-data">-</span>';
+					data = '<span title="无数据" class="no-data">-</span>';
 				}
 				$('<td />').html(data).appendTo($tr);
 			}
@@ -389,7 +389,7 @@ jzgc.result = {
 				array.push({caption:caption||('部分'+i), jqdata: $h});
 			}
 		}
-		console.log(array);
+
 		for(i in array){
 			// 美化
 			$average = array[i].jqdata;
@@ -479,7 +479,104 @@ jzgc.result = {
 			});
 		}
 	},
-	extractAverageArrayToGradeData: function(array, meta){
+	extractAverageArrayToGradeData: function(data, gradeData, meta, currentExam, currentTime){
+		if(!gradeData) gradeData = data;
+		if(!meta) meta = data.meta;
+		if(!currentExam) currentExam = data.meta['考试场次'];
+		var year = this.getGradeYear(meta, currentTime), subjectType = this.getSubjectType(gradeData);
+		var array = data.averageArray || this.averageHTMLtoArray(data.averageHTML);
 
+		array = $.map(array, function(v){
+			return v.caption.indexOf(year) != -1 ? v : null;
+		});
+		if(array.length){
+			array = array[0];
+			// 筛出某级
+		}else{
+			return false;
+		}
+
+		currentExam = currentExam
+			.replace(/(考|测|试)/g, '')
+			.replace(/(学)?期/, '')
+			.replace(/(高一上)月/, '$110月')
+			.replace(/(高二上)初/, '$110月');
+		// console.log(currentExam);
+
+		var $exams = array.jqdata.filter('table'), exams = [], matches = [];
+		exams = $exams.map(function(i, v){
+			var $t = $(v), text = $t.find('caption').text();
+			text = text.replace(/(考|测|试)/g, '')
+				.replace(/^\d+级/, '')
+				.replace(/(\d*月)(期.)/, '$2')
+				.replace(/(学)?期/g, '')
+				.replace(/0(\d)月/, '$1月')
+				.replace(/\(.*\)/g, '')
+				.replace(/平均.*$/, '')
+				.replace(/(上)?入学/, '入学')
+				.replace(/上12月/, '上中后月')
+				.replace(/(\d*月)摸底/, '摸底')
+				.replace(/(高三上)8月/, '$1摸底')
+				.replace(/(下)?(初)?(.校)?联/, '联')
+				.replace(/(下)?(市|广)?(.)模/, '$3模');
+
+			console.log(text);
+
+			var ret = {title: $t.find('caption').text(), match_title: text, table: $t};
+			if(text == currentExam) matches.push(ret);
+			return ret;
+		});
+		console.log(matches);
+		if(matches.length != 1){
+			// Temparary
+			return false;
+		}
+
+		var ret = {}, examHasSubject = false;
+		matches[0].table.find('tr').each(function(i, t){
+			var $t = $(t), title = $t.find('td:first').text().replace(/(\s)/g,'');
+			if(title.length <= 2 && (title.substr(0, 1) == '文' || title.substr(0, 1) == '理')) examHasSubject = true;
+			if(subjectType && (title == subjectType || title == subjectType.substr(0, 1))){
+				// What we need
+				var $val = $t.next().find('td');
+				$t.find('td').not(':first').each(function(i, v){
+					if(v.innerHTML.replace(/(\s)/g,'') == '') return true;
+					ret[v.innerHTML.replace(/(\s)/g,'')] = $val.eq(i).text().replace(/(\s)/g,'');
+				});
+				return false;
+			}
+		});
+		if(examHasSubject){
+			if(subjectType){
+				//console.log(ret);
+				return ret;
+			}else{
+				return false;
+			}
+		}else{
+			matches[0].table.find('tr').each(function(i, t){
+				if(i%2) return true;
+				var $t = $(t), $val = $t.next().find('td'),
+					title = $t.find('td:first').text().replace(/(\s)/g,''), hasLeftTitle = false;
+
+				if(title == '科目') hasLeftTitle = true;
+	
+				$t.find('td').each(function(i, v){
+					if(hasLeftTitle && i==0) return true;
+					if(v.innerHTML.replace(/(\s)/g,'') == '') return true;
+					ret[v.innerHTML.replace(/(\s)/g,'')] = $val.eq(i).text().replace(/(\s)/g,'');
+				});
+			});
+			return ret;
+		}
+	},
+	appendAverageData: function(avgObject, gd){
+		gd.series.splice(1, 0, {
+			'name':'平均分',
+			'data': $.map(gd.subjects, function(v){
+				return avgObject[v] > 0 ? avgObject[v] : -1;
+			})
+		});
+		return gd;
 	}
 };
