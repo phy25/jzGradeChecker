@@ -108,9 +108,15 @@ jzgc.result = {
 					classes = {'+': '', '-':'', '0':''};
 			}
 
+			var tn, ln;
+			$('#gradeTable thead th').each(function(i, t){
+				if(t.innerHTML == '序') tn = i;
+				if(t.innerHTML == '前序') ln = i;
+			});
+
 			$('#gradeTable tbody>tr').each(function(i,t){
 				var $t = $(t).removeClass('error success warning');
-				var rankt = +$t.find('td:eq(2)').text(), rankl = +$t.find('td:eq(3)').text();
+				var rankt = +$t.find('td:eq('+tn+')').text(), rankl = +$t.find('td:eq('+ln+')').text();
 
 				// 判断成绩颜色
 				if(rankl){
@@ -244,7 +250,7 @@ jzgc.result = {
 		var r = {'subjects':[], 'series':[]},
 			$h = $Elem.find('thead tr:first'),
 			$b = $Elem.find('tbody tr'),
-			makeInt = function(text){return useInt?Number(text):text;};
+			makeInt = function(text){return useInt?(text>0?Number(text):null):text;};
 
 		if(!$h.length){
 			$h = $Elem.find('tbody tr:first');
@@ -279,7 +285,7 @@ jzgc.result = {
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
 			for(sei in gd.series){
 				var data = gd.series[sei].data[i];
-				if(data == -1 || data == 0){
+				if(data == -1 || !data){
 					data = '<span title="无数据" class="no-data">-</span>';
 				}
 				$('<td />').html(data).appendTo($tr);
