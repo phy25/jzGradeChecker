@@ -124,8 +124,11 @@ $(function(){
 			$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
 			$avg = $('<section id="averagedata"></section>');// <h3>平均分数据</h3>
 			jzgc.result.renderAverageHTML(json.averageHTML, $avg);
-			jzgc.result.renderAverageHTMLafter_logged(json.exams[0], $avg);
-			$avg.appendTo($c.find('#content'));
+			jzgc.result.renderAverageAfter_logged(json.exams[0], $avg, json.created);
+			$avg.find('#average').show()
+				.end().find('#expand_average').hide()
+				.end().find('#collapse_average').css('display', 'inline-block')
+				.end().appendTo($c.find('#content'));
 		}
 		
 		$('body').scrollspy({offset: 25, target: '#exams-menu-well'});
