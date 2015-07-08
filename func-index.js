@@ -143,7 +143,7 @@ jzgc.index = {
 			if(no.indexOf('2') == 0){
 				if(month > 3 && month < 7 && $('#ext-tip').text() == '' && (+jzgc.user.attrGet('noticeRead') || 0) < 28){
 					// 5-7 月，编号 28
-					$('#ext-tip').removeClass().addClass('alert alert-success alert-28').html('查询学业水平考试成绩，请<a href="http://query.5184.com/query/query_list.jsp?queryType=30">登录广东省考试服务网页面</a>。').show();
+					$('#ext-tip').removeClass().addClass('alert alert-success alert-28').html('如果学校无法查询学业水平考试成绩，请<a href="http://query.5184.com/query/query_list.jsp?queryType=30">登录广东省考试服务网</a>。').show();
 					$('<button type="button" class="close" title="不再提示">&times;</button>')
 						.click(function(){
 							jzgc.user.attrSave('noticeRead', 28);

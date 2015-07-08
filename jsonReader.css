@@ -9,16 +9,20 @@ table.examData td, table.examData th{text-align: center; vertical-align: middle;
   width: 210px;
   margin: 10px 0 0;
   padding: 10px 5px;
+  height: 90%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-#exams-menu-well.affix {
+#exams-menu-well.affix, #exams-menu-well.affix-bottom{
   top: 10px;
 }
+/*
 #exams-menu-well.affix-bottom {
   position: absolute;
   top: auto;
   bottom: 270px;
 }
-
+*/
 
 /* Responsive
 -------------------------------------------------- */
