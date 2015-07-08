@@ -354,7 +354,7 @@ jzgc.result = {
 		});
 		$(window).on('resize orientationchange', function(){
 			var $c = $('#chart');
-			$c.highcharts().setSize($c[0].offsetWidth, $c[0].offsetHeight);
+			$c.highcharts().setSize($c[0].offsetWidth, $c[0].offsetHeight, false);
 			$c = undefined;
 		}); // Tablet support added
 	},
@@ -416,7 +416,7 @@ jzgc.result = {
 		return array;
 	},
 	renderAverageArray: function(avgs_array, $dest){
-		var $average = $('<div id="average" class="hide"><h2>平均分数据</h2><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
+		var $average = $('<div id="average" class="hide"><h3>平均分数据</h3><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
 
 		for(i in avgs_array){
 			$average.find('#average_nav').append('<li><a href="#average_tab'+i+'">'+avgs_array[i].caption+'</a></li>');
@@ -479,17 +479,45 @@ jzgc.result = {
 			});
 		}
 	},
-	extractAverageArrayToGradeData: function(data, gradeData, meta, currentExam, currentTime){
-		if(!gradeData) gradeData = data;
-		if(!meta) meta = data.meta;
-		if(!currentExam) currentExam = data.meta['考试场次'];
-		var year = this.getGradeYear(meta, currentTime), subjectType = this.getSubjectType(gradeData);
-		var array = data.averageArray || this.averageHTMLtoArray(data.averageHTML);
+	extractAverageArrayInYear: function(averageArray){
+		return $.map(averageArray, function(v){
+			v.exams = v.jqdata.filter('table').map(function(i, v){
+				var $t = $(v), text = $t.find('caption').text();
+				text = text.replace(/(考|测|试)/g, '')
+					.replace(/^\d+级/, '')
+					.replace(/(\d*月)(期.)/, '$2')
+					.replace(/(学)?期/g, '')
+					.replace(/0(\d)月/, '$1月')
+					.replace(/\(.*\)/g, '')
+					.replace(/平均.*$/, '')
+					.replace(/(上)?入学/, '入学')
+					.replace(/上12月/, '上中后月')
+					.replace(/(\d*月)摸底/, '摸底')
+					.replace(/(高三上)8月/, '$1摸底')
+					.replace(/(下)?(初)?(.校)?联/, '联')
+					.replace(/(下)?(市|广)?(.)模/, '$3模');
+
+				// console.log(text);
+
+				var ret = {title: $t.find('caption').text(), match_title: text, table: $t};
+				return ret;
+			});
+
+			return v;
+		});
+	},
+	extractAverageArrayToGradeData: function(data, data4Grade, currentExam, currentTime){
+		if(!data4Grade) data4Grade = data;
+		if(!currentExam) currentExam = data4Grade.meta['考试场次'];
+		var year = this.getGradeYear(data4Grade.meta, currentTime), subjectType = this.getSubjectType(data4Grade);
+		var array = data.length>0 ? data : data.averageArray || this.averageHTMLtoArray(data.averageHTML);
+
+		if(!array[0].exams) array = this.extractAverageArrayInYear(array);
 
 		array = $.map(array, function(v){
 			return v.caption.indexOf(year) != -1 ? v : null;
 		});
-		if(array.length){
+		if(array.length==1){
 			array = array[0];
 			// 筛出某级
 		}else{
@@ -503,52 +531,52 @@ jzgc.result = {
 			.replace(/(高二上)初/, '$110月');
 		// console.log(currentExam);
 
-		var $exams = array.jqdata.filter('table'), exams = [], matches = [];
-		exams = $exams.map(function(i, v){
-			var $t = $(v), text = $t.find('caption').text();
-			text = text.replace(/(考|测|试)/g, '')
-				.replace(/^\d+级/, '')
-				.replace(/(\d*月)(期.)/, '$2')
-				.replace(/(学)?期/g, '')
-				.replace(/0(\d)月/, '$1月')
-				.replace(/\(.*\)/g, '')
-				.replace(/平均.*$/, '')
-				.replace(/(上)?入学/, '入学')
-				.replace(/上12月/, '上中后月')
-				.replace(/(\d*月)摸底/, '摸底')
-				.replace(/(高三上)8月/, '$1摸底')
-				.replace(/(下)?(初)?(.校)?联/, '联')
-				.replace(/(下)?(市|广)?(.)模/, '$3模');
-
-			console.log(text);
-
-			var ret = {title: $t.find('caption').text(), match_title: text, table: $t};
-			if(text == currentExam) matches.push(ret);
-			return ret;
+		var matches = [];
+		$.each(array.exams, function(i, v){
+			// {title: $t.find('caption').text(), match_title: text, table: $t}
+			if(v.match_title == currentExam) matches.push(v);
 		});
-		console.log(matches);
+		// console.log(matches);
 		if(matches.length != 1){
 			// Temparary
 			return false;
 		}
 
-		var ret = {}, examHasSubject = false;
+		var ret = {}, examHasSubject = false, intergratedTitle = false;
 		matches[0].table.find('tr').each(function(i, t){
 			var $t = $(t), title = $t.find('td:first').text().replace(/(\s)/g,'');
+			if(i==0 && title=='') intergratedTitle = true;
 			if(title.length <= 2 && (title.substr(0, 1) == '文' || title.substr(0, 1) == '理')) examHasSubject = true;
 			if(subjectType && (title == subjectType || title == subjectType.substr(0, 1))){
 				// What we need
-				var $val = $t.next().find('td');
-				$t.find('td').not(':first').each(function(i, v){
-					if(v.innerHTML.replace(/(\s)/g,'') == '') return true;
-					ret[v.innerHTML.replace(/(\s)/g,'')] = $val.eq(i).text().replace(/(\s)/g,'');
+				var $val;
+				if(intergratedTitle){
+					$val = $t.find('td').not(':first');
+					$t = matches[0].table.find('tr:first td:not(:first)');
+				}else{
+					$val = $t.next().find('td');
+					$t = $t.find('td').not(':first');
+				}
+				
+				$t.each(function(i, v){
+					var text = v.innerHTML.replace(/(\s)/g,'');
+					if(text == '') return true;
+					if(/^物政|化史|生地$/.test(text)){
+						var convertArr = {'文科':{'政':'政治','史':'历史','地':'地理'},'理科':{'物':'物理','化':'化学','生':'生物'}};
+						$.each(convertArr[subjectType] || [], function(i, v){
+							if(text.indexOf(i) != -1){
+								text = v;
+							}
+						});
+					}
+					ret[text] = $val.eq(i).text().replace(/(\s)/g,'');
 				});
 				return false;
 			}
 		});
+
 		if(examHasSubject){
 			if(subjectType){
-				//console.log(ret);
 				return ret;
 			}else{
 				return false;

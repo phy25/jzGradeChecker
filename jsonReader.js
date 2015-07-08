@@ -105,7 +105,12 @@ $(function(){
 		}
 		
 
-		var etitle = '';
+		var etitle = '', avgArray = false, avgObject = false;
+		if(json.averageHTML){
+			avgArray = jzgc.result.extractAverageArrayInYear(jzgc.result.averageHTMLtoArray(json.averageHTML));
+			// console.log(avgArray[0]);			
+		}
+
 		for(i in examsIDs){
 			var e = examsByKey[examsIDs[i]];
 			if(etitle != e.examName.substr(0, 2)){
@@ -116,11 +121,17 @@ $(function(){
 
 			var $e = $('<section id="exam-'+e.id+'"><h3>'+e.examName+' <small>总分排名 '+(getTotalRank(e) || '未知')+'</small></h3></section>');
 			e.gradeData = jzgc.result.gradeDataPreProcess(e.gradeData);
+
+			if(avgArray){
+				avgObject = jzgc.result.extractAverageArrayToGradeData(avgArray, e, null, json.created);
+				if(avgObject) e.gradeData = jzgc.result.appendAverageData(avgObject, e.gradeData);
+			}
+
 			jzgc.result.renderTable(e.gradeData, $e);
 			$e.appendTo($c.find('#content'));
 		}
 
-		if(json.averageHTML){
+		if(avgArray){
 			$m.append('<li class="divider"></li><li><a href="#averagedata">平均分数据</a></li>');
 			$avg = $('<section id="averagedata"></section>');// <h3>平均分数据</h3>
 			/*
@@ -129,7 +140,7 @@ $(function(){
 				return v.meta['考试场次'];
 			}));
 			*/
-			jzgc.result.renderAverageHTML(json.averageHTML, $avg);
+			jzgc.result.renderAverageArray(avgArray, $avg);
 			jzgc.result.renderAverageAfter_logged(json.exams[json.exams.length-1], $avg, json.created);
 			$avg.find('#average').show()
 				.end().find('#expand_average').hide()
@@ -140,25 +151,41 @@ $(function(){
 		$('body').scrollspy({offset: 25, target: '#exams-menu-well'});
 		$('#exams-menu-well').affix({offset: 80}).on('activate', 'li', function(){$('#exams-menu-well').scrollTop($(this).position().top)});
 		$('#chart-reset').click(resetChart);
-		$('#chart-option').submit(function(event){
+		$('#chart-show-subject-total').click(function(){$('#chart-subject').val('总分');$('#chart-option').trigger('submit', 'showSubjectTotal');});
+		$('#chart-option').submit(function(event, ext){
 			event.preventDefault();
-			var subject = $('#chart-subject').val(), categories = [], series = [{name:'分数', data: [], yAxis:0}, {name:'排名', data:[], yAxis:1}],
-				$table = $('<table class="table table-hover table-striped examData"><thead><tr><th>考试</th><th>分数</th><th>排名</th><th></th></tr></thead><tbody></tbody></table>'), $tbody = $table.find('tbody:first');
+			var subject = $('#chart-subject').val(), categories = [], series = [{name:'分数', data: [], yAxis:0}, {name:'校平均分', data: [], yAxis:0}, {name:'排名', data:[], yAxis:1}],
+				$table = $('<table class="table table-hover table-striped examData"><thead><tr><th>考试</th><th>分数</th><th>校平均分</th><th>排名</th><th></th></tr></thead><tbody></tbody></table>'), $tbody = $table.find('tbody:first');
+			var showSubjectTotal = (ext == 'showSubjectTotal')? jzgc.result.getSubjectType(json.exams[json.exams.length-1]): false;
+
 			for(i in examsIDs){
 				var e = examsByKey[examsIDs[i]], hasit = false, cur = [];
 				for (n in e.gradeData.subjects){
 					if(e.gradeData.subjects[n] == subject){
-						cur[0] = e.examName;
-						cur[1] = e.gradeData.series[0].data[n];
-						cur[2] = e.gradeData.series[1].data[n];
-						series[0].data.push(cur[1]);
-						series[1].data.push(cur[2]);
 						hasit = true;
+					}
+					if(showSubjectTotal && subject == '总分'){
+						if(e.gradeData.subjects[n] == subject && e.examName.indexOf('入学') != -1) hasit = false;
+						if(e.gradeData.subjects[n] == showSubjectTotal+'总分'){
+							hasit = true;
+						}
+					}
+					if(hasit){
+						cur[0] = e.examName;
+						$.each(e.gradeData.series, function(i, v){
+							if(v.name=='成绩') cur[1] = v.data[n];
+							if(v.name=='平均分') cur[2] = v.data[n];
+							if(v.name=='序') cur[3] = v.data[n];
+						});
+						series[0].data.push(cur[1] || 0);
+						series[1].data.push(+cur[2]>0 ? +cur[2] : null);
+						series[2].data.push(cur[3] || 0);
+						break;
 					}
 				}
 				if(hasit){
 					categories.push(e.examName);
-					$('<tr><td><a href="#exam-'+e.id+'">'+cur[0]+'</a></td><td>'+cur[1]+'</td><td>'+cur[2]+'</td><td><a title="去除异常点" href="javascript:void(0)" class="removePoint"><i class="icon-trash"></i></a></td></tr>').appendTo($tbody);
+					$('<tr><td><a href="#exam-'+e.id+'">'+cur[0]+'</a></td><td>'+cur[1]+'</td><td>'+(cur[2]>0? cur[2] : '<span class="no-data" title="无数据">-</span>')+'</td><td>'+cur[3]+'</td><td><a title="去除异常点" href="javascript:void(0)" class="removePoint"><i class="icon-trash"></i></a></td></tr>').appendTo($tbody);
 				}
 			}
 			if(categories.length > 0){
@@ -166,17 +193,19 @@ $(function(){
 					var $tr = $(this).parents('tr'), i = $tbody.find('tr').index($tr), hc = $('#chart-charts').highcharts();
 					hc.series[0].data[i].remove(false);
 					hc.series[1].data[i].remove(false);
+					hc.series[2].data[i].remove(false);
 					hc.redraw();
 					$tr.remove();
 				});
 				$('#chart-table').empty().append($table);
+				// console.log(series[1]);
 				$('#chart-charts').highcharts({
 					chart: {type: 'line'},
 					title: {text: null},
 					xAxis: {categories: categories, labels:{enabled:false}},
 					yAxis: [{
 						title: {text: '分数'},
-						allowDecimals: false,
+						allowDecimals: true,
 					},{
 						title: {text: '排名'},
 						min: 0,
@@ -205,7 +234,7 @@ $(function(){
 							allowPointSelect: true,
 							states: {
 								select: {
-									color: null,
+									color: 'orange',
 									borderWidth: 1,
 									borderColor: '#f89406'
 								}
