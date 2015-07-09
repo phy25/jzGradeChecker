@@ -190,17 +190,28 @@ jzgc.result = {
 	},
 	gradeDataPreProcess: function(gd){
 		// 市序判断
+		console.log(gd);
 		var hasCityRank = false;
 		if(gd.series[3]){
 			for(i in gd.series[3].data){
-				if(gd.series[3].data[i] > 0) hasCityRank = true;
+				if(gd.series[3].data[i]) hasCityRank = true;
 			}
 		}
 		if(!hasCityRank){
 			gd.series.splice(3,1);
 		}
 
-		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 前序
+		if(!gd.series[2] || !gd.series[2].data[0]) gd.series.splice(2,1); // 前序
+
+		var hasRank = false;
+		if(gd.series[1]){
+			for(i in gd.series[1].data){
+				if(gd.series[1].data[i]) hasRank = true;
+			}
+		}
+		if(!hasRank){
+			gd.series.splice(1,1);
+		}
 
 		// 总分后移
 		for(var i = gd.subjects.length-1; i>=0; i--){
@@ -250,7 +261,17 @@ jzgc.result = {
 		var r = {'subjects':[], 'series':[]},
 			$h = $Elem.find('thead tr:first'),
 			$b = $Elem.find('tbody tr'),
-			makeInt = function(text){return useInt?(text>0?Number(text):null):text;};
+			makeInt = function(text){
+				if(useInt){
+					if(/^[A-Za-z]$/.test(text)){
+						return text;
+					}else{
+						return text>0?Number(text):null;
+					}
+				}else{
+					return text;
+				}
+			};
 
 		if(!$h.length){
 			$h = $Elem.find('tbody tr:first');
@@ -303,6 +324,11 @@ jzgc.result = {
 			if(gd.series[a].name == '序'){
 				series[1] = {name: '级排名', data: gd.series[a].data.slice(0), color: '#049CDB'};
 			}
+		}
+
+		if(!series[1] && !series[0]){
+			$dest.hide();
+			return false;
 		}
 
 		for(i in subjects){
@@ -422,7 +448,7 @@ jzgc.result = {
 		return array;
 	},
 	renderAverageArray: function(avgs_array, $dest){
-		var $average = $('<div id="average" class="hide"><h3>平均分数据</h3><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
+		var $average = $('<div id="average" class="hide"><h3>平均分数据</h3><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示所有平均分</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏所有平均分</a></p>');
 
 		for(i in avgs_array){
 			$average.find('#average_nav').append('<li><a href="#average_tab'+i+'">'+avgs_array[i].caption+'</a></li>');
