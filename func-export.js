@@ -31,7 +31,7 @@ jzgc.export = {
 			$('#content').hide().after('<div id="content-export" />');
 			var $export = $('<div id="content-export" />'), user = jzgc.user.get(0);
 
-			$('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">主页</a> <span class="divider">&rsaquo;</span></li></ul>').appendTo($export);
+			$('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">返回查询主页</a> <span class="divider">|</span></li></ul>').appendTo($export);
 
 			$('#breadcrumb', $export).append('<li title="原学号"><i class="icon-user" /> <span id="bc_xuehao">'+ user[0] +'</span></li> <li><span id="bc_name">'+ (jzgc.user.attrGet('name') || '') +'</span> <span class="divider">&rsaquo;</span></li> <li class="active">导出成绩数据</li>');
 			$('<div id="export-progress" class="progress progress-striped active"><div id="export-progress-bar" class="bar"></div></div>').appendTo($export);
@@ -40,7 +40,7 @@ jzgc.export = {
 
 			$('<a id="export-stopnow" href="javascript:void(0)" role="button" title="在当前考试下载完成后，立即停止继续下载" class="btn btn-danger">停止</a>').click(function(){
 				window.jzgcStopNow = true;
-				$(this).addClass('disabled').text('就到此为止');
+				$(this).addClass('disabled').text('请稍等');
 			}).prependTo($('#export-options', $export));
 
 			$('#content').after($export);
@@ -153,8 +153,8 @@ jzgc.export = {
 				}
 				$('#export-progress').removeClass('active progress-striped').find('div:first').removeClass().addClass('bar bar-success');
 				var fileName = 'exams-' + ret.xuehao + (ret.name?('-'+ret.name):'') +'.json';
-				$('#content-export').append('<h2>终于导出了 '+ret.exams.length+' 场考试的数据</h2><p>反正数据都在这里头了，先存着就是了。您可以在成绩查询页面的“导出”按钮旁的下拉菜单中找到查看器。<a href="'+ chrome.extension.getURL("jsonReader.html") +'" class="btn btn-small btn-info" target="_blank">打开查看器</a></p><p><span class="label label-info">ProTip</span> 文件是 JSON 格式，技术宅们也可以自己读数据出来。</p><p>请复制并保存文本框中的内容 <span>或直接 <a href="javascript:void(0)" id="save-btn" role="button" class="btn btn-primary btn-small" title="下载导出数据为 '+fileName+'"><i class="icon-file icon-white" /> 保存文件</a></span></p><textarea id="result" class="input-xxlarge" rows="6"></textarea><p>有空的话，来吐槽导出的使用体验吧！ <a href="'+jzgc.config.urls.extSite+'exportgotit.html" class="btn btn-small btn-success" target="_blank"><i class="icon-comment icon-white" /> 吐个槽</a></p>');
-				$('#result').text(JSON.stringify(ret))[0];
+				$('#content-export').append('<h2>导出了 '+ret.exams.length+' 场考试的成绩</h2><p>请复制保存文本框中的内容<span>或直接点击 <a href="javascript:void(0)" id="save-btn" role="button" class="btn btn-primary btn-small" title="下载导出数据为 '+fileName+'"><i class="icon-file icon-white" /> 另存为文件</a></span>。<strong>这样才算完成导出。</strong></p><textarea id="result" class="input-xxlarge" rows="6"></textarea><p>您可以在查询首页“导出”按钮旁的下拉菜单中找到查看器。<a href="'+ chrome.extension.getURL("jsonReader.html") +'" class="btn btn-small btn-info" target="_blank">现在打开查看器</a></p><p><span class="label label-info">ProTip</span> 请把文件保存为诸如 <code>'+fileName+'</code> 的文件名。技术宅们也可以自己读 JSON 格式的数据出来。</p><p><i class="icon-comment " /> 有空的话，来说说导出的使用体验吧！ <a href="'+jzgc.config.urls.extSite+'exportgotit.html" class="btn btn-small" target="_blank">吐个槽</a></p>');
+				$('#result').text(JSON.stringify(ret)).click(function(){this.select()});
 
 				try{ var isFileSaverSupported = !!new Blob(); } catch(e){}
 				if(isFileSaverSupported){

@@ -56,7 +56,7 @@ jzgc.result = {
 	},
 	renderPage: function(resultData, $dest){
 		// 考生信息
-		$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm" id="back-btn">主页</a> <span class="divider">&rsaquo;</span></li></ul>');
+		$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm" id="back-btn">返回查询主页</a> <span class="divider">|</span></li></ul>');
 
 		$('#back-btn', $dest).click(function(){
 			history.back();
@@ -108,9 +108,15 @@ jzgc.result = {
 					classes = {'+': '', '-':'', '0':''};
 			}
 
+			var tn, ln;
+			$('#gradeTable thead th').each(function(i, t){
+				if(t.innerHTML == '序') tn = i;
+				if(t.innerHTML == '前序') ln = i;
+			});
+
 			$('#gradeTable tbody>tr').each(function(i,t){
 				var $t = $(t).removeClass('error success warning');
-				var rankt = +$t.find('td:eq(2)').text(), rankl = +$t.find('td:eq(3)').text();
+				var rankt = +$t.find('td:eq('+tn+')').text(), rankl = +$t.find('td:eq('+ln+')').text();
 
 				// 判断成绩颜色
 				if(rankl){
@@ -127,22 +133,24 @@ jzgc.result = {
 
 			var chart = $('#chart').highcharts(), chartSeries;
 
-			if(chart.series[1]){
-				chartSeries = chart.series[1];
-			}else{
-				chartSeries = chart.series[0];
-				if($('#ext-tip').length) $('#ext-tip').remove();
-				$('#breadcrumb').after('<div id="ext-tip" class="alert alert-info alert-color-select-nocolor">这次考试没有前次排序可以对比，所以色彩就随意啦。</div>');
-				$('<button type="button" class="close" title="隐藏">&times;</button>')
-					.click(function(){
-						$(this).parent().fadeOut();
-						return false;
-					}).prependTo('#ext-tip');
+			if(chart){
+				if(chart.series[1]){
+					chartSeries = chart.series[1];
+				}else{
+					chartSeries = chart.series[0];
+					if($('#ext-tip').length) $('#ext-tip').remove();
+					$('#breadcrumb').after('<div id="ext-tip" class="alert alert-info alert-color-select-nocolor">这次考试没有前次排序可以对比，所以色彩就随意啦。</div>');
+					$('<button type="button" class="close" title="隐藏">&times;</button>')
+						.click(function(){
+							$(this).parent().fadeOut();
+							return false;
+						}).prependTo('#ext-tip');
+				}
+				for(l in chartSeries.data){
+					chartSeries.data[l].update({'color': colors[datas[l]]}, false);
+				}
+				chart.redraw();
 			}
-			for(l in chartSeries.data){
-				chartSeries.data[l].update({'color': colors[datas[l]]}, false);
-			}
-			chart.redraw();
 
 			jzgc.user.attrSave('color', type);
 
@@ -184,17 +192,32 @@ jzgc.result = {
 	},
 	gradeDataPreProcess: function(gd){
 		// 市序判断
-		var hasCityRank = false;
+		var hasCityRank = 0;
 		if(gd.series[3]){
 			for(i in gd.series[3].data){
-				if(gd.series[3].data[i] > 0) hasCityRank = true;
+				if(gd.series[3].data[i]) hasCityRank = 1;
+				if(/^[A-Za-z]$/.test(gd.series[3].data[i])) hasCityRank = 2;
+				if(hasCityRank) break;
 			}
 		}
 		if(!hasCityRank){
 			gd.series.splice(3,1);
+		}else if(hasCityRank == 2){
+			// 市序列代等级使用
+			gd.series[3].name = '等级';
 		}
 
-		if(!gd.series[2] || gd.series[2].data[0] == 0) gd.series.splice(2,1); // 前序
+		if(!gd.series[2] || !gd.series[2].data[0]) gd.series.splice(2,1); // 前序
+
+		var hasRank = false;
+		if(gd.series[1]){
+			for(i in gd.series[1].data){
+				if(gd.series[1].data[i]) hasRank = true;
+			}
+		}
+		if(!hasRank){
+			gd.series.splice(1,1);
+		}
 
 		// 总分后移
 		for(var i = gd.subjects.length-1; i>=0; i--){
@@ -244,7 +267,17 @@ jzgc.result = {
 		var r = {'subjects':[], 'series':[]},
 			$h = $Elem.find('thead tr:first'),
 			$b = $Elem.find('tbody tr'),
-			makeInt = function(text){return useInt?Number(text):text;};
+			makeInt = function(text){
+				if(useInt){
+					if(/^[A-Za-z]$/.test(text)){
+						return text;
+					}else{
+						return text>0?Number(text):null;
+					}
+				}else{
+					return text;
+				}
+			};
 
 		if(!$h.length){
 			$h = $Elem.find('tbody tr:first');
@@ -279,7 +312,7 @@ jzgc.result = {
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
 			for(sei in gd.series){
 				var data = gd.series[sei].data[i];
-				if(data == -1 || data == 0){
+				if(data == -1 || !data){
 					data = '<span title="无数据" class="no-data">-</span>';
 				}
 				$('<td />').html(data).appendTo($tr);
@@ -291,12 +324,17 @@ jzgc.result = {
 	renderChart: function(gd, $dest){
 		var subjects = gd.subjects.slice(0), series = [];
 		for(a in gd.series){
-			if(gd.series[a].name == '前序'){
+			if(gd.series[a].name == '前序' && gd.series[a].data[0] != null){
 				series[0] = {name: '前排名', data: gd.series[a].data.slice(0), color: '#BBB'};
 			}
 			if(gd.series[a].name == '序'){
 				series[1] = {name: '级排名', data: gd.series[a].data.slice(0), color: '#049CDB'};
 			}
+		}
+
+		if(!series[1] && !series[0]){
+			$dest.hide();
+			return false;
 		}
 
 		for(i in subjects){
@@ -359,7 +397,7 @@ jzgc.result = {
 		}); // Tablet support added
 	},
 	averageHTMLtoArray: function(averageHTML){
-		var avgs = averageHTML.split('<p><font size="6">'), array = [];
+		var avgs = (averageHTML || '').split('<p><font size="6">'), array = [];
 
 		for(i in avgs){
 			var $h = $((i!=0?'<p><font size="6">':'')+avgs[i]), $t = $h.filter('p:has(font[size=6])');
@@ -416,7 +454,7 @@ jzgc.result = {
 		return array;
 	},
 	renderAverageArray: function(avgs_array, $dest){
-		var $average = $('<div id="average" class="hide"><h3>平均分数据</h3><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示平均分数据</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏平均分数据</a></p>');
+		var $average = $('<div id="average" class="hide"><h3>平均分数据</h3><ul id="average_nav" class="nav nav-pills"></ul><div class="tab-content" id="average-tab-content"></div></div><p><a id="expand_average" href="javascript:void(0)" class="btn"><i class="icon-chevron-down" /> 显示所有平均分</a> <a id="collapse_average" href="javascript:void(0)" style="display:none" class="btn"><i class="icon-chevron-up" /> 隐藏所有平均分</a></p>');
 
 		for(i in avgs_array){
 			$average.find('#average_nav').append('<li><a href="#average_tab'+i+'">'+avgs_array[i].caption+'</a></li>');
@@ -512,7 +550,7 @@ jzgc.result = {
 		var year = this.getGradeYear(data4Grade.meta, currentTime), subjectType = this.getSubjectType(data4Grade);
 		var array = data.length>0 ? data : data.averageArray || this.averageHTMLtoArray(data.averageHTML);
 
-		if(!array[0].exams) array = this.extractAverageArrayInYear(array);
+		if(!array[0] || !array[0].exams) array = this.extractAverageArrayInYear(array);
 
 		array = $.map(array, function(v){
 			return v.caption.indexOf(year) != -1 ? v : null;
