@@ -76,9 +76,9 @@ jzgc.ce = {
 	},
 	appendCopyRight: function($dest){
 		var urls = jzgc.config.urls;
-		$dest.append('<p class="text-right"><small><i class="icon-heart" /> <a href="javascript:void(0)" class="muted" id="ext-copyright">jzGradeChecker ' + jzgc.config.version[1] + '</a> <a href="/" class="muted">金中首页</a></small></p>');
+		$dest.append('<p class="text-right"><small><i class="icon-heart" /> <a href="javascript:void(0)" class="muted" id="ext-copyright">jzGradeChecker ' + jzgc.config.version[1] + '</a> <a href="'+ chrome.extension.getURL("hello.html") +'" class="muted" id="ext-hello-link">新手指南</a> <a href="/" class="muted">金中首页</a></small></p>');
 		if($.fn.popover){
-			$('#ext-copyright', $dest).popover({html:true, title:'jzGradeChecker ' + jzgc.config.version[1], content:'<ul class="unstyled"><li>开发者 <a href="'+urls.contactDeveloper+'" target="_blank">@phy25</a></li><li>联系项目<a href="'+urls.extSite+'" target="_blank">请上扩展网站</a></li><li>贡献代码<a href="'+urls.GitHubRepo+'" target="_blank">请到 GitHub</a></li></ul>', placement:'top', trigger:'click'});
+			$('#ext-copyright', $dest).popover({html:true, title:'jzGradeChecker ' + jzgc.config.version[1], content:'<ul class="unstyled"><li>开发者 <a href="'+urls.contactDeveloper+'" target="_blank">@phy25</a></li><li>联系项目<a href="'+urls.extSite+'" target="_blank">请上扩展网站</a></li><li>贡献代码<a href="'+urls.GitHubRepo+'" target="_blank">请到 GitHub</a></li></ul>', placement:'top', trigger:'click'}).click(function(){return false;});
 		}else{
 			$('#ext-copyright', $dest).attr('href', urls.extSite).attr('target', '_blank');
 		}

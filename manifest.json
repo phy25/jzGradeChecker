@@ -45,6 +45,7 @@
     "bootstrap/img/glyphicons-halflings.png",
     "bootstrap/img/glyphicons-halflings-white.png",
     "icon.png",
-    "jsonReader.html"
+    "jsonReader.html",
+    "hello.html"
   ]
 }

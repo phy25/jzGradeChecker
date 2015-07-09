@@ -113,6 +113,15 @@ function startExecution(){
 
 		var indexData = jzgc.index.fetchIndexData($(document.body));
 
+		if((+jzgc.user.attrGet('noticeRead') || 0) < 1){
+			if(location.search == '?noticeRead=1'){
+				jzgc.user.attrSave('noticeRead', 1);
+			}else{
+				// 新手指引，编号 1
+				location = chrome.extension.getURL("hello.html");
+			}
+		}
+
 		// Start to render page
 		var $container = $('<div id="container" class="container"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
 		jzgc.index.renderPage(indexData, $('#content'));
