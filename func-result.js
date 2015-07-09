@@ -133,22 +133,24 @@ jzgc.result = {
 
 			var chart = $('#chart').highcharts(), chartSeries;
 
-			if(chart.series[1]){
-				chartSeries = chart.series[1];
-			}else{
-				chartSeries = chart.series[0];
-				if($('#ext-tip').length) $('#ext-tip').remove();
-				$('#breadcrumb').after('<div id="ext-tip" class="alert alert-info alert-color-select-nocolor">这次考试没有前次排序可以对比，所以色彩就随意啦。</div>');
-				$('<button type="button" class="close" title="隐藏">&times;</button>')
-					.click(function(){
-						$(this).parent().fadeOut();
-						return false;
-					}).prependTo('#ext-tip');
+			if(chart){
+				if(chart.series[1]){
+					chartSeries = chart.series[1];
+				}else{
+					chartSeries = chart.series[0];
+					if($('#ext-tip').length) $('#ext-tip').remove();
+					$('#breadcrumb').after('<div id="ext-tip" class="alert alert-info alert-color-select-nocolor">这次考试没有前次排序可以对比，所以色彩就随意啦。</div>');
+					$('<button type="button" class="close" title="隐藏">&times;</button>')
+						.click(function(){
+							$(this).parent().fadeOut();
+							return false;
+						}).prependTo('#ext-tip');
+				}
+				for(l in chartSeries.data){
+					chartSeries.data[l].update({'color': colors[datas[l]]}, false);
+				}
+				chart.redraw();
 			}
-			for(l in chartSeries.data){
-				chartSeries.data[l].update({'color': colors[datas[l]]}, false);
-			}
-			chart.redraw();
 
 			jzgc.user.attrSave('color', type);
 
@@ -190,15 +192,19 @@ jzgc.result = {
 	},
 	gradeDataPreProcess: function(gd){
 		// 市序判断
-		console.log(gd);
-		var hasCityRank = false;
+		var hasCityRank = 0;
 		if(gd.series[3]){
 			for(i in gd.series[3].data){
-				if(gd.series[3].data[i]) hasCityRank = true;
+				if(gd.series[3].data[i]) hasCityRank = 1;
+				if(/^[A-Za-z]$/.test(gd.series[3].data[i])) hasCityRank = 2;
+				if(hasCityRank) break;
 			}
 		}
 		if(!hasCityRank){
 			gd.series.splice(3,1);
+		}else if(hasCityRank == 2){
+			// 市序列代等级使用
+			gd.series[3].name = '等级';
 		}
 
 		if(!gd.series[2] || !gd.series[2].data[0]) gd.series.splice(2,1); // 前序
