@@ -365,7 +365,7 @@ jzgc.result = {
 		}); // Tablet support added
 	},
 	averageHTMLtoArray: function(averageHTML){
-		var avgs = averageHTML.split('<p><font size="6">'), array = [];
+		var avgs = (averageHTML || '').split('<p><font size="6">'), array = [];
 
 		for(i in avgs){
 			var $h = $((i!=0?'<p><font size="6">':'')+avgs[i]), $t = $h.filter('p:has(font[size=6])');
@@ -518,7 +518,7 @@ jzgc.result = {
 		var year = this.getGradeYear(data4Grade.meta, currentTime), subjectType = this.getSubjectType(data4Grade);
 		var array = data.length>0 ? data : data.averageArray || this.averageHTMLtoArray(data.averageHTML);
 
-		if(!array[0].exams) array = this.extractAverageArrayInYear(array);
+		if(!array[0] || !array[0].exams) array = this.extractAverageArrayInYear(array);
 
 		array = $.map(array, function(v){
 			return v.caption.indexOf(year) != -1 ? v : null;
