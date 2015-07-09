@@ -114,7 +114,7 @@ function startExecution(){
 		var indexData = jzgc.index.fetchIndexData($(document.body));
 
 		if((+jzgc.user.attrGet('noticeRead') || 0) < 1){
-			if(location.search == '?noticeRead=1'){
+			if(location.hash == '#noticeRead=1'){
 				jzgc.user.attrSave('noticeRead', 1);
 			}else{
 				// 新手指引，编号 1

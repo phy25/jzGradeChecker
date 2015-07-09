@@ -2,7 +2,7 @@ var jzgc = {};
 
 $(function(){
 	var $container = $('<div id="container" class="container"><h1>金中成绩查询</h1><div id="content"><div id="alert-hello" class="alert"><a id="back-btn" class="btn">跳过介绍</a> <span>以后，在页面最下方“新手指南”可以回到本页面。</span></div></div></div>').appendTo($('<body />').replaceAll('body')),
-		href = jzgc.config.urls.examList+'?noticeRead=1';
+		href = jzgc.config.urls.examList+'#noticeRead=1';
 
 	$container.find('#back-btn').attr('href', href);
 
@@ -56,7 +56,7 @@ $(function(){
 			}
 		},
 		onExit: function(){
-			jzgc.user.clear();
+			jzgc.user.attrClear('color');
 			$('#alert-hello').show();
 			$('#back-btn')[0].click();
 			location.href = href;

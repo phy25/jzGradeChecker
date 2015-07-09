@@ -56,7 +56,7 @@ jzgc.result = {
 	},
 	renderPage: function(resultData, $dest){
 		// 考生信息
-		$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm" id="back-btn">主页</a> <span class="divider">&rsaquo;</span></li></ul>');
+		$dest.append('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm" id="back-btn">返回查询主页</a> <span class="divider">|</span></li></ul>');
 
 		$('#back-btn', $dest).click(function(){
 			history.back();
@@ -297,7 +297,7 @@ jzgc.result = {
 	renderChart: function(gd, $dest){
 		var subjects = gd.subjects.slice(0), series = [];
 		for(a in gd.series){
-			if(gd.series[a].name == '前序'){
+			if(gd.series[a].name == '前序' && gd.series[a].data[0] != null){
 				series[0] = {name: '前排名', data: gd.series[a].data.slice(0), color: '#BBB'};
 			}
 			if(gd.series[a].name == '序'){
