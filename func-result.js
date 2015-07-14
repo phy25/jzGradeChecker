@@ -46,7 +46,7 @@ jzgc.result = {
 			.each(function(i, e){
 				var $e = $(e);
 				if($.trim($e.text())){
-					data.notes.push($.trim( $e.html() ).replace(/(\s)(\s)+/g,'$1'));
+					data.notes.push($.trim( $e.html() ).replace(/\&nbsp;/g, ' ').replace(/(\s)(\s)+/g,'$1'));
 				}
 			});
 		
@@ -530,6 +530,7 @@ jzgc.result = {
 					.replace(/平均.*$/, '')
 					.replace(/(上)?入学/, '入学')
 					.replace(/上12月/, '上中后月')
+					.replace(/末(市)?统/, '$1统')
 					.replace(/(\d*月)摸底/, '摸底')
 					.replace(/(高三上)8月/, '$1摸底')
 					.replace(/(下)?(初)?(.校)?联/, '联')
