@@ -69,8 +69,8 @@ jzgc.index = {
 				jzgc.settings.set('passwordHide', undefined);
 			}
 		});
-			// .on('focus mouseover', function(){$('#password-after-hint').stop(1,1).show();})
-			// .on('blur mouseout', function(){$('#password-after-hint').stop(1,1).fadeOut(200);});
+			// .on('focus', function(){$('#password-after-hint').stop(1,1).show();})
+			// .on('blur', function(){$('#password-after-hint').stop(1,1).fadeOut(200);});
 
 		// 当填入学号后
 		$('#xuehao', $f).change(function(){

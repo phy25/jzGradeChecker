@@ -36,7 +36,7 @@ jzgc.ce = {
 								}else{
 									// 仍在维护
 									$bar.css('width', 0);
-									setTimeout(wait, 1000);
+									setTimeout(function(){wait();}, 1000);
 								}
 							}
 						});

@@ -18,7 +18,7 @@ var popfunc = function() {
 	var f = function(){
 		c++;
 		if(!$('body').is('.loaded') && c<10){
-			setTimeout(f, 50);
+			setTimeout(function(){f();}, 50);
 			return;
 		}
 
