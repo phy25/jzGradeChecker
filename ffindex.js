@@ -12,10 +12,10 @@ var workerFunc = function(worker){
 // Create page-mods
 pageMod.PageMod({
   include: [
-  	/^http:\/\/jszx\.stedu\.net\/jszxcj\/.*\.htm/,
-  	/^http:\/\/(www\.)?stjszx\.net\/jszxcj\/.*\.htm/
+  	/^http:\/\/jszx\.stedu\.net\/jszxcj\/.*\.htm(\#.*)?/,
+  	/^http:\/\/(www\.)?stjszx\.net\/jszxcj\/.*\.htm(\#.*)?/
   ],
-  contentScriptFile: [self.data.url("jquery-1.8.3.min.js"), self.data.url("func-common.js"), self.data.url("bootstrap/js/bootstrap.min.js"), self.data.url("func-ce.js"), self.data.url("func-index.js"), self.data.url("func-ajax.js"), self.data.url("ce-index.js"), self.data.url("func-result.js"), self.data.url("func-export.js")],
+  contentScriptFile: [self.data.url("jquery-2.1.4.min.js"), self.data.url("func-common.js"), self.data.url("bootstrap/js/bootstrap.min.js"), self.data.url("func-ce.js"), self.data.url("func-index.js"), self.data.url("func-ajax.js"), self.data.url("ce-index.js"), self.data.url("func-result.js"), self.data.url("func-export.js")],
   contentScriptWhen: "ready",
   contentScriptOptions: {"localUrl": self.data.url()},
   onAttach: workerFunc,
@@ -27,7 +27,7 @@ pageMod.PageMod({
   	/^http:\/\/jszx\.stedu\.net\/jszxcj\/.*\.asp/,
   	/^http:\/\/(www\.)?stjszx\.net\/jszxcj\/.*\.asp/
   ],
-  contentScriptFile: [self.data.url("jquery-1.8.3.min.js"), self.data.url("highcharts.js"), self.data.url("func-common.js"), self.data.url("bootstrap/js/bootstrap.min.js"), self.data.url("func-ce.js"), self.data.url("func-result.js"), self.data.url("ce-result.js")],
+  contentScriptFile: [self.data.url("jquery-2.1.4.min.js"), self.data.url("highcharts.js"), self.data.url("func-common.js"), self.data.url("bootstrap/js/bootstrap.min.js"), self.data.url("func-ce.js"), self.data.url("func-result.js"), self.data.url("ce-result.js")],
   contentScriptWhen: "ready",
   contentScriptOptions: {"localUrl": self.data.url()},
   onAttach: workerFunc,
@@ -36,9 +36,9 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: "resource://jzgradechecker/data/hello.html",
-  contentScriptFile: [self.data.url("jquery-1.8.3.min.js"), self.data.url("bootstrap/js/bootstrap.min.js"), self.data.url("bootstro.min.js"), self.data.url("hello.js"), self.data.url("func-common.js"), self.data.url("func-ce.js"), self.data.url("func-ajax.js"), self.data.url("func-index.js")],
+  contentScriptFile: [self.data.url("jquery-2.1.4.min.js"), self.data.url("bootstrap/js/bootstrap.min.js"), self.data.url("bootstro.min.js"), self.data.url("hello.js"), self.data.url("func-common.js"), self.data.url("func-ce.js"), self.data.url("func-ajax.js"), self.data.url("func-index.js")],
   contentScriptWhen: "ready",
   contentScriptOptions: {"localUrl": self.data.url()},
   onAttach: workerFunc
 });
-tabs.activeTab.url = "http://jszx.stedu.net/jszxcj/search.htm";
+tabs.activeTab.url = "http://jszx.stedu.net/jszxcj/search.htm#noticeRead=1";

@@ -82,7 +82,7 @@ jzgc.index = {
 			if(no.indexOf('1') == 0){
 				$exams.find('label').each(function(i,t){
 					var $t = $(t);
-					if(t.innerText.indexOf('高一') == -1){
+					if(t.innerHTML.indexOf('高一') == -1){
 						$t.addClass('hide');
 					}else{
 						$t.removeClass('hide');
@@ -96,7 +96,7 @@ jzgc.index = {
 			if(no.indexOf('2') == 0){
 				$exams.find('label').each(function(i,t){
 					var $t = $(t);
-					if(t.innerText.indexOf('高二') == -1){
+					if(t.innerHTML.indexOf('高二') == -1){
 						$t.addClass('hide');
 					}else{
 						$t.removeClass('hide');
@@ -110,7 +110,7 @@ jzgc.index = {
 			if(no.indexOf('3') == 0){
 				$exams.find('label').each(function(i,t){
 					var $t = $(t);
-					if(t.innerText.indexOf('高三') == -1 && this.innerText.indexOf('高考') == -1){
+					if(t.innerHTML.indexOf('高三') == -1 && this.innerHTML.indexOf('高考') == -1){
 						$(t).addClass('hide');
 					}else{
 						$(t).removeClass('hide');
@@ -152,7 +152,7 @@ jzgc.index = {
 						}).prependTo('#ext-tip');
 				}
 			}
-
+			
 			if(vf){
 				if(!$exams.is('.load-selected')) $exams.find('input').removeAttr('checked');
 				var vfc; // v_final_checked
@@ -175,7 +175,7 @@ jzgc.index = {
 				$exams.hide();
 				$('#exam-control .controls .help-block').show();
 			}
-			$exams.prependTo('#exam-control .controls');
+			$exams.appendTo('#exam-selector');
 			// if($('#form-stuinfo').is('.konami-mode')) vfc.focus();
 			// if(vca && $(vca).parent().is('.hide')) $('#expand_all').click();
 			$exams.removeClass('load-selected');
@@ -321,7 +321,7 @@ jzgc.index = {
 	renderExamSelector: function(indexData, $dest){
 		$dest.addClass('row-fluid').html('<span class="help-block">请先输入学号</span>');
 
-		var $exams = $('<div id="exams-list" class="hide" />');
+		var $exams = $('<div id="exams-list" class="hide"></div>');
 
 		// 渐进部署，先排序，不分类
 		var examList = jzgc.ajax.sortExamList(indexData.examList);

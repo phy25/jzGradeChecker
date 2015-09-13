@@ -6,11 +6,11 @@ jzgc.ce.removebg();
 jzgc.ce.conflictCheck(startExecution);
 
 function startExecution(){
-	$(function(){
+	(function(){
 		if(jzgc.ce.checkErrorPage()){return;}
 
 		// No result
-		var innerText = document.body.innerText;
+		var innerText = document.body.innerHTML;
 
 		if(innerText.indexOf('对不起') != -1){
 			if(window.sessionStorage){
@@ -50,5 +50,5 @@ function startExecution(){
 
 		// Finally show the page
 		$('body').addClass('loaded');
-	});
+	})();
 };

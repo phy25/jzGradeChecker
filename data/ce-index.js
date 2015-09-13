@@ -112,7 +112,6 @@ function startExecution(){
 		if(jzgc.ce.checkErrorPage()){return;}
 
 		var indexData = jzgc.index.fetchIndexData($(document.body));
-		console.log('OK');
 
 		if((+jzgc.user.attrGet('noticeRead') || 0) < 1){
 			if(location.hash == '#noticeRead=1'){

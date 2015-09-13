@@ -69,9 +69,9 @@ jzgc.ce = {
 	_conflictCheckOnComplete: false,
 	removebg: function(){
 		if(document.body && document.body.background){
-			//document.body.background = '';
+			document.body.background = '';
 		}else{
-			setTimeout(this.removebg, 50);
+			setTimeout(jzgc.ce.removebg, 50);
 		}
 	},
 	appendCopyRight: function($dest){
