@@ -15,7 +15,6 @@ function parseQuery(a){
 
 // Pop state support
 var popfunc = function() {
-	console.log('pop');
 	var f = function(){
 		c++;
 		if(!$('body').is('.loaded') && c<10){
@@ -107,9 +106,8 @@ var popfunc = function() {
 	}, c = 0;
 	f();
 };
-window.addEventListener('load', popfunc);
-// We are in Firefox, so popstate will be triggered on load
-window.addEventListener('popstate', popfunc);
+// window.addEventListener('load', popfunc);
+// Error handle is removed here
 
 function startExecution(){
 	(function(){
