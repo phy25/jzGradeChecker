@@ -16,14 +16,16 @@ function startExecution(){
 			if(window.sessionStorage){
 				sessionStorage['result_error'] = innerText.indexOf('考生号或密码无效') != -1 ? 'cert': 'exam';
 			}
-			window.history.back();
+			//window.history.back();
+			return;
 		}
 
 		if(innerText.indexOf('该页无法显示') != -1 || innerText.indexOf('服务器出错') != -1){
 			if(window.sessionStorage){
 				sessionStorage['result_error'] = 'server';
 			}
-			window.history.back();
+			//window.history.back();
+			return;
 		}
 		
 		// 去掉固有的 style

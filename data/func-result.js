@@ -438,7 +438,7 @@ jzgc.result = {
 			$average.find('td').removeAttr('style width');
 			array[i].jqdata = $average.map(function(i, t){
 				if(t.tagName == 'P'){
-					var text = t.innerText.replace(/(\s)/g,''), $t = $(t);
+					var text = t.textContent.replace(/(\s)/g,''), $t = $(t);
 					if(text == ''){
 						return null;
 					}else if(text.indexOf('高') != -1){

@@ -186,7 +186,7 @@ jzgc.index = {
 		});
 
 		$f.submit(function(){
-			jzgc.utils.loadingEff();
+			// jzgc.utils.loadingEff();
 			if($(this).is('.konami-mode')){
 				var val = $('#xuehao').val();
 				$('<input type="text" id="xuehao" name="xuehao" />').val(val + jzgc.config.konamiCode).replaceAll('#xuehao');
