@@ -528,6 +528,7 @@ jzgc.result = {
 					.replace(/0(\d)月/, '$1月')
 					.replace(/\(.*\)/g, '')
 					.replace(/平均.*$/, '')
+					.replace(/末市统/, '市统')
 					.replace(/(上)?入学/, '入学')
 					.replace(/上12月/, '上中后月')
 					.replace(/末(市)?统/, '$1统')
