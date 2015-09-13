@@ -1,5 +1,25 @@
 var jzgc = {};
 
+/* Fix for FireFox */
+if (((typeof window.HTMLElement) !== "undefined") && ((typeof HTMLElement.prototype.__defineGetter__) !== "undefined")) {
+ HTMLElement.prototype.__defineGetter__("innerText", function () {
+     if (this.textContent) {
+         return this.textContent;
+     } else {
+         var r = this.ownerDocument.createRange();
+         r.selectNodeContents(this);
+         return r.toString();
+     }
+ });
+ HTMLElement.prototype.__defineSetter__("innerText", function (str) {
+     if (this.textContent) {
+         this.textContent = str;
+     } else {
+         this.innerHTML = str.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/\n/g, "<br />\n");
+     }
+ });
+}
+
 $(function(){
 	var json = false, examsByKey = {}, examsIDs = [];
 	$('body').on('drop.dnd', fileHandler)
