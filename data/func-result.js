@@ -528,6 +528,7 @@ jzgc.result = {
 					.replace(/0(\d)月/, '$1月')
 					.replace(/\(.*\)/g, '')
 					.replace(/平均.*$/, '')
+					.replace(/末市统/, '市统')
 					.replace(/(上)?入学/, '入学')
 					.replace(/上12月/, '上中后月')
 					.replace(/(\d*月)摸底/, '摸底')
@@ -535,7 +536,7 @@ jzgc.result = {
 					.replace(/(下)?(初)?(.校)?联/, '联')
 					.replace(/(下)?(市|广)?(.)模/, '$3模');
 
-				// console.log(text);
+				//console.log(text);
 
 				var ret = {title: $t.find('caption').text(), match_title: text, table: $t};
 				return ret;
@@ -567,14 +568,14 @@ jzgc.result = {
 			.replace(/(学)?期/, '')
 			.replace(/(高一上)月/, '$110月')
 			.replace(/(高二上)初/, '$110月');
-		// console.log(currentExam);
+		//console.log('Cur:'+currentExam);
 
 		var matches = [];
 		$.each(array.exams, function(i, v){
 			// {title: $t.find('caption').text(), match_title: text, table: $t}
 			if(v.match_title == currentExam) matches.push(v);
 		});
-		// console.log(matches);
+		//console.log(matches);
 		if(matches.length != 1){
 			// Temparary
 			return false;

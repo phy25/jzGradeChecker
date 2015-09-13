@@ -28,7 +28,7 @@ jzgc.export = {
 				return false;
 			}
 
-			$('#content').hide().after('<div id="content-export" />');
+			$('#content').hide();
 			var $export = $('<div id="content-export" />'), user = jzgc.user.get(0);
 
 			$('<ul id="breadcrumb" class="breadcrumb"><li><a href="search.htm">返回查询主页</a> <span class="divider">|</span></li></ul>').appendTo($export);
@@ -153,7 +153,7 @@ jzgc.export = {
 				}
 				$('#export-progress').removeClass('active progress-striped').find('div:first').removeClass().addClass('bar bar-success');
 				var fileName = 'exams-' + ret.xuehao + (ret.name?('-'+ret.name):'') +'.json';
-				$('#content-export').append('<h2>导出了 '+ret.exams.length+' 场考试的成绩</h2><p>请复制保存文本框中的内容<span>或直接点击 <a href="javascript:void(0)" id="save-btn" role="button" class="btn btn-primary btn-small" title="下载导出数据为 '+fileName+'"><i class="icon-file icon-white" /> 另存为文件</a></span>。<strong>这样才算完成导出。</strong></p><textarea id="result" class="input-xxlarge" rows="6"></textarea><p>您可以在查询首页“导出”按钮旁的下拉菜单中找到查看器。<a href="'+ chrome.extension.getURL("jsonReader.html") +'" class="btn btn-small btn-info" target="_blank">现在打开查看器</a></p><p><span class="label label-info">ProTip</span> 请把文件保存为诸如 <code>'+fileName+'</code> 的文件名。技术宅们也可以自己读 JSON 格式的数据出来。</p><p><i class="icon-comment " /> 有空的话，来说说导出的使用体验吧！ <a href="'+jzgc.config.urls.extSite+'exportgotit.html" class="btn btn-small" target="_blank">吐个槽</a></p>');
+				$('#content-export').append('<h2>导出了 '+ret.exams.length+' 场考试的成绩</h2><p>请复制保存文本框中的内容<span>或直接点击 <a href="javascript:void(0)" id="save-btn" role="button" class="btn btn-primary btn-small" title="下载导出数据为 '+fileName+'"><i class="icon-file icon-white" /> 另存为文件</a></span>。<strong>这样才算完成导出。</strong></p><textarea id="result" class="input-xxlarge" rows="6"></textarea><p>您可以在查询首页“导出”按钮旁的下拉菜单中找到查看器。<a href="'+ jzgc.ce.getLocalURL("jsonReader.html") +'" class="btn btn-small btn-info" id="open-viewer-btn" target="_blank">现在打开查看器</a></p><p><span class="label label-info">ProTip</span> 请把文件保存为诸如 <code>'+fileName+'</code> 的文件名。技术宅们也可以自己读 JSON 格式的数据出来。</p><p><i class="icon-comment " /> 有空的话，来说说导出的使用体验吧！ <a href="'+jzgc.config.urls.extSite+'exportgotit.html" class="btn btn-small" target="_blank">吐个槽</a></p>');
 				$('#result').text(JSON.stringify(ret)).click(function(){this.select()});
 
 				try{ var isFileSaverSupported = !!new Blob(); } catch(e){}
@@ -162,6 +162,11 @@ jzgc.export = {
 						var blob = new Blob([JSON.stringify(ret)], {type: "application/json;charset=utf-8"});
 						saveAs(blob, fileName);
 					}).on('dragstart', function(){alert("不支持拖拽下载文件，抱歉啦。\n建议您点击下载后在下载栏处拖动文件。");return false;});
+					$('#open-viewer-btn').click(function(){
+						if(jzgc.config.version[0] == 'ff-extension'){
+							self.port.emit('pushUrlChangeBlank', 'jsonReader.html');
+						}
+					});
 				}else{
 					$('#save-btn').parent().hide();
 				}

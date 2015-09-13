@@ -128,6 +128,9 @@ function startExecution(){
 		// Start to render page
 		var $container = $('<div id="container" class="container"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
 		jzgc.index.renderPage(indexData, $('#content'));
+		$('#export-viewer-btn').click(function(){
+			self.port.emit('pushUrlChangeBlank', 'jsonReader.html');
+		});
 
 		jzgc.ce.appendCopyRight($container);
 

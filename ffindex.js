@@ -5,8 +5,11 @@ var tabs = require("sdk/tabs");
 
 var workerFunc = function(worker){
 	worker.port.on("pushUrlChange", function(message) {
-		worker.tab.url = self.data.url(message);
-	});
+    worker.tab.url = self.data.url(message);
+  });
+  worker.port.on("pushUrlChangeBlank", function(message) {
+    tabs.open(self.data.url(message));
+  });
 };
 
 // Create page-mods
