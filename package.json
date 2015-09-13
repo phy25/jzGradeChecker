@@ -10,5 +10,6 @@
   },
   "license": "MIT",
   "homepage": "http://jzgc.phy25.com/",
-  "icon": "data/icon-48.png"
+  "icon": "data/icon-48.png",
+  "permissions": {"cross-domain-content": ["http://jszx.stedu.net/"]}
 }

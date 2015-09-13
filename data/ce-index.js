@@ -108,17 +108,19 @@ window.addEventListener('load', function() {
 });
 
 function startExecution(){
-	$(function(){
+	(function(){
 		if(jzgc.ce.checkErrorPage()){return;}
 
 		var indexData = jzgc.index.fetchIndexData($(document.body));
+		console.log('OK');
 
 		if((+jzgc.user.attrGet('noticeRead') || 0) < 1){
 			if(location.hash == '#noticeRead=1'){
 				jzgc.user.attrSave('noticeRead', 1);
 			}else{
 				// 新手指引，编号 1
-				location = chrome.extension.getURL("hello.html");
+				self.port.emit('pushUrlChange', 'hello.html');
+				// location = self.options.localUrl+"hello.html";
 			}
 		}
 
@@ -130,5 +132,5 @@ function startExecution(){
 
 		// Finally show the page
 		$('body').addClass('loaded');
-	});
+	})();
 }

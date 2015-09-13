@@ -100,7 +100,14 @@ jzgc.ajax = {
 			url: jzgc.config.urls.examList,
 			type: 'GET',
 			dataType: 'html',
-			timeout: 10000
+			timeout: 10000,
+			beforeSend: function( xhr ) {
+				/*
+				the "BUG" existed for more than one year, and it is fixed by this now
+				No more charset problem :)
+				*/
+				xhr.overrideMimeType( "application/x-www-form-urlencoded; charset=GB2312" );
+			}
 		}).done(function(data) {
 			// Thanks to jQuery.load(): removing the scripts
 			// to avoid any 'Permission Denied' errors in IE

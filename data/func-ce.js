@@ -8,7 +8,7 @@ $(function(){
 
 jzgc.ce = {
 	checkErrorPage: function(force){
-		if(force || (document.body && document.body.innerText.indexOf('您未被授权查看该页') != -1)){
+		if(force || (document.body && document.body.innerHTML.indexOf('您未被授权查看该页') != -1)){
 			this.errorPage();
 			return true;
 		}
@@ -69,18 +69,21 @@ jzgc.ce = {
 	_conflictCheckOnComplete: false,
 	removebg: function(){
 		if(document.body && document.body.background){
-			document.body.background = '';
+			//document.body.background = '';
 		}else{
 			setTimeout(this.removebg, 50);
 		}
 	},
 	appendCopyRight: function($dest){
 		var urls = jzgc.config.urls;
-		$dest.append('<p class="text-right"><small><i class="icon-heart" /> <a href="javascript:void(0)" class="muted" id="ext-copyright">jzGradeChecker ' + jzgc.config.version[1] + '</a> <a href="'+ chrome.extension.getURL("hello.html") +'" class="muted" id="ext-hello-link">新手指南</a> <a href="/" class="muted">金中首页</a></small></p>');
+		$dest.append('<p class="text-right"><small><i class="icon-heart" /> <a href="javascript:void(0)" class="muted" id="ext-copyright">jzGradeChecker ' + jzgc.config.version[1] + '</a> <a href="'+ jzgc.ce.getLocalURL("hello.html") +'" class="muted" id="ext-hello-link">新手指南</a> <a href="/" class="muted">金中首页</a></small></p>');
 		if($.fn.popover){
 			$('#ext-copyright', $dest).popover({html:true, title:'jzGradeChecker ' + jzgc.config.version[1], content:'<ul class="unstyled"><li>开发者 <a href="'+urls.contactDeveloper+'" target="_blank">@phy25</a></li><li>联系项目<a href="'+urls.extSite+'" target="_blank">请上扩展网站</a></li><li>贡献代码<a href="'+urls.GitHubRepo+'" target="_blank">请到 GitHub</a></li></ul>', placement:'top', trigger:'click'}).click(function(){return false;});
 		}else{
 			$('#ext-copyright', $dest).attr('href', urls.extSite).attr('target', '_blank');
 		}
+	},
+	getLocalURL: function(url){
+		return (self.options?self.options:require("sdk/self").data.url()).localUrl+url;
 	}
 };
