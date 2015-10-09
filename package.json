@@ -1,13 +1,10 @@
 {
   "title": "jzGradeChecker",
   "name": "jzgradechecker",
-  "version": "0.8.0",
-  "description": "Modifier for jszx.stedu.net",
+  "version": "0.8.1",
+  "description": "Modifier for jszx.stedu.net/jszxcj/search.htm",
   "main": "ffindex.js",
   "author": "Phy25",
-  "engines": {
-    "firefox": ">=38.0a1"
-  },
   "license": "MIT",
   "homepage": "http://jzgc.phy25.com/",
   "icon": "icon.png",
