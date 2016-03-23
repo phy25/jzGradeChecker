@@ -304,9 +304,11 @@ jzgc.result = {
 		var $table = $('<table id="gradeTable" class="table table-hover table-striped examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
 			$thead = $table.find('thead tr:first'),
 			$tbody = $table.find('tbody:first');
+		var averageNo = 0;
 
 		for(i in gd.series){
 			$('<th />').text(gd.series[i].name).appendTo($thead);
+			if(gd.series[i].name == '平均分') averageNo = i;
 		}
 		for(i in gd.subjects){
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
@@ -314,6 +316,25 @@ jzgc.result = {
 				var data = gd.series[sei].data[i];
 				if(data == -1 || !data){
 					data = '<span title="无数据" class="no-data">-</span>';
+				}
+				if(averageNo && sei == averageNo){
+					data = data.toString();
+					var index = data.indexOf('.');
+					if(index >= 0){
+						while(data.length - index != 3){
+							data = data + '0';
+						}
+					}else{
+						data = data+'.00';
+					}
+					if(index<3){
+						data = '</span>'+data;
+						while(index != 3){
+							data = '&numsp;'+data;
+							index++;
+						}
+						data = '<span style="color:#FFF;">'+data;
+					}
 				}
 				$('<td />').html(data).appendTo($tr);
 			}
@@ -643,7 +664,7 @@ jzgc.result = {
 		gd.series.splice(1, 0, {
 			'name':'平均分',
 			'data': $.map(gd.subjects, function(v){
-				return avgObject[v] > 0 ? avgObject[v] : -1;
+				return avgObject[v] > 0 ? +avgObject[v] : -1;
 			})
 		});
 		return gd;
