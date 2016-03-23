@@ -312,6 +312,7 @@ jzgc.result = {
 		}
 		for(i in gd.subjects){
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
+			var digitAfter = 1, digitAfterDetected = 0;
 			for(sei in gd.series){
 				var data = gd.series[sei].data[i];
 				if(data == -1 || !data){
@@ -321,15 +322,20 @@ jzgc.result = {
 					data = data.toString();
 					var index = data.indexOf('.');
 					if(index >= 0){
-						while(data.length - index != 3){
+						if(!digitAfterDetected && data.length - index == 3){
+							digitAfter = 2;
+							digitAfterDetected = 1;
+						}
+						while(data.length - index - 1 < digitAfter){
 							data = data + '0';
 						}
 					}else{
+						index = data.length;
 						data = data+'.00';
 					}
 					if(index<3){
 						data = '</span>'+data;
-						while(index != 3){
+						while(index < 3){
 							data = '&numsp;'+data;
 							index++;
 						}
