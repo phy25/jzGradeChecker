@@ -45,7 +45,7 @@ $(function(){
 			}
 		};
 		reader.readAsText(files[0]);
-		
+
 		return false;
 	}
 
@@ -53,7 +53,7 @@ $(function(){
 	function JSONLoadValidation(j){
 		var obj;
 		try{
-			obj = parseJSON(j);	
+			obj = parseJSON(j);
 		}
 		catch(e){
 			console.error(e);
@@ -78,7 +78,7 @@ $(function(){
 			location.reload();
 			return false;
 		}
-		
+
 		var created = new Date(json.created);
 		$('#landing').remove();
 		var $c = $('#main').show();
@@ -96,19 +96,19 @@ $(function(){
 		}
 
 		examsIDs.sort();
-		
+
 		// $c.find('#meta h3 small').append('<a href="#'+json.exams[0].id+'">'+json.exams[0].examName+'</a>');
 		var $meta = $c.find('#meta ul:first'), metaarr = json.exams[0].meta;
 		for(n in metaarr){
 			if(n == '考试场次') continue;
 			$c.find('#meta ul:first').append('<li>'+n+': '+metaarr[n]+'</li>');
 		}
-		
+
 
 		var etitle = '', avgArray = false, avgObject = false;
 		if(json.averageHTML){
 			avgArray = jzgc.result.extractAverageArrayInYear(jzgc.result.averageHTMLtoArray(json.averageHTML));
-			// console.log(avgArray[0]);			
+			// console.log(avgArray[0]);
 		}
 
 		for(i in examsIDs){
@@ -147,7 +147,7 @@ $(function(){
 				.end().find('#collapse_average').css('display', 'inline-block')
 				.end().appendTo($c.find('#content'));
 		}
-		
+
 		$('body').scrollspy({offset: 25, target: '#exams-menu-well'});
 		$('#exams-menu-well').affix({offset: 80}).on('activate', 'li', function(){$('#exams-menu-well').scrollTop($(this).position().top)});
 		$('#chart-reset').click(resetChart);
@@ -179,13 +179,13 @@ $(function(){
 						});
 						series[0].data.push(cur[1] || 0);
 						series[1].data.push(+cur[2]>0 ? +cur[2] : null);
-						series[2].data.push(cur[3] || 0);
+						series[2].data.push(+cur[3]>0 ? +cur[3] : null);
 						break;
 					}
 				}
 				if(hasit){
 					categories.push(e.examName);
-					$('<tr><td><a href="#exam-'+e.id+'">'+cur[0]+'</a></td><td>'+cur[1]+'</td><td>'+(cur[2]>0? cur[2] : '<span class="no-data" title="无数据">-</span>')+'</td><td>'+cur[3]+'</td><td><a title="去除异常点" href="javascript:void(0)" class="removePoint"><i class="icon-trash"></i></a></td></tr>').appendTo($tbody);
+					$('<tr><td><a href="#exam-'+e.id+'">'+cur[0]+'</a></td><td>'+cur[1]+'</td><td>'+(cur[2]>0? cur[2] : '<span class="no-data" title="无数据">-</span>')+'</td><td>'+(cur[3]>0? cur[3] : '<span class="no-data" title="无数据">-</span>')+'</td><td><a title="去除异常点" href="javascript:void(0)" class="removePoint"><i class="icon-trash"></i></a></td></tr>').appendTo($tbody);
 				}
 			}
 			if(categories.length > 0){
