@@ -45,16 +45,18 @@ jzgc.export = {
 
 			$('#content').after($export);
 
-			jzgc.export.run(user);
+			var listArray = [];
+			for(id in jzgc.config.examList){
+				listArray.push({id: id, name: jzgc.config.examList[id]});
+			}
+
+			jzgc.export.run(user, listArray);
 		};
 	},
-	run: function(user){
+	run: function(user, list){
 		var $log = $('#export-log').css('height', '15em').append('<p>正在开始导出... 为了避免给学校服务器造成太大的压力，请耐心等待导出。</p>'), ret = {created: +new Date(), exams:[], xuehao: user[0]}, dataFirst, list = [], pointer = 0, timeout = 2000, errorCount = 0;
 		function log(t, type){
 			$('<p />').html(t).addClass(type ? ('text-' + type) : '').prependTo($log);
-		}
-		for(id in jzgc.config.examList){
-			list.push([id, jzgc.config.examList[id]]);
 		}
 
 		if(user[1] == 'KONAMIMODE'){
@@ -70,7 +72,7 @@ jzgc.export = {
 		function getID(){
 			// log('即将下载 '+ list[pointer][1] + ' (' + list[pointer][0] + ')');
 			jzgc.ajax.getExamResult(
-				{xuehao: user[0], password: user[1], kaoshi: list[pointer][0]},
+				{xuehao: user[0], password: user[1], kaoshi: list[pointer].id},
 				function(data){
 					if(!dataFirst){
 						dataFirst = jQuery.extend(true, {}, data);
@@ -80,11 +82,11 @@ jzgc.export = {
 					}
 					data.notes = undefined;
 					data.averageHTML = undefined;
-					data.id = list[pointer][0];
-					data.examName = list[pointer][1];
+					data.id = list[pointer].id;
+					data.examName = list[pointer].name;
 					ret.exams.push(data);
 
-					log('已保存 ' + list[pointer][1] + ' (' + list[pointer][0] + ') ');
+					log('已保存 ' + list[pointer].name + ' (' + list[pointer].id + ') ');
 					pointer++;
 					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');
 
@@ -100,8 +102,8 @@ jzgc.export = {
 					if(t == 'examError') errorShown = '无成绩数据';
 					if(t == 'timeout') errorShown = '请求超时';
 
-					log('保存 ' + list[pointer][1] + ' (' + list[pointer][0] + ') 时错误：' + errorShown, 'error');
-					if(console) console.error(list[pointer][0], t, d);
+					log('保存 ' + list[pointer].name + ' (' + list[pointer].id + ') 时错误：' + errorShown, 'error');
+					if(console) console.error(list[pointer].name, t, d);
 
 					pointer++;
 					$('#export-progress-bar').css('width', pointer / list.length * 100 +'%');

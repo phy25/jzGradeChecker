@@ -36,7 +36,7 @@ jzgc.result = {
 		// 成绩
 		var gradeData = this.getTableData($content.filter('table:first'), true);
 		data.gradeData = gradeData;
-		
+
 		// 平均分
 		data.averageHTML = $.trim($sourceElm.find('table:eq(4)').find('td:first').html().replace(/(\s)(\s)+/g,'$1'));
 
@@ -46,10 +46,10 @@ jzgc.result = {
 			.each(function(i, e){
 				var $e = $(e);
 				if($.trim($e.text())){
-					data.notes.push($.trim( $e.html() ).replace(/(\s)(\s)+/g,'$1'));
+					data.notes.push($.trim( $e.html() ).replace(/\&nbsp;/g, ' ').replace(/(\s)(\s)+/g,'$1'));
 				}
 			});
-		
+
 		$content = undefined;
 		// $average = undefined;
 		return data;
@@ -250,7 +250,7 @@ jzgc.result = {
 	},
 	getGradeYear: function(meta, currentTime){
 		var date = new Date(currentTime || Date.now());
-		
+
 		var grade_this = (meta['学籍号'] || '').substr(0, 2); // temp
 		if(grade_this){ // 能读到学籍号就用学籍号判断级数
 			grade_this = date.getFullYear().toString().substr(0, 2) + grade_this;
@@ -289,7 +289,7 @@ jzgc.result = {
 				r.series.push({'name': $.text(this).replace(/(\s)/g,''), 'data':[]});
 			}
 		});
-		
+
 		$b.each(function(){
 			var $td = $(this).find('td');
 			r.subjects.push($.text($td.eq(0)).replace(/(\s)/g,''));
@@ -304,16 +304,43 @@ jzgc.result = {
 		var $table = $('<table id="gradeTable" class="table table-hover table-striped examData"><thead><tr><th>科目</th></tr></thead><tbody></tbody></table>'),
 			$thead = $table.find('thead tr:first'),
 			$tbody = $table.find('tbody:first');
+		var averageNo = 0;
 
 		for(i in gd.series){
 			$('<th />').text(gd.series[i].name).appendTo($thead);
+			if(gd.series[i].name == '平均分') averageNo = i;
 		}
 		for(i in gd.subjects){
 			var $tr = $('<tr><td></td></tr>').find('td').text(gd.subjects[i]).end();
+			var digitAfter = 1, digitAfterDetected = 0;
 			for(sei in gd.series){
 				var data = gd.series[sei].data[i];
 				if(data == -1 || !data){
 					data = '<span title="无数据" class="no-data">-</span>';
+				}
+				if(averageNo && sei == averageNo){
+					data = data.toString();
+					var index = data.indexOf('.');
+					if(index >= 0){
+						if(!digitAfterDetected && data.length - index == 3){
+							digitAfter = 2;
+							digitAfterDetected = 1;
+						}
+						while(data.length - index - 1 < digitAfter){
+							data = data + '0';
+						}
+					}else{
+						index = data.length;
+						data = data+'.00';
+					}
+					if(index<3){
+						data = '</span>'+data;
+						while(index < 3){
+							data = '&numsp;'+data;
+							index++;
+						}
+						data = '<span style="color:#FFF;">'+data;
+					}
 				}
 				$('<td />').html(data).appendTo($tr);
 			}
@@ -431,7 +458,7 @@ jzgc.result = {
 		for(i in array){
 			// 美化
 			$average = array[i].jqdata;
-			
+
 			$average.filter('table').addClass('table table-condensed table-bordered examData').removeAttr('style width border cellpadding cellspacing bordercolor');
 			$average.find('colgroup').remove();
 			$average.find('tr').removeAttr('style height');
@@ -523,17 +550,19 @@ jzgc.result = {
 				var $t = $(v), text = $t.find('caption').text();
 				text = text.replace(/(考|测|试)/g, '')
 					.replace(/^\d+级/, '')
-					.replace(/(\d*月)(期.)/, '$2')
+					.replace(/(\d*月?)(期.)/, '$2')
 					.replace(/(学)?期/g, '')
 					.replace(/0(\d)月/, '$1月')
 					.replace(/\(.*\)/g, '')
 					.replace(/平均.*$/, '')
 					.replace(/(上)?入学/, '入学')
 					.replace(/上12月/, '上中后月')
+					.replace(/末(市)?统/, '$1统')
 					.replace(/(\d*月)摸底/, '摸底')
 					.replace(/(高三上)8月/, '$1摸底')
 					.replace(/(下)?(初)?(.校)?联/, '联')
-					.replace(/(下)?(市|广)?(.)模/, '$3模');
+					.replace(/汕头/, '')
+					.replace(/(下)?(广)?(州)?(市)?(.)模/, '$2$5模');
 
 				// console.log(text);
 
@@ -566,7 +595,8 @@ jzgc.result = {
 			.replace(/(考|测|试)/g, '')
 			.replace(/(学)?期/, '')
 			.replace(/(高一上)月/, '$110月')
-			.replace(/(高二上)初/, '$110月');
+			.replace(/(高二上)初/, '$110月')
+			.replace(/末(市)?统/, '$1统');
 		// console.log(currentExam);
 
 		var matches = [];
@@ -595,7 +625,7 @@ jzgc.result = {
 					$val = $t.next().find('td');
 					$t = $t.find('td').not(':first');
 				}
-				
+
 				$t.each(function(i, v){
 					var text = v.innerHTML.replace(/(\s)/g,'');
 					if(text == '') return true;
@@ -626,7 +656,7 @@ jzgc.result = {
 					title = $t.find('td:first').text().replace(/(\s)/g,''), hasLeftTitle = false;
 
 				if(title == '科目') hasLeftTitle = true;
-	
+
 				$t.find('td').each(function(i, v){
 					if(hasLeftTitle && i==0) return true;
 					if(v.innerHTML.replace(/(\s)/g,'') == '') return true;
@@ -640,7 +670,7 @@ jzgc.result = {
 		gd.series.splice(1, 0, {
 			'name':'平均分',
 			'data': $.map(gd.subjects, function(v){
-				return avgObject[v] > 0 ? avgObject[v] : -1;
+				return avgObject[v] > 0 ? +avgObject[v] : -1;
 			})
 		});
 		return gd;

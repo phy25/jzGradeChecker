@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "jzGradeChecker",
   "description": "汕头市金山中学学生成绩查询界面优化插件。",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "icons": {
     "16": "icon.png",
     "128": "icon.png",

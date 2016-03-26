@@ -53,7 +53,7 @@ jzgc.ajax = {
 				}
 				// Thanks to jQuery.load(): removing the scripts
 				// to avoid any 'Permission Denied' errors in IE
-				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")), ret;
+				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "").replace(/src=\"images\/s.+\"/gi, '')), ret;
 				
 				if(jzgc.result && typeof jzgc.result.fetchResultData == 'function'){
 					ret = jzgc.result.fetchResultData($d);
@@ -104,7 +104,7 @@ jzgc.ajax = {
 		}).done(function(data) {
 			// Thanks to jQuery.load(): removing the scripts
 			// to avoid any 'Permission Denied' errors in IE
-			var $data = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")),
+			var $data = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "").replace(/src=\"images\/s.+\"/gi, '')),
 				$ks = $('#kaoshi', $data),
 				ret = {examList:[]};
 
