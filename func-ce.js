@@ -8,7 +8,7 @@ $(function(){
 
 jzgc.ce = {
 	checkErrorPage: function(force){
-		if(force || (document.body && document.body.innerText.indexOf('您未被授权查看该页') != -1)){
+		if(force || (document.body && document.body.textContent.indexOf('您未被授权查看该页') != -1)){
 			this.errorPage();
 			return true;
 		}
@@ -36,7 +36,7 @@ jzgc.ce = {
 								}else{
 									// 仍在维护
 									$bar.css('width', 0);
-									setTimeout(wait, 1000);
+									setTimeout(function(){wait();}, 1000);
 								}
 							}
 						});
@@ -71,7 +71,7 @@ jzgc.ce = {
 		if(document.body && document.body.background){
 			document.body.background = '';
 		}else{
-			setTimeout(this.removebg, 50);
+			setTimeout(function(){jzgc.ce.removebg();}, 50);
 		}
 	},
 	appendCopyRight: function($dest){
