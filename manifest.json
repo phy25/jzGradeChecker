@@ -3,6 +3,13 @@
   "name": "jzGradeChecker",
   "description": "汕头市金山中学学生成绩查询界面优化插件。",
   "version": "0.8.1",
+  "applications": {
+    "gecko": {
+        "id": "jzgradechecker@ext.phy25.com",
+        "strict_min_version": "42.0",
+        "strict_max_version": "*"
+    }
+  },
   "icons": {
     "128": "icon.png",
     "256": "icon-256.png"
@@ -10,7 +17,7 @@
   "homepage_url": "http://jzgc.phy25.com/",
   "update_url": "http://jzgc.phy25.com/chrome-extension/updates.xml",
   "permissions": [
-
+    "*://jszx.stedu.net/"
   ],
   "app": {
     "launch": {

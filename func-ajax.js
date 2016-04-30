@@ -18,7 +18,7 @@ jzgc.ajax = {
 			}
 		}
 		if(!data.kaoshi || !data.xuehao) return false;
-		
+
 		$.ajax({
 			url: jzgc.config.urls.examResult,
 			type: 'POST',
@@ -54,7 +54,7 @@ jzgc.ajax = {
 				// Thanks to jQuery.load(): removing the scripts
 				// to avoid any 'Permission Denied' errors in IE
 				var $d = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "").replace(/src=\"images\/s.+\"/gi, '')), ret;
-				
+
 				if(jzgc.result && typeof jzgc.result.fetchResultData == 'function'){
 					ret = jzgc.result.fetchResultData($d);
 				}else{
@@ -62,7 +62,7 @@ jzgc.ajax = {
 					ret = jzgc.ajax.getTableArr($d);
 					ret.isOldType = true;
 				}
-				
+
 				$d = undefined;
 				if(typeof successCallback == 'function') successCallback(ret);
 			}).error(function(jqXHR, textStatus, errorThrown){
@@ -83,7 +83,7 @@ jzgc.ajax = {
 				r.thead[r.thead.length] = $.text(this).replace(/(\s)/g,'');
 			}
 		});
-		
+
 		$b.each(function(){
 			r.tbody[r.tbody.length] = {};
 			var td = r.tbody[r.tbody.length-1], $td = $(this).find('td');
@@ -100,7 +100,10 @@ jzgc.ajax = {
 			url: jzgc.config.urls.examList,
 			type: 'GET',
 			dataType: 'html',
-			timeout: 10000
+			timeout: 10000,
+			beforeSend: function( xhr ) {
+				xhr.overrideMimeType( "text/html; charset=GB2312" );
+			}
 		}).done(function(data) {
 			// Thanks to jQuery.load(): removing the scripts
 			// to avoid any 'Permission Denied' errors in IE
@@ -121,7 +124,7 @@ jzgc.ajax = {
 					ret.examList[this.value] = this.text.replace(/(\s)/g,'');
 				});
 			}
-			
+
 			$data = $ks = undefined;
 				if(typeof successCallback == 'function') successCallback(ret);
 		}).error(function(jqXHR, textStatus, errorThrown){
@@ -138,7 +141,7 @@ jzgc.ajax = {
 		}
 
 		examsIDs.sort();
-		
+
 		for(i in examsIDs){
 			ret.push({id: examsByKey[examsIDs[i]], name: examList[examsByKey[examsIDs[i]]]});
 		}

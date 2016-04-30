@@ -32,3 +32,28 @@ body>table>tbody>:first-child>td>table>tbody>:nth-child(1), body>table>tbody>:fi
 .dropdown-submenu:focus > a > [class*=" icon-"] {
   background-image: url("chrome-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings-white.png") !important;
 }
+
+@-moz-document url-prefix(){
+	[class^="icon-"], [class*=" icon-"] {background-image: url("moz-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings.png") !important;}
+
+	/* White icons with optional class, or on hover/focus/active states of certain elements */
+	.icon-white,
+	.nav-pills > .active > a > [class^="icon-"],
+	.nav-pills > .active > a > [class*=" icon-"],
+	.nav-list > .active > a > [class^="icon-"],
+	.nav-list > .active > a > [class*=" icon-"],
+	.navbar-inverse .nav > .active > a > [class^="icon-"],
+	.navbar-inverse .nav > .active > a > [class*=" icon-"],
+	.dropdown-menu > li > a:hover > [class^="icon-"],
+	.dropdown-menu > li > a:focus > [class^="icon-"],
+	.dropdown-menu > li > a:hover > [class*=" icon-"],
+	.dropdown-menu > li > a:focus > [class*=" icon-"],
+	.dropdown-menu > .active > a > [class^="icon-"],
+	.dropdown-menu > .active > a > [class*=" icon-"],
+	.dropdown-submenu:hover > a > [class^="icon-"],
+	.dropdown-submenu:focus > a > [class^="icon-"],
+	.dropdown-submenu:hover > a > [class*=" icon-"],
+	.dropdown-submenu:focus > a > [class*=" icon-"] {
+	  background-image: url("moz-extension://__MSG_@@extension_id__/bootstrap/img/glyphicons-halflings-white.png") !important;
+}
+}
