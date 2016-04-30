@@ -36,7 +36,7 @@ jzgc.ce = {
 								}else{
 									// 仍在维护
 									$bar.css('width', 0);
-									setTimeout(wait, 1000);
+									setTimeout(function(){wait();}, 1000);
 								}
 							}
 						});
@@ -71,7 +71,7 @@ jzgc.ce = {
 		if(document.body && document.body.background){
 			document.body.background = '';
 		}else{
-			setTimeout(this.removebg, 50);
+			setTimeout(function(){jzgc.ce.removebg();}, 50);
 		}
 	},
 	appendCopyRight: function($dest){

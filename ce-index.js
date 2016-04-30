@@ -18,7 +18,7 @@ window.addEventListener('load', function() {
 	var f = function(){
 		c++;
 		if(!$('body').is('.loaded') && c<10){
-			setTimeout(f, 50);
+			setTimeout(function(){f();}, 50);
 			return;
 		}
 
@@ -93,7 +93,7 @@ window.addEventListener('load', function() {
 		}else{
 			jzgc.user.attrClear('xuehaoBefore');
 		}
-		
+
 		if($radio.parent().is('.hide')){
 			$('#expand_all').click();
 		}

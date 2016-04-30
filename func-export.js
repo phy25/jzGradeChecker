@@ -93,7 +93,7 @@ jzgc.export = {
 					if(pointer == list.length || window.jzgcStopNow){
 						complete();
 					}else{
-						setTimeout(getID, timeout);
+						setTimeout(function(){getID();}, timeout);
 					}
 				},
 				function(t, d){
@@ -132,7 +132,7 @@ jzgc.export = {
 					if(pointer == list.length || window.jzgcStopNow){
 						complete();
 					}else{
-						setTimeout(getID, timeout);
+						setTimeout(function(){getID();}, timeout);
 					}
 				}
 			);
