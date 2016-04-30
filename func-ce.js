@@ -8,7 +8,7 @@ $(function(){
 
 jzgc.ce = {
 	checkErrorPage: function(force){
-		if(force || (document.body && document.body.innerText.indexOf('您未被授权查看该页') != -1)){
+		if(force || (document.body && document.body.textContent.indexOf('您未被授权查看该页') != -1)){
 			this.errorPage();
 			return true;
 		}

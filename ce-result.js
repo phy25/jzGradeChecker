@@ -10,7 +10,7 @@ function startExecution(){
 		if(jzgc.ce.checkErrorPage()){return;}
 
 		// No result
-		var innerText = document.body.innerText;
+		var innerText = document.body.textContent;
 
 		if(innerText.indexOf('对不起') != -1){
 			if(window.sessionStorage){
@@ -25,11 +25,11 @@ function startExecution(){
 			}
 			window.history.back();
 		}
-		
+
 		// 去掉固有的 style
 		$('link:first').remove();
-		
-		
+
+
 		var resultData = jzgc.result.fetchResultData($(document.body));
 
 		// Save the time to give hints on index.js
@@ -40,7 +40,7 @@ function startExecution(){
 		}else{
 			jzgc.user.attrClear('newxuehao');
 		}
-		
+
 		// Start to render page
 		var $container = $('<div id="container" class="container-fluid"><h1>金中成绩查询</h1><div id="content" /></div>').appendTo($('<body />').replaceAll('body'));
 		jzgc.result.renderPage(resultData, $('#content'));

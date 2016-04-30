@@ -82,7 +82,7 @@ jzgc.index = {
 			if(no.indexOf('1') == 0){
 				$exams.find('label').each(function(i,t){
 					var $t = $(t);
-					if(t.innerText.indexOf('高一') == -1){
+					if(t.textContent.indexOf('高一') == -1){
 						$t.addClass('hide');
 					}else{
 						$t.removeClass('hide');
@@ -96,7 +96,7 @@ jzgc.index = {
 			if(no.indexOf('2') == 0){
 				$exams.find('label').each(function(i,t){
 					var $t = $(t);
-					if(t.innerText.indexOf('高二') == -1){
+					if(t.textContent.indexOf('高二') == -1){
 						$t.addClass('hide');
 					}else{
 						$t.removeClass('hide');
@@ -110,7 +110,7 @@ jzgc.index = {
 			if(no.indexOf('3') == 0){
 				$exams.find('label').each(function(i,t){
 					var $t = $(t);
-					if(t.innerText.indexOf('高三') == -1 && this.innerText.indexOf('高考') == -1){
+					if(t.textContent.indexOf('高三') == -1 && this.textContent.indexOf('高考') == -1){
 						$(t).addClass('hide');
 					}else{
 						$(t).removeClass('hide');
@@ -137,7 +137,7 @@ jzgc.index = {
 							$('#export-btn').click();
 							return false;
 						}).appendTo('#ext-tip');
-					
+
 				}
 			}
 			if(no.indexOf('2') == 0){
@@ -164,7 +164,7 @@ jzgc.index = {
 				}
 				if(!$exams.is('.load-selected')) vfc.checked = true;
 				// console.log($exams.is('.load-selected'), vc.checked, vf.checked, vfc.checked, vca.checked);
-				
+
 				$('#exam-control .controls').removeClass('expanded').addClass('collapsed');
 				$exams.show().find('label.hide').hide().end().find('label:not(.hide)').show();
 				$('#expand_all').show();
@@ -295,7 +295,7 @@ jzgc.index = {
 					return false;
 				});
 			}
-			
+
 			$('#xuehao').val(stu_arr[0]).change();
 			$('#password').val(stu_arr[1]);
 
@@ -331,7 +331,7 @@ jzgc.index = {
 		}
 
 		var $exams_act = $('<p class="span12"><button id="expand_all" type="button" class="btn btn-mini" tabindex="40"><i class="icon-chevron-down" /> 显示更多</button><button id="collapse_all" type="button" style="display:none" class="btn btn-mini" tabindex="40"><i class="icon-chevron-up" /> 隐藏其他</button></p>');
-		
+
 		$dest.append($exams.append($exams_act));
 
 		// <div class="tabbable tabs-left" id="exam-selector"><ul class="nav nav-tabs"><li class="active"><a href="#grade10"><input type="checkbox" title="全不选" checked /> 高一 <span class="badge badge-success">6</span></a></li></ul><div class="tab-content"><div class="tab-pane active row-fluid" id="grade10"><label class="radio span5"><input name="kaoshi" tabindex="30" type="checkbox" value="10" checked="checked" disabled> 高一上学期10月考 <span class="text-info">（已读取）</span></label></div></div></div>
