@@ -5,9 +5,10 @@
   "version": "0.8.2",
   "applications": {
     "gecko": {
-        "id": "@jzgradechecker",
+        "id": "@jzgradechecker-own",
         "strict_min_version": "44.0",
-        "strict_max_version": "*"
+        "strict_max_version": "*",
+        "update_url": "http://jzgc.phy25.com/chrome-extension/updates-ff.json"
     }
   },
   "icons": {
