@@ -73,8 +73,10 @@ function trackLinkEvent(loc, cat, act, attr, val){
 	}, 1000);
 }
 if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+	$id('non-chrome-notice').style.display = 'none';
 	var ff = function(e){
 		trackLinkEvent('latest-ff.xpi', 'jzGradeChecker', 'Download', 'Firefox');
+		e.preventDefault();
 		return false;
 	};
 	$id('install-link-quick').addEventListener('click', ff);
