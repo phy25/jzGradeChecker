@@ -59,16 +59,24 @@ if(window.chrome){
 				$id('box').style.display = 'none';
 			});
 		}
-		function trackLinkEvent(loc, cat, act, attr, val){
-			_gaq.push(['_trackEvent', cat, act, attr, val]);
-			document.body.style.opacity = '0.5';
-			setTimeout(function() {
-				document.location.href = loc;
-			}, 1000);
-		}
 		$id('install-direct-done').addEventListener('click', function(){
 			trackLinkEvent(this.href, 'jzGradeChecker', 'UIDownloadLightboxContinue');
 			return false;
 		});
 	}
+}
+function trackLinkEvent(loc, cat, act, attr, val){
+	_gaq.push(['_trackEvent', cat, act, attr, val]);
+	document.body.style.opacity = '0.5';
+	setTimeout(function() {
+		document.location.href = loc;
+	}, 1000);
+}
+if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+	var ff = function(e){
+		trackLinkEvent('latest-ff.xpi', 'jzGradeChecker', 'Download', 'Firefox');
+		return false;
+	};
+	$id('install-link-quick').addEventListener('click', ff);
+	$id('install-link-ff').addEventListener('click', ff);
 }
