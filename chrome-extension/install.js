@@ -75,8 +75,8 @@ function trackLinkEvent(loc, cat, act, attr, val){
 if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
 	$id('non-chrome-notice').style.display = 'none';
 	var ff = function(e){
-		trackLinkEvent('latest-ff.xpi', 'jzGradeChecker', 'Download', 'Firefox');
 		e.preventDefault();
+		trackLinkEvent('latest-ff.xpi', 'jzGradeChecker', 'Download', 'Firefox');
 		return false;
 	};
 	$id('install-link-quick').addEventListener('click', ff);
