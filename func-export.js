@@ -54,7 +54,7 @@ jzgc.export = {
 		};
 	},
 	run: function(user, list){
-		var $log = $('#export-log').css('height', '15em').append('<p>正在开始导出... 为了避免给学校服务器造成太大的压力，请耐心等待导出。</p>'), ret = {created: +new Date(), exams:[], xuehao: user[0]}, dataFirst, list = [], pointer = 0, timeout = 2000, errorCount = 0;
+		var $log = $('#export-log').css('height', '15em').append('<p>正在开始导出... 为了避免给学校服务器造成太大的压力，请耐心等待导出。</p>'), ret = {created: +new Date(), exams:[], xuehao: user[0]}, dataFirst, pointer = 0, timeout = 2000, errorCount = 0;
 		function log(t, type){
 			$('<p />').html(t).addClass(type ? ('text-' + type) : '').prependTo($log);
 		}
