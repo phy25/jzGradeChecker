@@ -5,7 +5,7 @@ Common functions
 if(!jzgc) var jzgc = {};
 
 jzgc.config = {
-	version: ['chrome-extension', '0.8.2'],
+	version: ['chrome-extension', '0.8.3'],
 	konamiCode: "' or ''='",
 	urls: {extSite: 'http://jzgc.phy25.com/', examResult: 'http://jszx.stedu.net/jszxcj/search.asp', examList: 'http://jszx.stedu.net/jszxcj/search.htm', contactDeveloper:'http://weibo.com/phy25', GitHubRepo: 'https://github.com/phy25/jzGradeChecker'},
 	attrs: ['color', 'lastChecked', 'lastUpgraded', 'name', 'noticeRead', 'noticeReadKonami', 'xuehaoNew', 'xuehaoBefore']

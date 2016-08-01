@@ -24,7 +24,7 @@ jzgc.ajax = {
 			type: 'POST',
 			data: data,
 			dataType: 'html',
-			timeout: 30000,
+			timeout: 60000,
 			beforeSend: function( xhr ) {
 				/*
 				the "BUG" existed for more than one year, and it is fixed by this now
