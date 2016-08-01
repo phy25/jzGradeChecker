@@ -4,7 +4,7 @@ Common functions for Chrome extension
 
 jzgc.export = {
 	showUI: function(){
-		if(!jzgc.config.examList){
+		if(!jzgc.config.examList || !jzgc.config.examList.length){
 			if(jzgc.ajax){
 				jzgc.ajax.getExamList(
 					function(d){
@@ -54,6 +54,7 @@ jzgc.export = {
 		};
 	},
 	run: function(user, list){
+		//var list = list;
 		var $log = $('#export-log').css('height', '15em').append('<p>正在开始导出... 为了避免给学校服务器造成太大的压力，请耐心等待导出。</p>'), ret = {created: +new Date(), exams:[], xuehao: user[0]}, dataFirst, pointer = 0, timeout = 2000, errorCount = 0;
 		function log(t, type){
 			$('<p />').html(t).addClass(type ? ('text-' + type) : '').prependTo($log);
@@ -70,6 +71,11 @@ jzgc.export = {
 		document.title = '【导出中】金中成绩查询';
 
 		function getID(){
+			if(list.length == 0){
+				log('错误：抓取考试列表失败', 'error');
+				complete();
+				return false;
+			}
 			// log('即将下载 '+ list[pointer][1] + ' (' + list[pointer][0] + ')');
 			jzgc.ajax.getExamResult(
 				{xuehao: user[0], password: user[1], kaoshi: list[pointer].id},
