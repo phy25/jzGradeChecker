@@ -77,9 +77,12 @@ if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
 	var ff = function(e){
 		e.preventDefault();
 		trackLinkEvent('latest-ff.xpi', 'jzGradeChecker', 'Download', 'Firefox');
-		if(confirm('安装完成了吗？按确定将跳转到学校成绩页面，开始使用。')){
-			location = 'http://jszx.stedu.net/jszxcj/search.htm';
-		}
+		setTimeout(function() {
+			if(confirm('安装完成了吗？按确定将跳转到学校成绩页面，开始使用。')){
+				location = 'http://jszx.stedu.net/jszxcj/search.htm';
+			}
+		}, 3000);
+
 		return false;
 	};
 	$id('install-link-quick').addEventListener('click', ff);
