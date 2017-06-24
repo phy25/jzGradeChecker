@@ -2,9 +2,8 @@
   "addons": {
     "jzgradechecker-own": {
       "updates": [
-        { "version": "0.8.2",
-          "update_link": "http://jzgc.phy25.com/chrome-extension/latest-ff.xpi",
-          "update_hash": "sha256:de77b8f4eaf5bcb618abaa3429ea28b683b03921287720e6b9d421afffa7e7c7" }
+        { "version": "0.8.3",
+          "update_link": "http://jzgc.phy25.com/chrome-extension/latest-ff.xpi" }
       ]
     }
   }
